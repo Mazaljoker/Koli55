@@ -5,7 +5,7 @@
 
 // @deno-types="https://esm.sh/@supabase/supabase-js@2"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { authenticationError, authorizationError } from './errors.js'
+import { authenticationError, authorizationError } from './errors'
 
 // Interface définissant l'utilisateur authentifié
 export interface AuthUser {

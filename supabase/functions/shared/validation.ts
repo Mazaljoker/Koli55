@@ -3,7 +3,7 @@
  * Utilitaires pour valider les structures de données et paramètres
  */
 
-import { validationError } from './errors.js'
+import { validationError } from './errors'
 
 /**
  * Interface définissant les règles de validation

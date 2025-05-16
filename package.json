@@ -17,6 +17,7 @@
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.49.4",
+    "@tremor/react": "^3.18.7",
     "@vapi-ai/server-sdk": "^0.7.0",
     "@vapi-ai/web": "^2.3.0",
     "autoprefixer": "^10.4.21",

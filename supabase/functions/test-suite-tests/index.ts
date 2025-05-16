@@ -14,10 +14,11 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
+import { vapiTestSuiteTests } from '../shared/vapi.ts'
 
 // Configuration de l'accès à l'API Vapi
 // @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
+// import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
 
 // Utilitaire pour accéder à Deno avec typage
 const DenoEnv = {
@@ -27,8 +28,8 @@ const DenoEnv = {
   }
 };
 
-const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
+// const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
+// const vapiClient = new VapiClient({ token: vapiApiKey })
 
 // Schéma de validation pour la création d'un test
 const createTestSchema: ValidationSchema = {
@@ -105,7 +106,7 @@ serve(async (req: Request) => {
       const { page, limit } = validatePagination(url.searchParams)
       
       // Récupération des tests via l'API Vapi
-      const tests = await vapiClient.testSuiteTests.list(suiteId, {
+      const tests = await vapiTestSuiteTests.list(suiteId, {
         limit,
         offset: (page - 1) * limit
       })
@@ -126,7 +127,7 @@ serve(async (req: Request) => {
     // GET /test-suite-tests/:suiteId/:testId - Récupération d'un test spécifique
     if (req.method === 'GET' && testId) {
       // Récupération du test via l'API Vapi
-      const test = await vapiClient.testSuiteTests.retrieve(suiteId, testId)
+      const test = await vapiTestSuiteTests.get(suiteId, testId)
       
       if (!test) {
         throw notFoundError(`Test avec l'ID ${testId} non trouvé dans la suite ${suiteId}`)
@@ -153,7 +154,7 @@ serve(async (req: Request) => {
       }
       
       // Création du test via l'API Vapi
-      const test = await vapiClient.testSuiteTests.create(suiteId, validatedData)
+      const test = await vapiTestSuiteTests.create(suiteId, validatedData)
       
       return new Response(JSON.stringify({ data: test }), {
         status: 201,
@@ -170,7 +171,7 @@ serve(async (req: Request) => {
       const validatedData = validateInput(data, updateTestSchema)
       
       // Mise à jour du test via l'API Vapi
-      const test = await vapiClient.testSuiteTests.update(suiteId, testId, validatedData)
+      const test = await vapiTestSuiteTests.update(suiteId, testId, validatedData)
       
       return new Response(JSON.stringify({ data: test }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -180,7 +181,7 @@ serve(async (req: Request) => {
     // DELETE /test-suite-tests/:suiteId/:testId - Suppression d'un test
     if (req.method === 'DELETE' && testId) {
       // Suppression du test via l'API Vapi
-      await vapiClient.testSuiteTests.delete(suiteId, testId)
+      await vapiTestSuiteTests.remove(suiteId, testId)
       
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }

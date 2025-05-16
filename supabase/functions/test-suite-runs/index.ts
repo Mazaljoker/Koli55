@@ -14,10 +14,11 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
+import { callVapiAPI } from '../shared/vapi.ts'
 
 // Configuration de l'accès à l'API Vapi
 // @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
+// import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
 
 // Utilitaire pour accéder à Deno avec typage
 const DenoEnv = {
@@ -28,7 +29,7 @@ const DenoEnv = {
 };
 
 const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
+// const vapiClient = new VapiClient({ token: vapiApiKey })
 
 // Schéma de validation pour le démarrage d'une exécution de tests
 const startRunSchema: ValidationSchema = {
@@ -83,10 +84,10 @@ serve(async (req: Request) => {
       const { page, limit } = validatePagination(url.searchParams)
       
       // Récupération des exécutions via l'API Vapi
-      const runs = await vapiClient.testSuiteRuns.list(suiteId, {
-        limit,
-        offset: (page - 1) * limit
-      })
+      const runs = await callVapiAPI(
+        `test-suite/${suiteId}/run?limit=${limit}&offset=${(page - 1) * limit}`,
+        'GET'
+      )
       
       return new Response(JSON.stringify({
         data: runs.data,
@@ -104,7 +105,10 @@ serve(async (req: Request) => {
     // GET /test-suite-runs/:suiteId/:runId - Récupération d'une exécution spécifique
     if (req.method === 'GET' && runId) {
       // Récupération de l'exécution via l'API Vapi
-      const run = await vapiClient.testSuiteRuns.retrieve(suiteId, runId)
+      const run = await callVapiAPI(
+        `test-suite/${suiteId}/run/${runId}`,
+        'GET'
+      )
       
       if (!run) {
         throw notFoundError(`Exécution avec l'ID ${runId} non trouvée dans la suite ${suiteId}`)
@@ -124,14 +128,18 @@ serve(async (req: Request) => {
       const validatedData = validateInput(data, startRunSchema)
       
       // Ajout des métadonnées utilisateur
-      validatedData.metadata = {
-        ...validatedData.metadata,
-        user_id: user.id,
-        organization_id: user.organization_id || user.id
-      }
+      // validatedData.metadata = {
+      //   ...validatedData.metadata,
+      //   user_id: user.id,
+      //   organization_id: user.organization_id || user.id
+      // }
       
       // Démarrage de l'exécution via l'API Vapi
-      const run = await vapiClient.testSuiteRuns.start(suiteId, validatedData)
+      const run = await callVapiAPI(
+        `test-suite/${suiteId}/run`,
+        'POST',
+        validatedData
+      )
       
       return new Response(JSON.stringify({ data: run }), {
         status: 201,
@@ -148,7 +156,11 @@ serve(async (req: Request) => {
       const validatedData = validateInput(data, updateRunSchema)
       
       // Mise à jour de l'exécution via l'API Vapi
-      const run = await vapiClient.testSuiteRuns.update(suiteId, runId, validatedData)
+      const run = await callVapiAPI(
+        `test-suite/${suiteId}/run/${runId}`,
+        'PATCH',
+        validatedData
+      )
       
       return new Response(JSON.stringify({ data: run }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -158,7 +170,10 @@ serve(async (req: Request) => {
     // DELETE /test-suite-runs/:suiteId/:runId - Suppression d'une exécution
     if (req.method === 'DELETE' && runId) {
       // Suppression de l'exécution via l'API Vapi
-      await vapiClient.testSuiteRuns.delete(suiteId, runId)
+      await callVapiAPI(
+        `test-suite/${suiteId}/run/${runId}`,
+        'DELETE'
+      )
       
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }

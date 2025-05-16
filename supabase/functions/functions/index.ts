@@ -14,21 +14,13 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
-
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
-
-// Utilitaire pour accéder à Deno avec typage
-const DenoEnv = {
-  get: (key: string): string | undefined => {
-    // @ts-ignore - Deno existe dans l'environnement d'exécution
-    return typeof Deno !== 'undefined' ? Deno.env.get(key) : undefined;
-  }
-};
-
-const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
+import { 
+  vapiTools, 
+  FunctionCreateParams, 
+  FunctionUpdateParams, 
+  VapiFunctionParameters, // Importer pour les schémas
+  PaginationParams 
+} from '../shared/vapi.ts'
 
 // Schéma de validation pour la création d'une fonction
 const createFunctionSchema: ValidationSchema = {
@@ -42,13 +34,14 @@ const createFunctionSchema: ValidationSchema = {
     type: 'string',
     maxLength: 500
   },
-  parameters: { 
+  parameters: { // Type VapiFunctionParameters est un objet avec properties
     type: 'object',
-    required: true
+    required: true,
+    // Une validation plus poussée de la structure interne est possible
   },
   webhook_url: { 
     type: 'string',
-    pattern: /^https?:\/\/.*$/
+    pattern: /^https?:\/\/.+$/i // Correction du pattern regex
   },
   metadata: { 
     type: 'object'
@@ -71,7 +64,7 @@ const updateFunctionSchema: ValidationSchema = {
   },
   webhook_url: { 
     type: 'string',
-    pattern: /^https?:\/\/.*$/
+    pattern: /^https?:\/\/.+$/i // Correction du pattern regex
   },
   metadata: { 
     type: 'object'
@@ -90,38 +83,25 @@ serve(async (req: Request) => {
     
     // Récupération de l'URL pour le routage
     const url = new URL(req.url)
-    const pathSegments = url.pathname.split('/').filter(segment => segment)
+    const pathSegments = url.pathname.split('/').filter(segment => segment).slice(1);
     
     // Extraction de l'ID de la fonction si présent
-    const functionId = pathSegments.length >= 2 ? pathSegments[1] : null
+    const functionId = pathSegments[0]
     
     // GET /functions - Liste de toutes les fonctions
     if (req.method === 'GET' && !functionId) {
-      const { page, limit } = validatePagination(url.searchParams)
-      
-      // Récupération des fonctions via l'API Vapi
-      const functions = await vapiClient.functions.list({
-        limit,
-        offset: (page - 1) * limit
-      })
-      
-      return new Response(JSON.stringify({
-        data: functions.data,
-        pagination: {
-          page,
-          limit,
-          total: functions.pagination.total || 0,
-          has_more: functions.pagination.has_more || false
-        }
-      }), {
+      const params = new URLSearchParams(url.search);
+      const { page, limit } = validatePagination(params)
+      const listParams: PaginationParams = { limit, offset: (page - 1) * limit }
+      const functions = await vapiTools.list(listParams)
+      return new Response(JSON.stringify(functions), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // GET /functions/:id - Récupération d'une fonction spécifique
     if (req.method === 'GET' && functionId) {
-      // Récupération de la fonction via l'API Vapi
-      const fn = await vapiClient.functions.retrieve(functionId)
+      const fn = await vapiTools.retrieve(functionId)
       
       if (!fn) {
         throw notFoundError(`Fonction avec l'ID ${functionId} non trouvée`)
@@ -134,22 +114,14 @@ serve(async (req: Request) => {
     
     // POST /functions - Création d'une nouvelle fonction
     if (req.method === 'POST' && !functionId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, createFunctionSchema)
-      
-      // Ajout des métadonnées utilisateur
+      const validatedData = validateInput<FunctionCreateParams>(data, createFunctionSchema)
       validatedData.metadata = {
         ...validatedData.metadata,
         user_id: user.id,
         organization_id: user.organization_id || user.id
       }
-      
-      // Création de la fonction via l'API Vapi
-      const fn = await vapiClient.functions.create(validatedData)
-      
+      const fn = await vapiTools.create(validatedData)
       return new Response(JSON.stringify({ data: fn }), {
         status: 201,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -158,15 +130,9 @@ serve(async (req: Request) => {
     
     // PATCH /functions/:id - Mise à jour d'une fonction
     if (req.method === 'PATCH' && functionId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, updateFunctionSchema)
-      
-      // Mise à jour de la fonction via l'API Vapi
-      const fn = await vapiClient.functions.update(functionId, validatedData)
-      
+      const validatedData = validateInput<FunctionUpdateParams>(data, updateFunctionSchema)
+      const fn = await vapiTools.update(functionId, validatedData)
       return new Response(JSON.stringify({ data: fn }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -174,21 +140,14 @@ serve(async (req: Request) => {
     
     // DELETE /functions/:id - Suppression d'une fonction
     if (req.method === 'DELETE' && functionId) {
-      // Suppression de la fonction via l'API Vapi
-      await vapiClient.functions.delete(functionId)
-      
+      await vapiTools.delete(functionId)
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // Méthode non supportée
-    return new Response(JSON.stringify({ 
-      error: 'Méthode non supportée' 
-    }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    })
+    throw notFoundError('Endpoint non trouvé ou méthode non supportée.');
     
   } catch (error) {
     return errorResponse(error)

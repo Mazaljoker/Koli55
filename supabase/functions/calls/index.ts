@@ -43,7 +43,7 @@ serve(async (req) => {
     )
   } catch (error) {
     console.error('Error:', error)
-    
+      
     return new Response(
       JSON.stringify({ 
         error: { 
@@ -53,7 +53,7 @@ serve(async (req) => {
       }),
       { 
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders } 
+        headers: { 'Content-Type': 'application/json', ...corsHeaders }
       }
     )
   }

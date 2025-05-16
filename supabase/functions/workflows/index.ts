@@ -15,23 +15,17 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
+import { 
+  vapiWorkflows,
+  WorkflowCreateParams,
+  WorkflowUpdateParams,
+  WorkflowExecuteParams,
+  PaginationParams
+} from '../shared/vapi.ts'
 
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
-
-// Utilitaire pour accéder à Deno avec typage
-const DenoEnv = {
-  get: (key: string): string | undefined => {
-    // @ts-ignore - Deno existe dans l'environnement d'exécution
-    return typeof Deno !== 'undefined' ? Deno.env.get(key) : undefined;
-  }
-};
-
-const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
-
-// Schéma de validation pour la création d'un workflow
+// Schémas de validation (inchangés)
+// ... (createWorkflowSchema, updateWorkflowSchema, executeWorkflowSchema)
+// ... existing code ...
 const createWorkflowSchema: ValidationSchema = {
   name: { 
     type: 'string',
@@ -47,6 +41,7 @@ const createWorkflowSchema: ValidationSchema = {
     type: 'array',
     required: true,
     minLength: 1
+    // La validation détaillée des steps peut être complexe et est omise ici
   },
   metadata: { 
     type: 'object'
@@ -78,6 +73,7 @@ const executeWorkflowSchema: ValidationSchema = {
   inputs: { 
     type: 'object',
     required: true
+    // La validation détaillée des inputs peut être complexe
   },
   metadata: { 
     type: 'object'
@@ -96,28 +92,22 @@ serve(async (req: Request) => {
     
     // Récupération de l'URL pour le routage
     const url = new URL(req.url)
-    const pathSegments = url.pathname.split('/').filter(segment => segment)
+    const pathSegments = url.pathname.split('/').filter(segment => segment).slice(1);
     
     // Extraction de l'ID du workflow si présent
-    const workflowId = pathSegments.length >= 2 ? pathSegments[1] : null
+    const workflowId = pathSegments[0]
+    const action = pathSegments[1] // 'execute' ou undefined
     
-    // Action spéciale: exécuter un workflow
-    if (req.method === 'POST' && workflowId && pathSegments.length === 3 && pathSegments[2] === 'execute') {
+    // POST /workflows/:id/execute - Exécuter un workflow
+    if (req.method === 'POST' && workflowId && action === 'execute') {
       // Récupération des données du corps de la requête
       const data = await req.json()
       
       // Validation des données
-      const validatedData = validateInput(data, executeWorkflowSchema)
-      
-      // Ajout des métadonnées utilisateur
-      validatedData.metadata = {
-        ...validatedData.metadata,
-        user_id: user.id,
-        organization_id: user.organization_id || user.id
-      }
+      const validatedData = validateInput<WorkflowExecuteParams>(data, executeWorkflowSchema)
       
       // Exécution du workflow via l'API Vapi
-      const execution = await vapiClient.workflows.execute(workflowId, validatedData)
+      const execution = await vapiWorkflows.execute(workflowId, validatedData)
       
       return new Response(JSON.stringify({ data: execution }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -126,31 +116,25 @@ serve(async (req: Request) => {
     
     // GET /workflows - Liste de tous les workflows
     if (req.method === 'GET' && !workflowId) {
-      const { page, limit } = validatePagination(url.searchParams)
+      const params = new URLSearchParams(url.search);
+      const { page, limit } = validatePagination(params)
       
-      // Récupération des workflows via l'API Vapi
-      const workflows = await vapiClient.workflows.list({
+      const listParams: PaginationParams = { // Utilisation de PaginationParams direct
         limit,
         offset: (page - 1) * limit
-      })
+      }
       
-      return new Response(JSON.stringify({
-        data: workflows.data,
-        pagination: {
-          page,
-          limit,
-          total: workflows.pagination.total || 0,
-          has_more: workflows.pagination.has_more || false
-        }
-      }), {
+      const workflows = await vapiWorkflows.list(listParams)
+      
+      return new Response(JSON.stringify(workflows), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // GET /workflows/:id - Récupération d'un workflow spécifique
-    if (req.method === 'GET' && workflowId) {
+    if (req.method === 'GET' && workflowId && !action) {
       // Récupération du workflow via l'API Vapi
-      const workflow = await vapiClient.workflows.retrieve(workflowId)
+      const workflow = await vapiWorkflows.retrieve(workflowId)
       
       if (!workflow) {
         throw notFoundError(`Workflow avec l'ID ${workflowId} non trouvé`)
@@ -167,7 +151,7 @@ serve(async (req: Request) => {
       const data = await req.json()
       
       // Validation des données
-      const validatedData = validateInput(data, createWorkflowSchema)
+      const validatedData = validateInput<WorkflowCreateParams>(data, createWorkflowSchema)
       
       // Ajout des métadonnées utilisateur
       validatedData.metadata = {
@@ -177,7 +161,7 @@ serve(async (req: Request) => {
       }
       
       // Création du workflow via l'API Vapi
-      const workflow = await vapiClient.workflows.create(validatedData)
+      const workflow = await vapiWorkflows.create(validatedData)
       
       return new Response(JSON.stringify({ data: workflow }), {
         status: 201,
@@ -186,15 +170,15 @@ serve(async (req: Request) => {
     }
     
     // PATCH /workflows/:id - Mise à jour d'un workflow
-    if (req.method === 'PATCH' && workflowId) {
+    if (req.method === 'PATCH' && workflowId && !action) {
       // Récupération des données du corps de la requête
       const data = await req.json()
       
       // Validation des données
-      const validatedData = validateInput(data, updateWorkflowSchema)
+      const validatedData = validateInput<WorkflowUpdateParams>(data, updateWorkflowSchema)
       
       // Mise à jour du workflow via l'API Vapi
-      const workflow = await vapiClient.workflows.update(workflowId, validatedData)
+      const workflow = await vapiWorkflows.update(workflowId, validatedData)
       
       return new Response(JSON.stringify({ data: workflow }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -202,9 +186,9 @@ serve(async (req: Request) => {
     }
     
     // DELETE /workflows/:id - Suppression d'un workflow
-    if (req.method === 'DELETE' && workflowId) {
+    if (req.method === 'DELETE' && workflowId && !action) {
       // Suppression du workflow via l'API Vapi
-      await vapiClient.workflows.delete(workflowId)
+      await vapiWorkflows.delete(workflowId)
       
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -212,12 +196,7 @@ serve(async (req: Request) => {
     }
     
     // Méthode non supportée
-    return new Response(JSON.stringify({ 
-      error: 'Méthode non supportée' 
-    }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    })
+    throw notFoundError('Endpoint non trouvé ou méthode non supportée.');
     
   } catch (error) {
     return errorResponse(error)

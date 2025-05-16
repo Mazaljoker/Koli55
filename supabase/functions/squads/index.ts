@@ -16,21 +16,13 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
-
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
-
-// Utilitaire pour accéder à Deno avec typage
-const DenoEnv = {
-  get: (key: string): string | undefined => {
-    // @ts-ignore - Deno existe dans l'environnement d'exécution
-    return typeof Deno !== 'undefined' ? Deno.env.get(key) : undefined;
-  }
-};
-
-const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
+import { 
+  vapiSquads,
+  SquadCreateParams,
+  SquadUpdateParams,
+  SquadMember,
+  PaginationParams
+} from '../shared/vapi.ts'
 
 // Schéma de validation pour la création d'une équipe
 const createSquadSchema: ValidationSchema = {
@@ -46,7 +38,7 @@ const createSquadSchema: ValidationSchema = {
   },
   members: { 
     type: 'array',
-    minLength: 1
+    // items: { type: 'object', properties: { id: {type: 'string'}, role: {type: 'string'} } } // Validation plus stricte
   },
   metadata: { 
     type: 'object'
@@ -74,55 +66,38 @@ const addMembersSchema: ValidationSchema = {
   members: { 
     type: 'array',
     required: true,
-    minLength: 1
+    minLength: 1,
+    // items: { type: 'object', properties: { id: {type: 'string'}, role: {type: 'string'} } }
   }
 }
 
 serve(async (req: Request) => {
-  // Gestion des requêtes CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders, status: 204 })
   }
 
   try {
-    // Authentification de l'utilisateur
     const user = await authenticate(req)
-    
-    // Récupération de l'URL pour le routage
     const url = new URL(req.url)
-    const pathSegments = url.pathname.split('/').filter(segment => segment)
-    
-    // Vérification qu'on a au moins le segment 'squads'
-    if (pathSegments.length === 0 || pathSegments[0] !== 'squads') {
-      throw validationError('Chemin d\'URL invalide')
-    }
-    
-    // Extraction de l'ID de l'équipe si présent
-    const squadId = pathSegments.length >= 2 ? pathSegments[1] : null
-    
-    // Action spéciale: ajouter des membres à une équipe
-    if (req.method === 'POST' && squadId && pathSegments.length === 3 && pathSegments[2] === 'members') {
-      // Récupération des données du corps de la requête
+    const pathSegments = url.pathname.split('/').filter(segment => segment).slice(1);
+
+    const squadId = pathSegments[0]
+    const action = pathSegments[1] // 'members' ou undefined
+    const memberId = pathSegments[2] // ID du membre pour suppression
+
+    // POST /squads/:id/members - Ajoute des membres à une équipe
+    if (req.method === 'POST' && squadId && action === 'members' && !memberId) {
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, addMembersSchema)
-      
-      // Ajout des membres à l'équipe via l'API Vapi
-      await vapiClient.squads.addMembers(squadId, validatedData.members)
-      
-      return new Response(JSON.stringify({ success: true }), {
+      const validatedData = validateInput<{ members: SquadMember[] }>(data, addMembersSchema)
+      const updatedSquad = await vapiSquads.addMembers(squadId, validatedData.members)
+      return new Response(JSON.stringify({ data: updatedSquad }), { // Vapi retourne le squad mis à jour
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
-    // Action spéciale: retirer un membre d'une équipe
-    if (req.method === 'DELETE' && squadId && pathSegments.length === 4 && pathSegments[2] === 'members') {
-      const memberId = pathSegments[3]
-      
-      // Suppression du membre de l'équipe via l'API Vapi
-      await vapiClient.squads.removeMember(squadId, memberId)
-      
+    // DELETE /squads/:id/members/:memberId - Retire un membre d'une équipe
+    if (req.method === 'DELETE' && squadId && action === 'members' && memberId) {
+      await vapiSquads.removeMember(squadId, memberId)
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -130,36 +105,21 @@ serve(async (req: Request) => {
     
     // GET /squads - Liste de toutes les équipes
     if (req.method === 'GET' && !squadId) {
-      const { page, limit } = validatePagination(url.searchParams)
-      
-      // Récupération des équipes via l'API Vapi
-      const squads = await vapiClient.squads.list({
+      const params = new URLSearchParams(url.search);
+      const { page, limit } = validatePagination(params)
+      const listParams: PaginationParams = {
         limit,
         offset: (page - 1) * limit
-      })
-      
-      return new Response(JSON.stringify({
-        data: squads.data,
-        pagination: {
-          page,
-          limit,
-          total: squads.pagination.total || 0,
-          has_more: squads.pagination.has_more || false
-        }
-      }), {
+      }
+      const squads = await vapiSquads.list(listParams)
+      return new Response(JSON.stringify(squads), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // GET /squads/:id - Récupération d'une équipe spécifique
-    if (req.method === 'GET' && squadId) {
-      // Récupération de l'équipe via l'API Vapi
-      const squad = await vapiClient.squads.retrieve(squadId)
-      
-      if (!squad) {
-        throw notFoundError(`Équipe avec l'ID ${squadId} non trouvée`)
-      }
-      
+    if (req.method === 'GET' && squadId && !action) {
+      const squad = await vapiSquads.retrieve(squadId)
       return new Response(JSON.stringify({ data: squad }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -167,22 +127,14 @@ serve(async (req: Request) => {
     
     // POST /squads - Création d'une nouvelle équipe
     if (req.method === 'POST' && !squadId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, createSquadSchema)
-      
-      // Ajout des métadonnées utilisateur
+      const validatedData = validateInput<SquadCreateParams>(data, createSquadSchema)
       validatedData.metadata = {
         ...validatedData.metadata,
         user_id: user.id,
         organization_id: user.organization_id || user.id
       }
-      
-      // Création de l'équipe via l'API Vapi
-      const squad = await vapiClient.squads.create(validatedData)
-      
+      const squad = await vapiSquads.create(validatedData)
       return new Response(JSON.stringify({ data: squad }), {
         status: 201,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -190,39 +142,25 @@ serve(async (req: Request) => {
     }
     
     // PATCH /squads/:id - Mise à jour d'une équipe
-    if (req.method === 'PATCH' && squadId) {
-      // Récupération des données du corps de la requête
+    if (req.method === 'PATCH' && squadId && !action) {
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, updateSquadSchema)
-      
-      // Mise à jour de l'équipe via l'API Vapi
-      const squad = await vapiClient.squads.update(squadId, validatedData)
-      
+      const validatedData = validateInput<SquadUpdateParams>(data, updateSquadSchema)
+      const squad = await vapiSquads.update(squadId, validatedData)
       return new Response(JSON.stringify({ data: squad }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // DELETE /squads/:id - Suppression d'une équipe
-    if (req.method === 'DELETE' && squadId) {
-      // Suppression de l'équipe via l'API Vapi
-      await vapiClient.squads.delete(squadId)
-      
+    if (req.method === 'DELETE' && squadId && !action) {
+      await vapiSquads.delete(squadId)
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
-    // Méthode non supportée
-    return new Response(JSON.stringify({ 
-      error: 'Méthode non supportée' 
-    }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    })
-    
+    throw notFoundError('Endpoint non trouvé ou méthode non supportée.');
+
   } catch (error) {
     return errorResponse(error)
   }

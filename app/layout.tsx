@@ -1,27 +1,33 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import React from 'react'
-import { Providers } from './providers'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Koli55 - Intégration Vapi',
-  description: 'Application d\'intégration entre Vapi et Supabase',
+  title: 'Koli55 Vapi Integration',
+  description: 'Frontend for Vapi-powered assistants',
 }
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>
-        <Providers>
+    <html lang="en">
+      <body className="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+        <header className="bg-blue-600 text-white p-4 shadow-md">
+          <nav className="container mx-auto">
+            <h1 className="text-xl font-bold">Koli55 Vapi Platform</h1>
+          </nav>
+        </header>
+
+        <main className="flex-grow container mx-auto p-4">
           {children}
-        </Providers>
+        </main>
+
+        <footer className="bg-gray-800 text-white p-4 text-center">
+          <p>&copy; {new Date().getFullYear()} Koli55. All rights reserved.</p>
+        </footer>
       </body>
     </html>
   )

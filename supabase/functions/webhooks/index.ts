@@ -16,10 +16,7 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate, verifyAdmin } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
-
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
+import { vapiWebhooks, WebhookCreateParams, WebhookUpdateParams } from '../shared/vapi.ts'
 
 // Utilitaire pour accéder à Deno avec typage
 const DenoEnv = {
@@ -30,7 +27,6 @@ const DenoEnv = {
 };
 
 const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
 
 // Schéma de validation pour la création d'un webhook
 const createWebhookSchema: ValidationSchema = {
@@ -146,7 +142,6 @@ serve(async (req: Request) => {
       }
       
       // Traiter l'événement de manière asynchrone
-      // Note: dans Deno, on n'a pas besoin d'attendre cette promesse pour renvoyer une réponse
       handleVapiEvent(event)
       
       // Répondre immédiatement avec un succès (requis par Vapi)
@@ -162,8 +157,7 @@ serve(async (req: Request) => {
     if (req.method === 'POST' && pathSegments.length === 3 && pathSegments[2] === 'ping') {
       const webhookId = pathSegments[1]
       
-      // Ping le webhook via l'API Vapi
-      await vapiClient.webhooks.ping(webhookId)
+      await vapiWebhooks.ping(webhookId)
       
       return new Response(JSON.stringify({ success: true, message: 'Webhook testé avec succès' }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -174,19 +168,18 @@ serve(async (req: Request) => {
     if (req.method === 'GET' && pathSegments.length <= 1) {
       const { page, limit } = validatePagination(url.searchParams)
       
-      // Récupération des webhooks via l'API Vapi
-      const webhooks = await vapiClient.webhooks.list({
+      const webhooksResult = await vapiWebhooks.list({
         limit,
         offset: (page - 1) * limit
       })
       
       return new Response(JSON.stringify({
-        data: webhooks.data,
+        data: webhooksResult.data,
         pagination: {
           page,
           limit,
-          total: webhooks.pagination.total || 0,
-          has_more: webhooks.pagination.has_more || false
+          total: webhooksResult.pagination.total || 0,
+          has_more: webhooksResult.pagination.has_more || false
         }
       }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -197,8 +190,7 @@ serve(async (req: Request) => {
     if (req.method === 'GET' && pathSegments.length === 2) {
       const webhookId = pathSegments[1]
       
-      // Récupération du webhook via l'API Vapi
-      const webhook = await vapiClient.webhooks.retrieve(webhookId)
+      const webhook = await vapiWebhooks.retrieve(webhookId)
       
       if (!webhook) {
         throw notFoundError(`Webhook avec l'ID ${webhookId} non trouvé`)
@@ -211,17 +203,10 @@ serve(async (req: Request) => {
     
     // POST /webhooks - Création d'un nouveau webhook
     if (req.method === 'POST' && pathSegments.length <= 1) {
-      // Cette opération nécessite des privilèges d'administrateur
       verifyAdmin(user)
-      
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, createWebhookSchema)
-      
-      // Création du webhook via l'API Vapi
-      const webhook = await vapiClient.webhooks.create(validatedData)
+      const validatedData = validateInput<WebhookCreateParams>(data, createWebhookSchema)
+      const webhook = await vapiWebhooks.create(validatedData)
       
       return new Response(JSON.stringify({ data: webhook }), {
         status: 201,
@@ -231,19 +216,11 @@ serve(async (req: Request) => {
     
     // PATCH /webhooks/:id - Mise à jour d'un webhook
     if (req.method === 'PATCH' && pathSegments.length === 2) {
-      // Cette opération nécessite des privilèges d'administrateur
       verifyAdmin(user)
-      
       const webhookId = pathSegments[1]
-      
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, updateWebhookSchema)
-      
-      // Mise à jour du webhook via l'API Vapi
-      const webhook = await vapiClient.webhooks.update(webhookId, validatedData)
+      const validatedData = validateInput<WebhookUpdateParams>(data, updateWebhookSchema)
+      const webhook = await vapiWebhooks.update(webhookId, validatedData)
       
       return new Response(JSON.stringify({ data: webhook }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -252,13 +229,9 @@ serve(async (req: Request) => {
     
     // DELETE /webhooks/:id - Suppression d'un webhook
     if (req.method === 'DELETE' && pathSegments.length === 2) {
-      // Cette opération nécessite des privilèges d'administrateur
       verifyAdmin(user)
-      
       const webhookId = pathSegments[1]
-      
-      // Suppression du webhook via l'API Vapi
-      await vapiClient.webhooks.delete(webhookId)
+      await vapiWebhooks.delete(webhookId)
       
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }

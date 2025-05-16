@@ -9,24 +9,14 @@
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { corsHeaders } from '../shared/cors.ts'
-import { errorResponse, validationError } from '../shared/errors.ts'
+import { errorResponse, validationError } from '../shared/errors.ts' // notFoundError non utilisé
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, ValidationSchema } from '../shared/validation.ts'
-
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
-
-// Utilitaire pour accéder à Deno avec typage
-const DenoEnv = {
-  get: (key: string): string | undefined => {
-    // @ts-ignore - Deno existe dans l'environnement d'exécution
-    return typeof Deno !== 'undefined' ? Deno.env.get(key) : undefined;
-  }
-};
-
-const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
+import { 
+  vapiAnalytics,
+  CallMetricsParams,
+  UsageStatsParams
+} from '../shared/vapi.ts'
 
 // Schéma de validation pour les paramètres de métriques d'appels
 const callMetricsSchema: ValidationSchema = {
@@ -59,79 +49,53 @@ const usageStatsSchema: ValidationSchema = {
 }
 
 serve(async (req: Request) => {
-  // Gestion des requêtes CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders, status: 204 })
   }
 
   try {
-    // Authentification de l'utilisateur
-    const user = await authenticate(req)
-    
-    // Récupération de l'URL pour le routage
+    await authenticate(req) // Authentification pour tous les endpoints analytics
     const url = new URL(req.url)
-    const pathSegments = url.pathname.split('/').filter(segment => segment)
-    
-    // Vérification qu'on a au moins le segment 'analytics'
-    if (pathSegments.length === 0 || pathSegments[0] !== 'analytics') {
-      return new Response(JSON.stringify({ 
-        error: 'Chemin d\'URL invalide' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders }
-      })
-    }
-    
+    // Les segments commencent après /functions/NOM_FONCTION/
+    // /analytics/calls -> pathSegments = ["calls"]
+    // /analytics/usage -> pathSegments = ["usage"]
+    // /analytics/calls/CALL_ID/timeline -> pathSegments = ["calls", "CALL_ID", "timeline"]
+    const pathSegments = url.pathname.split('/').filter(segment => segment).slice(1);
+
+    const mainAction = pathSegments[0]
+    const callId = pathSegments[1] // Utilisé seulement pour timeline
+    const subAction = pathSegments[2] // 'timeline' ou undefined
+
     // GET /analytics/calls - Obtention des métriques sur les appels
-    if (req.method === 'GET' && pathSegments.length === 2 && pathSegments[1] === 'calls') {
-      // Récupération des paramètres de requête
-      const queryParams: Record<string, any> = {}
+    if (req.method === 'GET' && mainAction === 'calls' && !callId) {
+      const queryParams: CallMetricsParams = {}
       for (const [key, value] of url.searchParams.entries()) {
         queryParams[key] = value
       }
-      
-      // Validation des paramètres
       validateInput(queryParams, callMetricsSchema)
-      
-      // Récupération des métriques via l'API Vapi
-      const callMetrics = await vapiClient.analytics.getCallMetrics(queryParams)
-      
+      const callMetrics = await vapiAnalytics.getCallMetrics(queryParams)
       return new Response(JSON.stringify({ data: callMetrics }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // GET /analytics/usage - Récupération des statistiques d'utilisation
-    if (req.method === 'GET' && pathSegments.length === 2 && pathSegments[1] === 'usage') {
-      // Récupération des paramètres de requête
-      const queryParams: Record<string, any> = {}
+    if (req.method === 'GET' && mainAction === 'usage') {
+      const queryParams: UsageStatsParams = {}
       for (const [key, value] of url.searchParams.entries()) {
         queryParams[key] = value
       }
-      
-      // Validation des paramètres
       validateInput(queryParams, usageStatsSchema)
-      
-      // Récupération des statistiques d'utilisation via l'API Vapi
-      const usageStats = await vapiClient.analytics.getUsageStats(queryParams)
-      
+      const usageStats = await vapiAnalytics.getUsageStats(queryParams)
       return new Response(JSON.stringify({ data: usageStats }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // GET /analytics/calls/:id/timeline - Obtention de la chronologie d'un appel
-    if (req.method === 'GET' && pathSegments.length === 4 && 
-        pathSegments[1] === 'calls' && pathSegments[3] === 'timeline') {
-      const callId = pathSegments[2]
-      
-      // Récupération de la chronologie de l'appel via l'API Vapi
-      const timeline = await vapiClient.analytics.getCallTimeline(callId)
-      
-      if (!timeline) {
-        throw validationError(`Chronologie de l'appel avec l'ID ${callId} non trouvée`)
-      }
-      
+    if (req.method === 'GET' && mainAction === 'calls' && callId && subAction === 'timeline') {
+      const timeline = await vapiAnalytics.getCallTimeline(callId)
+      // Pas besoin de vérifier !timeline car callVapiAPI lèvera une erreur si 404
       return new Response(JSON.stringify({ data: timeline }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -139,7 +103,7 @@ serve(async (req: Request) => {
     
     // Méthode non supportée
     return new Response(JSON.stringify({ 
-      error: 'Méthode non supportée' 
+      error: 'Endpoint non trouvé ou méthode non supportée' 
     }), {
       status: 405,
       headers: { 'Content-Type': 'application/json', ...corsHeaders }

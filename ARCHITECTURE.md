@@ -14,10 +14,10 @@
 ## Structure du backend
 ### Dossier `/supabase/functions`
 - **Infrastructure commune**
-  - `_shared/cors.ts` - Gestion des headers CORS
-  - `_shared/auth.ts` - Vérification de l'authentification
-  - `_shared/errors.ts` - Gestion standardisée des erreurs
-  - `_shared/validation.ts` - Validation des données entrantes
+  - `shared/cors.ts` - Gestion des headers CORS
+  - `shared/auth.ts` - Vérification de l'authentification
+  - `shared/errors.ts` - Gestion standardisée des erreurs
+  - `shared/validation.ts` - Validation des données entrantes
 
 - **Entités principales**
   - `assistants.ts` - Gestion des assistants Vapi

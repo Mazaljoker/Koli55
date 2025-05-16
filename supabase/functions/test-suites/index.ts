@@ -14,21 +14,12 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
-
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
-
-// Utilitaire pour accéder à Deno avec typage
-const DenoEnv = {
-  get: (key: string): string | undefined => {
-    // @ts-ignore - Deno existe dans l'environnement d'exécution
-    return typeof Deno !== 'undefined' ? Deno.env.get(key) : undefined;
-  }
-};
-
-const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
+import { 
+  vapiTestSuites,
+  TestSuiteCreateParams,
+  TestSuiteUpdateParams,
+  PaginationParams
+} from '../shared/vapi.ts'
 
 // Schéma de validation pour la création d'une suite de tests
 const createTestSuiteSchema: ValidationSchema = {
@@ -82,43 +73,25 @@ serve(async (req: Request) => {
     
     // Récupération de l'URL pour le routage
     const url = new URL(req.url)
-    const pathSegments = url.pathname.split('/').filter(segment => segment)
+    const pathSegments = url.pathname.split('/').filter(segment => segment).slice(1);
     
     // Extraction de l'ID de la suite de tests si présent
-    const testSuiteId = pathSegments.length >= 2 ? pathSegments[1] : null
+    const testSuiteId = pathSegments[0]
     
     // GET /test-suites - Liste de toutes les suites de tests
     if (req.method === 'GET' && !testSuiteId) {
-      const { page, limit } = validatePagination(url.searchParams)
-      
-      // Récupération des suites de tests via l'API Vapi
-      const testSuites = await vapiClient.testSuites.list({
-        limit,
-        offset: (page - 1) * limit
-      })
-      
-      return new Response(JSON.stringify({
-        data: testSuites.data,
-        pagination: {
-          page,
-          limit,
-          total: testSuites.pagination.total || 0,
-          has_more: testSuites.pagination.has_more || false
-        }
-      }), {
+      const params = new URLSearchParams(url.search);
+      const { page, limit } = validatePagination(params)
+      const listParams: PaginationParams = { limit, offset: (page - 1) * limit }
+      const testSuites = await vapiTestSuites.list(listParams)
+      return new Response(JSON.stringify(testSuites), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
     // GET /test-suites/:id - Récupération d'une suite de tests spécifique
     if (req.method === 'GET' && testSuiteId) {
-      // Récupération de la suite de tests via l'API Vapi
-      const testSuite = await vapiClient.testSuites.retrieve(testSuiteId)
-      
-      if (!testSuite) {
-        throw notFoundError(`Suite de tests avec l'ID ${testSuiteId} non trouvée`)
-      }
-      
+      const testSuite = await vapiTestSuites.retrieve(testSuiteId)
       return new Response(JSON.stringify({ data: testSuite }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -126,22 +99,14 @@ serve(async (req: Request) => {
     
     // POST /test-suites - Création d'une nouvelle suite de tests
     if (req.method === 'POST' && !testSuiteId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, createTestSuiteSchema)
-      
-      // Ajout des métadonnées utilisateur
+      const validatedData = validateInput<TestSuiteCreateParams>(data, createTestSuiteSchema)
       validatedData.metadata = {
         ...validatedData.metadata,
         user_id: user.id,
         organization_id: user.organization_id || user.id
       }
-      
-      // Création de la suite de tests via l'API Vapi
-      const testSuite = await vapiClient.testSuites.create(validatedData)
-      
+      const testSuite = await vapiTestSuites.create(validatedData)
       return new Response(JSON.stringify({ data: testSuite }), {
         status: 201,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -150,15 +115,9 @@ serve(async (req: Request) => {
     
     // PATCH /test-suites/:id - Mise à jour d'une suite de tests
     if (req.method === 'PATCH' && testSuiteId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
-      const validatedData = validateInput(data, updateTestSuiteSchema)
-      
-      // Mise à jour de la suite de tests via l'API Vapi
-      const testSuite = await vapiClient.testSuites.update(testSuiteId, validatedData)
-      
+      const validatedData = validateInput<TestSuiteUpdateParams>(data, updateTestSuiteSchema)
+      const testSuite = await vapiTestSuites.update(testSuiteId, validatedData)
       return new Response(JSON.stringify({ data: testSuite }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -166,21 +125,13 @@ serve(async (req: Request) => {
     
     // DELETE /test-suites/:id - Suppression d'une suite de tests
     if (req.method === 'DELETE' && testSuiteId) {
-      // Suppression de la suite de tests via l'API Vapi
-      await vapiClient.testSuites.delete(testSuiteId)
-      
+      await vapiTestSuites.delete(testSuiteId)
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
     }
     
-    // Méthode non supportée
-    return new Response(JSON.stringify({ 
-      error: 'Méthode non supportée' 
-    }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders }
-    })
+    throw notFoundError('Endpoint non trouvé ou méthode non supportée.');
     
   } catch (error) {
     return errorResponse(error)

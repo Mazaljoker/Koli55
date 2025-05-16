@@ -35,10 +35,10 @@
 ## 🧠 Phase 5 — Fonctions Supabase Edge (1 par route Vapi)
 
 ### 🔹 Infrastructure commune
-- [x] `_shared/cors.ts` — Gestion des headers CORS
-- [x] `_shared/auth.ts` — Vérification de l'authentification
-- [x] `_shared/errors.ts` — Gestion standardisée des erreurs
-- [x] `_shared/validation.ts` — Validation des données entrantes
+- [x] `shared/cors.ts` — Gestion des headers CORS
+- [x] `shared/auth.ts` — Vérification de l'authentification
+- [x] `shared/errors.ts` — Gestion standardisée des erreurs
+- [x] `shared/validation.ts` — Validation des données entrantes
 
 ### 🔹 Assistants
 - [x] `assistants.ts` — CRUD complet des assistants
@@ -170,126 +170,124 @@
 
 ## ✅ Phase 5 — Conclusion
 La Phase 5 est maintenant complète ! Nous avons implémenté avec succès :
-- 4 composants d'infrastructure partagée dans `_shared/`
+- 4 composants d'infrastructure partagée dans `shared/`
 - 15 Edge Functions couvrant toutes les fonctionnalités de l'API Vapi
 - Chaque Edge Function suit la même architecture avec authentification, validation, et gestion d'erreurs standardisée
 - Le frontend pourra interagir avec ces fonctions via `supabase.functions.invoke()` sans jamais accéder directement à l'API Vapi
 
-### Prochaines étapes avant la Phase 6 :
-- ✅ Déployer les fonctions Edge avec `supabase functions deploy`
-  - ✅ Fonction de test
-  - ✅ Fonction shared (utilitaires partagés)
-  - ✅ Fonction assistants
-  - ✅ Fonction calls
-  - ✅ Tester la function assistant jusque vapi si possble
-  - ✅ Fonction knowledge-bases
-  - ⬜ Déployer les autres fonctions pour webhook, etc.
-
-### Bonnes pratiques découvertes pour les Edge Functions :
-- ✅ Utiliser un seul dossier pour les utilitaires partagés (`shared/` sans underscore)
-- ✅ Toujours utiliser l'extension `.ts` pour les imports internes
-- ✅ Passer systématiquement 4 arguments à `callVapiAPI` (avec `undefined` pour `body` si non utilisé)
-- ✅ Typer explicitement les paramètres et retours de fonctions
-- ✅ Utiliser les schémas de validation pour chaque endpoint
-- ✅ Ne pas utiliser le SDK Vapi (incompatible avec Deno/Supabase)
-- ✅ Utiliser des appels HTTP directs via `fetch` avec la fonction utilitaire `callVapiAPI`
-
-### Prochaines fonctions à déployer :
-- ⬜ webhooks
-- ⬜ files
-- ⬜ workflows
-- ⬜ squads
-- ⬜ functions
-- ⬜ organization
-- ⬜ analytics
-- ⬜ test-suites
-- ⬜ test-suite-tests
-- ⬜ test-suite-runs
-
-### Leçons apprises :
-- Les imports dans Deno/Supabase doivent avoir l'extension `.ts` explicite
-- Le dossier partagé doit s'appeler `shared/` (pas `_shared/`)
-- Les imports internes doivent être relatifs (ex: `../shared/cors.ts`)
-- Les imports externes doivent être complets (ex: `https://deno.land/std@0.168.0/http/server.ts`)
-- Pas de SDK externe non compatible avec Deno (comme le SDK Vapi)
-
-### Instructions détaillées pour le déploiement des fonctions Edge
-
-Pour déployer correctement toutes les fonctions Edge dans Supabase, suivez ces étapes :
-
-1. **Restructurer les fichiers des fonctions**
-   - Créer un dossier pour chaque fonction dans `supabase/functions/`
-   - Déplacer chaque fonction dans son propre dossier avec un fichier `index.ts`
-   - Exemple : `supabase/functions/assistants.ts` → `supabase/functions/assistants/index.ts`
-
-2. **Mettre à jour les imports**
-   - Corriger les chemins d'imports pour les utilitaires partagés
-   - Utiliser des chemins relatifs comme `../shared/cors.ts` au lieu de `./_shared/cors.js`
-
-3. **Gérer le code partagé**
-   - Créer une fonction `shared` pour exporter tous les utilitaires communs
-   - Importer de cette fonction partagée dans toutes les autres fonctions
-
-4. **Déployer avec authentification**
-   - Définir les variables d'environnement requises : `supabase secrets set VAPI_API_KEY=your_key`
-   - Déployer chaque fonction : `supabase functions deploy <nom-fonction>`
-   - Configurer les autorisations dans le dashboard Supabase
-
-5. **Tester les fonctions déployées**
-   - Utiliser un outil comme Postman ou cURL avec l'en-tête d'authentification approprié
-   - Format : `Authorization: Bearer <anon-key ou service-role-key>`
-   - Tester différents endpoints et vérifier les réponses
-
-6. **Déboguer les problèmes**
-   - Utiliser `supabase functions logs <nom-fonction>` pour voir les logs d'exécution
-   - Créer des fonctions de test simples pour isoler les problèmes
-
-En suivant ce processus méthodique, vous pourrez déployer et tester efficacement toutes les fonctions Edge.
+Pour les bonnes pratiques, leçons apprises et consignes de migration concernant les Edge Functions, veuillez consulter le fichier `EDGE_FUNCTIONS_GUIDE.md`.
 
 ---
 
-## 🛠️ Consignes de migration Edge Functions Vapi
+## 💿 Phase 6.0 — Création de la Base de Données (Supabase Tables)
+- [x] **Définir et créer la table `assistants`:**
+  - [x] Champs suggérés : `id` (UUID, primary key), `vapi_assistant_id` (TEXT, nullable, unique, pour référence à l'ID Vapi si différent), `name` (TEXT, not null), `model` (TEXT), `language` (TEXT), `voice` (TEXT), `first_message` (TEXT), `system_prompt` (TEXT, nullable), `created_at` (TIMESTAMPTZ, default now()), `updated_at` (TIMESTAMPTZ, default now()).
+  - [x] **Note Importante :** Aligner autant que possible les champs de la table avec les schémas de données de l'API Vapi pour les assistants.
+  - [x] (Optionnel) Ajouter des index pertinents (ex: sur `vapi_assistant_id`).
+- [x] **Adapter la fonction Edge `assistants` pour utiliser la table `assistants`:**
+  - [x] `GET /assistants` (lister)
+  - [x] `POST /assistants` (créer)
+  - [x] `GET /assistants/:id` (récupérer)
+  - [x] `PATCH /assistants/:id` (mettre à jour)
+  - [x] `DELETE /assistants/:id` (supprimer)
 
-### Bonnes pratiques pour la migration
-- **Utiliser uniquement des appels HTTP directs** (`fetch`) vers l'API Vapi dans les Edge Functions, pas le SDK Vapi (incompatible avec Deno/Supabase).
-- Centraliser la logique d'appel HTTP dans une fonction utilitaire partagée (`callVapiAPI`).
-- Factoriser les headers CORS, l'authentification, la gestion d'erreur et la validation dans le dossier `_shared/`.
-- Toujours typer explicitement les paramètres de fonction (évite les erreurs TypeScript/Deno).
-- Utiliser des schémas de validation pour chaque endpoint (création, update, query, etc.).
+### Méthodologie d'adaptation des Edge Functions (exemple `assistants`):
+1.  **Définition du Schéma de Table Supabase:**
+    *   Créer une table dans Supabase (ex: `public.assistants`) pour stocker les données de l'entité.
+    *   Aligner les champs de la table avec les schémas de l'API Vapi, en ajoutant les champs internes nécessaires (`id`, `user_id`, `created_at`, `updated_at`, `vapi_entity_id`).
+    *   Mettre en place les clés étrangères (ex: `user_id` vers `auth.users(id)`), les index, et les triggers (ex: pour `updated_at`).
+2.  **Modification de la Fonction Edge (pour chaque route CRUD):**
+    *   **`GET /entities` (Lister):**
+        *   Récupérer l'utilisateur authentifié.
+        *   Interroger la table Supabase pour lister les entités appartenant à l'utilisateur, avec pagination.
+    *   **`POST /entities` (Créer):**
+        *   Récupérer l'utilisateur authentifié.
+        *   Valider les données d'entrée.
+        *   Insérer les données initiales dans la table Supabase (avec `user_id`).
+        *   Appeler l'API Vapi pour créer l'entité sur leur plateforme.
+        *   Si succès Vapi, mettre à jour l'enregistrement Supabase avec le `vapi_entity_id` retourné par Vapi.
+        *   Gérer les cas d'erreur (échec DB, échec Vapi, échec de la mise à jour Vapi ID).
+    *   **`GET /entities/:id` (Récupérer par ID DB):**
+        *   Récupérer l'utilisateur authentifié.
+        *   Interroger la table Supabase par `id` et `user_id`.
+    *   **`PATCH /entities/:id` (Mettre à jour par ID DB):**
+        *   Récupérer l'utilisateur authentifié.
+        *   Récupérer l'entité existante de Supabase (pour `vapi_entity_id` et vérification de propriété).
+        *   Valider et préparer les données de mise à jour.
+        *   Mettre à jour l'enregistrement dans Supabase.
+        *   Si `vapi_entity_id` existe et que des champs pertinents ont changé, appeler l'API Vapi pour mettre à jour l'entité sur leur plateforme.
+        *   Gérer les cas d'erreur.
+    *   **`DELETE /entities/:id` (Supprimer par ID DB):**
+        *   Récupérer l'utilisateur authentifié.
+        *   Récupérer l'entité existante de Supabase (pour `vapi_entity_id` et vérification de propriété).
+        *   Si `vapi_entity_id` existe, appeler l'API Vapi pour supprimer l'entité sur leur plateforme.
+        *   Si succès Vapi (ou si pas de `vapi_entity_id`), supprimer l'enregistrement de Supabase.
+        *   Gérer les cas d'erreur (surtout si la suppression Vapi échoue, décider si la suppression DB doit quand même avoir lieu).
+3.  **Redéploiement de la fonction Edge** avec `supabase functions deploy <nom_fonction>`.
 
-### Erreurs courantes à éviter
-- **Noms réservés** : ne jamais utiliser `delete`, `update`, etc. comme noms de variables ou fonctions. Préférer `deleteAssistant`, `updateKnowledgeBase`, etc.
-- **Imports** :
-  - Toujours utiliser des chemins relatifs avec l'extension `.ts` pour les imports dans Deno/Supabase (ex : `../shared/cors.ts`).
-  - Ne pas importer de `.js` ou de modules non compatibles Deno.
-- **Appels à callVapiAPI** :
-  - Toujours passer 4 arguments (`endpoint`, `apiKey`, `method`, `body`), même si `body` est `undefined` pour les requêtes GET/DELETE.
-  - **Pas de double await** : ne pas faire `await (await callVapiAPI(...))`.
-  - **Pas de VapiClient** : ne pas instancier ou utiliser `VapiClient` dans les Edge Functions (SDK non supporté).
+**Note Importante:** Cette méthodologie devra être appliquée aux autres fonctions Edge (`calls`, `messages`, etc.) lorsqu'elles seront migrées pour utiliser des tables Supabase dédiées.
 
-### Processus de migration recommandé
-1. **Copier la structure de la fonction `/assistants`** (qui fonctionne) pour chaque nouvelle fonction.
-2. **Supprimer tout import ou usage du SDK Vapi**.
-3. **Injecter la fonction utilitaire `callVapiAPI`** si elle n'est pas déjà partagée.
-4. **Adapter tous les endpoints** pour correspondre à la documentation Vapi (vérifier les chemins et méthodes HTTP).
-5. **Renommer les variables/fonctions problématiques** (reserved words).
-6. **Déployer et tester chaque fonction individuellement** avec `supabase functions deploy <nom>` et un outil comme Postman/cURL.
-7. **Vérifier les logs** avec `supabase functions logs <nom>` en cas d'erreur.
-8. **Documenter chaque endpoint** (format, params, réponses) pour faciliter l'intégration frontend.
-
-### Rappels
-- Toujours relire et tester manuellement après migration automatique.
-- Mettre à jour la documentation technique à chaque modification majeure.
-- Utiliser le dashboard Supabase pour vérifier le bon déploiement et l'authentification.
-- Préparer des scripts de rollback en cas de problème de migration.
+- [ ] (À faire plus tard) Définir et créer d'autres tables nécessaires (ex: `workflows`, `calls`, `knowledge_bases`, `squads`, `analytics_data`, etc.) en suivant le même principe d'alignement avec les schémas Vapi.
 
 ---
 
 ## 🧪 Phase 6 — Intégration frontend initiale
-- [ ] Créer les pages `app/assistants/`, `app/workflows/`, etc.
-- [ ] Créer les composants UI réutilisables (`components/`)
-- [ ] Intégrer les appels aux Edge Functions
-- [ ] Ajouter les formulaires de création/édition d'assistants
+
+### Pages à créer (Priorisation)
+
+#### Tier 1: Essentiel pour Core Vapi Functionality & User Access
+- [x] **Layout Principal (`app/layout.tsx`):** Structure globale, navigation, footer. (Marqué comme suffisant pour l'instant)
+- [x] **Dashboard/Home Page (`app/page.tsx`):** Landing page post-login. (Simplifié pour l'instant)
+- [x] **Authentification:**
+  - [x] Login: `app/auth/login/page.tsx` (Logique de base implémentée)
+  - [x] Register: `app/auth/register/page.tsx` (Logique de base implémentée)
+  - [ ] (Optionnel) Forgot Password: `app/auth/forgot-password/page.tsx`
+- [x] **Gestion des Assistants (CRUD UI):**
+  - [x] Lister: `app/assistants/page.tsx`
+    - [x] Implémenter la récupération des assistants via Supabase Functions.
+  - [x] Créer: `app/assistants/new/page.tsx`
+    - [x] Implémenter la soumission du formulaire de création via Supabase Functions.
+  - [x] Voir détails: `app/assistants/[id]/page.tsx` (Implémenté)
+  - [x] Éditer: `app/assistants/[id]/edit/page.tsx` (Implémenté)
+  - [x] Implémenter la suppression d'un assistant depuis la liste ou la page de détails (Frontend)
+- [ ] **Gestion des Workflows:** (Si UI distincte des Assistants)
+  - [ ] Lister: `app/workflows/page.tsx`
+  - [ ] Créer: `app/workflows/new/page.tsx`
+  - [ ] Éditer: `app/workflows/[id]/edit/page.tsx`
+  - [ ] Voir Détails: `app/workflows/[id]/page.tsx`
+- [ ] **Interaction & Historique des Appels:**
+  - [ ] Interface d'Appel (Composant/Modal majeur, ex: utilisant Vapi Blocks)
+  - [ ] Logs/Historique des Appels: `app/calls/page.tsx`
+  - [ ] Détails d'Appel: `app/calls/[callId]/page.tsx`
+- [ ] **Composants UI Réutilisables (`components/`):**
+  - [ ] Explorer la bibliothèque Vapi Blocks ([https://www.vapiblocks.com/docs](https://www.vapiblocks.com/docs)) pour les composants UI et le hook `use-vapi.ts` pour l'intégration client Vapi.
+- [ ] **Intégration des Appels aux Edge Functions:** (Tâche continue pendant la création des pages)
+- [ ] **Formulaires de Création/Édition:** (Tâche continue)
+
+#### Tier 2: Fonctionnalités Vapi Avancées
+- [ ] **Gestion des Appels (Calls):**
+  - [ ] Lister: `app/calls/page.tsx`
+  - [ ] Créer: `app/calls/new/page.tsx`
+  - [ ] Éditer: `app/calls/[id]/edit/page.tsx`
+  - [ ] Voir Détails: `app/calls/[callId]/page.tsx`
+
+#### Tier 3: Configuration Essentielle & Gestion des Ressources
+- [ ] **Gestion des Numéros de Téléphone:**
+  - [ ] Lister: `app/phone-numbers/page.tsx`
+  - [ ] Provisionner/Rechercher: `app/phone-numbers/provision/page.tsx`
+- [ ] **Gestion des Bases de Connaissances:**
+  - [ ] Lister: `app/knowledge-bases/page.tsx`
+  - [ ] Créer: `app/knowledge-bases/new/page.tsx`
+  - [ ] Éditer: `app/knowledge-bases/[id]/edit/page.tsx`
+  - [ ] Gérer Fichiers (intégré à l'édition/détail)
+- [ ] **Configuration des Webhooks:**
+  - [ ] Lister/Gérer: `app/webhooks/page.tsx`
+
+#### Tier 4: Administration Générale & Paramètres Utilisateur (Moins prioritaire pour l'intégration initiale)
+- [ ] **Paramètres de l'Organisation:**
+  - [ ] Voir/Éditer Détails & Limites: `app/organization/page.tsx`
+- [ ] **Profil Utilisateur:**
+  - [ ] Voir/Éditer Profil: `app/profile/page.tsx`
 
 ---
 

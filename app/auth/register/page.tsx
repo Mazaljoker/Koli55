@@ -1,149 +1,140 @@
 'use client';
 
-import { useState } from 'react';
-import { useAuth } from '../../../lib/auth';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import supabase from '../../../lib/supabaseClient';
 
 export default function RegisterPage() {
+  const [name, setName] = useState(''); // Optional: Supabase `signUp` can take `options.data` for additional user_metadata
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const { signUp } = useAuth();
+  const [message, setMessage] = useState(''); // Pour les messages de succès (ex: vérifier email)
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation côté client
+    setError('');
+    setMessage('');
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError('Passwords do not match.');
       return;
     }
-    
-    if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
-      return;
-    }
-    
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-
-    try {
-      const { data, error } = await signUp(email, password);
-      
-      if (error) {
-        setError(error.message);
+    if (password.length < 6) { // Exemple de validation de base
+        setError('Password should be at least 6 characters.');
         return;
-      }
-      
-      setMessage('Inscription réussie ! Vérifiez votre boîte mail pour confirmer votre compte.');
-      setTimeout(() => {
-        router.push('/auth/login');
-      }, 3000);
-      
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
+    setLoading(true);
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          // Vous pouvez passer des données supplémentaires ici, qui seront stockées dans user_metadata
+          // Exemple : data: { full_name: name }
+          // Assurez-vous que votre table `users` ou `profiles` peut gérer ces données si nécessaire.
+          data: name ? { full_name: name } : {},
+        },
+      });
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      // Gérer la réponse de signUp
+      if (data.session) {
+        // Si une session est retournée directement (ex: auto-confirmation activée), rediriger
+        router.push('/'); 
+      } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+        // Cas où l'utilisateur existe déjà mais n'a pas confirmé son email (ou autre problème)
+        setError('This email may already be registered or unconfirmed. Try logging in or use a different email.');
+      } else if (data.user) {
+        // Si un utilisateur est retourné mais pas de session, la confirmation par email est probablement requise
+        setMessage('Registration successful! Please check your email to confirm your account.');
+      } else {
+        // Cas inattendu
+        setError('An unexpected error occurred during registration.');
+      }
+
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      setError(err.message || 'Failed to register. Please try again.');
+    }
+    setLoading(false);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-lg shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Créer un compte
-          </h2>
-        </div>
-        
-        {error && (
-          <div className="bg-red-50 p-4 rounded-md">
-            <p className="text-sm text-red-700">{error}</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+        {message && <p className="text-green-600 bg-green-100 border border-green-400 p-3 rounded-md mb-4 text-center">{message}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Full Name (Optional)</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Your Name"
+            />
           </div>
-        )}
-        
-        {message && (
-          <div className="bg-green-50 p-4 rounded-md">
-            <p className="text-sm text-green-700">{message}</p>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="you@example.com"
+            />
           </div>
-        )}
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                Adresse e-mail
-              </label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border-0 p-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
-                placeholder="nom@entreprise.com"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Mot de passe
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border-0 p-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
-                placeholder="Minimum 6 caractères"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
-                Confirmer le mot de passe
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 block w-full rounded-md border-0 p-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
-                placeholder="Saisissez à nouveau votre mot de passe"
-              />
-            </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="At least 6 characters"
+            />
           </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
-            >
-              {loading ? 'Inscription en cours...' : 'S\'inscrire'}
-            </button>
+          <div className="mb-6">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="••••••••"
+            />
           </div>
-          
-          <div className="text-center text-sm">
-            <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
-              Déjà inscrit ? Se connecter
-            </Link>
-          </div>
+          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm disabled:opacity-50 transition duration-150 ease-in-out"
+          >
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </button>
         </form>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
+            Log in
+          </Link>
+        </p>
       </div>
     </div>
   );

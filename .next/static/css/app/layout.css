@@ -6,6 +6,12 @@
 .relative {
   position: relative;
 }
+.static {
+  position: static;
+}
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
 .col-span-full {
   grid-column: 1 / -1;
 }
@@ -162,6 +168,12 @@
 .duration-150 {
   --tw-duration: 150ms;
   transition-duration: 150ms;
+}
+.file\:border-0 {
+  &::file-selector-button {
+    border-style: var(--tw-border-style);
+    border-width: 0px;
+  }
 }
 .focus\:ring-2 {
   &:focus {

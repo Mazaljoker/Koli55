@@ -273,21 +273,29 @@ Pour les bonnes pratiques, leçons apprises et consignes de migration concernant
 
 #### Tier 3: Configuration Essentielle & Gestion des Ressources
 - [ ] **Gestion des Numéros de Téléphone:**
-  - [ ] Lister: `app/phone-numbers/page.tsx`
-  - [ ] Provisionner/Rechercher: `app/phone-numbers/provision/page.tsx`
+  - [x] Créer la page de base: `app/dashboard/phone-numbers/page.tsx` (placeholder `PhoneNumbers.tsx` créé)
+  - [ ] Lister les numéros existants
+  - [ ] Provisionner/Rechercher des numéros: (page `app/dashboard/phone-numbers/provision/page.tsx` à créer)
 - [ ] **Gestion des Bases de Connaissances:**
-  - [ ] Lister: `app/knowledge-bases/page.tsx`
-  - [ ] Créer: `app/knowledge-bases/new/page.tsx`
-  - [ ] Éditer: `app/knowledge-bases/[id]/edit/page.tsx`
-  - [ ] Gérer Fichiers (intégré à l'édition/détail)
+  - [x] Créer la page de base: `app/dashboard/knowledge-bases/page.tsx` (placeholder `KnowledgeBases.tsx` créé)
+  - [ ] Lister les bases de connaissances existantes
+  - [ ] Créer une nouvelle base de connaissances (page `app/dashboard/knowledge-bases/new/page.tsx` à créer)
+  - [ ] Éditer une base de connaissances (page `app/dashboard/knowledge-bases/[id]/edit/page.tsx` à créer)
+  - [ ] Gérer les fichiers d'une base de connaissances (intégré à l'édition/détail)
 - [ ] **Configuration des Webhooks:**
   - [ ] Lister/Gérer: `app/webhooks/page.tsx`
 
 #### Tier 4: Administration Générale & Paramètres Utilisateur (Moins prioritaire pour l'intégration initiale)
 - [ ] **Paramètres de l'Organisation:**
-  - [ ] Voir/Éditer Détails & Limites: `app/organization/page.tsx`
+  - [ ] Voir/Éditer Détails & Limites: `app/organization/page.tsx` (Peut être intégré dans `app/dashboard/settings/page.tsx`)
 - [ ] **Profil Utilisateur:**
-  - [ ] Voir/Éditer Profil: `app/profile/page.tsx`
+  - [ ] Voir/Éditer Profil: `app/profile/page.tsx` (Peut être intégré dans `app/dashboard/settings/page.tsx`)
+- [x] **Page d'Utilisation et Facturation:** `app/dashboard/usage-billing/page.tsx` (placeholder `UsageBilling.tsx` créé)
+  - [ ] Afficher les données d'utilisation
+  - [ ] Afficher les informations de facturation
+- [x] **Page de Paramètres Généraux:** `app/dashboard/settings/page.tsx` (placeholder `Settings.tsx` créé)
+  - [ ] Gérer les paramètres du profil utilisateur
+  - [ ] Gérer les paramètres de l'organisation
 
 ---
 
@@ -320,3 +328,8 @@ Pour les bonnes pratiques, leçons apprises et consignes de migration concernant
 - [ ] Ajouter une intégration Make.com / Zapier via webhook Supabase
 - [ ] Ajouter des assistants templates (secrétaire, médecin, avocat…)
 - [ ] Générer des assistants en moins de 5 minutes (UX simplifiée)
+
+1. Gestion des Bases de Connaissances (KnowledgeBases.tsx)
+2. Gestion des Numéros de Téléphone (PhoneNumbers.tsx)
+3. Utilisation et Facturation (UsageBilling.tsx)
+4. Paramètres (Settings.tsx)

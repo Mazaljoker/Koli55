@@ -10,6 +10,10 @@ const protectedRoutes = [
   '/workflows',
   '/calls',
   '/dashboard',
+  '/dashboard/knowledge-bases',
+  '/dashboard/phone-numbers',
+  '/dashboard/usage-billing',
+  '/dashboard/settings',
 ];
 
 // Routes publiques qui ne nécessitent pas d'authentification

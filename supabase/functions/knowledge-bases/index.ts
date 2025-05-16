@@ -1,3 +1,32 @@
+async function callVapiAPI(
+  endpoint: string,
+  apiKey: string,
+  method: string = 'GET',
+  body: any = undefined
+): Promise<any> {
+    const url = `https://api.vapi.ai${endpoint}`;
+    const options: RequestInit = {
+        method,
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+    };
+    if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+        (options as any).body = JSON.stringify(body);
+    }
+    const response = await fetch(url, options);
+    const responseText = await response.text();
+    if (!response.ok) {
+        let errorData;
+        try { errorData = JSON.parse(responseText); }
+        catch { errorData = { raw_error: responseText }; }
+        throw new Error(errorData.message || errorData.raw_error || `API request failed with status ${response.status}`);
+    }
+    return JSON.parse(responseText);
+}
+
 /**
  * Fonction Supabase Edge pour la gestion des bases de connaissances Vapi
  * Endpoints:
@@ -13,14 +42,12 @@
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { corsHeaders } from '../shared/cors.ts'
-import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
-import { authenticate } from '../shared/auth.ts'
-import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
+import { corsHeaders } from '../_shared/cors.ts'
+import { errorResponse, notFoundError, validationError } from '../_shared/errors.ts'
+import { authenticate } from '../_shared/auth.ts'
+import { validateInput, validatePagination, ValidationSchema } from '../_shared/validation.ts'
 
 // Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
 
 // Utilitaire pour accéder à Deno avec typage
 const DenoEnv = {
@@ -31,7 +58,6 @@ const DenoEnv = {
 };
 
 const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
 
 // Schéma de validation pour la création d'une base de connaissances
 const createKnowledgeBaseSchema: ValidationSchema = {
@@ -123,15 +149,9 @@ serve(async (req: Request) => {
     
     // Action spéciale: interroger une base de connaissances
     if (req.method === 'POST' && kbId && pathSegments.length === 3 && pathSegments[2] === 'query') {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
       const validatedData = validateInput(data, queryKnowledgeBaseSchema)
-      
-      // Interrogation de la base de connaissances via l'API Vapi
-      const queryResult = await vapiClient.knowledgeBases.query(kbId, validatedData)
-      
+      const queryResult = await callVapiAPI(`/knowledge-base/${kbId}/query`, vapiApiKey, 'POST', validatedData)
       return new Response(JSON.stringify({ data: queryResult }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -139,15 +159,9 @@ serve(async (req: Request) => {
     
     // Action spéciale: ajouter un fichier à une base de connaissances
     if (req.method === 'POST' && kbId && pathSegments.length === 3 && pathSegments[2] === 'files') {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
       const validatedData = validateInput(data, addFileSchema)
-      
-      // Ajout du fichier à la base de connaissances via l'API Vapi
-      await vapiClient.knowledgeBases.addFile(kbId, validatedData.file_id)
-      
+      await callVapiAPI(`/knowledge-base/${kbId}/files`, vapiApiKey, 'POST', { file_id: validatedData.file_id })
       return new Response(JSON.stringify({ success: true }), {
         status: 201,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -157,10 +171,7 @@ serve(async (req: Request) => {
     // Action spéciale: retirer un fichier d'une base de connaissances
     if (req.method === 'DELETE' && kbId && pathSegments.length === 4 && pathSegments[2] === 'files') {
       const fileId = pathSegments[3]
-      
-      // Suppression du fichier de la base de connaissances via l'API Vapi
-      await vapiClient.knowledgeBases.removeFile(kbId, fileId)
-      
+      await callVapiAPI(`/knowledge-base/${kbId}/files/${fileId}`, vapiApiKey, 'DELETE', undefined)
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -169,21 +180,10 @@ serve(async (req: Request) => {
     // GET /knowledge-bases - Liste de toutes les bases de connaissances
     if (req.method === 'GET' && !kbId) {
       const { page, limit } = validatePagination(url.searchParams)
-      
-      // Récupération des bases de connaissances via l'API Vapi
-      const kbs = await vapiClient.knowledgeBases.list({
-        limit,
-        offset: (page - 1) * limit
-      })
-      
+      const kbs = await callVapiAPI(`/knowledge-base?limit=${limit}&offset=${(page-1)*limit}`, vapiApiKey, 'GET', undefined)
       return new Response(JSON.stringify({
         data: kbs.data,
-        pagination: {
-          page,
-          limit,
-          total: kbs.pagination.total || 0,
-          has_more: kbs.pagination.has_more || false
-        }
+        pagination: kbs.pagination || { page, limit, total: 0, has_more: false }
       }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -191,13 +191,10 @@ serve(async (req: Request) => {
     
     // GET /knowledge-bases/:id - Récupération d'une base de connaissances spécifique
     if (req.method === 'GET' && kbId) {
-      // Récupération de la base de connaissances via l'API Vapi
-      const kb = await vapiClient.knowledgeBases.retrieve(kbId)
-      
+      const kb = await callVapiAPI(`/knowledge-base/${kbId}`, vapiApiKey, 'GET', undefined)
       if (!kb) {
         throw notFoundError(`Base de connaissances avec l'ID ${kbId} non trouvée`)
       }
-      
       return new Response(JSON.stringify({ data: kb }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -205,22 +202,14 @@ serve(async (req: Request) => {
     
     // POST /knowledge-bases - Création d'une nouvelle base de connaissances
     if (req.method === 'POST' && !kbId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
       const validatedData = validateInput(data, createKnowledgeBaseSchema)
-      
-      // Ajout des métadonnées utilisateur
       validatedData.metadata = {
         ...validatedData.metadata,
         user_id: user.id,
         organization_id: user.organization_id || user.id
       }
-      
-      // Création de la base de connaissances via l'API Vapi
-      const kb = await vapiClient.knowledgeBases.create(validatedData)
-      
+      const kb = await callVapiAPI('/knowledge-base', vapiApiKey, 'POST', validatedData)
       return new Response(JSON.stringify({ data: kb }), {
         status: 201,
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
@@ -229,15 +218,9 @@ serve(async (req: Request) => {
     
     // PATCH /knowledge-bases/:id - Mise à jour d'une base de connaissances
     if (req.method === 'PATCH' && kbId) {
-      // Récupération des données du corps de la requête
       const data = await req.json()
-      
-      // Validation des données
       const validatedData = validateInput(data, updateKnowledgeBaseSchema)
-      
-      // Mise à jour de la base de connaissances via l'API Vapi
-      const kb = await vapiClient.knowledgeBases.update(kbId, validatedData)
-      
+      const kb = await callVapiAPI(`/knowledge-base/${kbId}`, vapiApiKey, 'PATCH', validatedData)
       return new Response(JSON.stringify({ data: kb }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -245,9 +228,7 @@ serve(async (req: Request) => {
     
     // DELETE /knowledge-bases/:id - Suppression d'une base de connaissances
     if (req.method === 'DELETE' && kbId) {
-      // Suppression de la base de connaissances via l'API Vapi
-      await vapiClient.knowledgeBases.delete(kbId)
-      
+      await callVapiAPI(`/knowledge-base/${kbId}`, vapiApiKey, 'DELETE', undefined)
       return new Response(JSON.stringify({ success: true }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })

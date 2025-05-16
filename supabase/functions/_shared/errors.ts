@@ -3,7 +3,7 @@
  * Formatage cohérent des messages d'erreur retournés au client
  */
 
-import { corsHeaders } from './cors.js'
+import { corsHeaders } from './cors.ts'
 
 // Types d'erreurs standards
 export enum ErrorType {

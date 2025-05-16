@@ -182,19 +182,27 @@ La Phase 5 est maintenant complète ! Nous avons implémenté avec succès :
   - ✅ Fonction assistants
   - ✅ Fonction calls
   - ✅ Tester la function assistant jusque vapi si possble
-  - ⬜ Déployer les autres fonctions pour webhook, knowledge-bases, etc.
-- ⬜ Créer les tables et relations nécessaires dans la base de données Supabase
-- ⬜ Tester les fonctions déployées avec powershell
-  - ✅ Configurer l'authentification pour les tests
-  - ⬜ Tester différents endpoints avec des paramètres variés
-- ⬜ Documenter les endpoints pour faciliter l'intégration frontend
-- ⬜ Vérifier les variables d'environnement et configurations dans l'environnement Supabase
-- ⬜ Créer des scripts de migration SQL pour initialiser le schéma de la base de données
-- ⬜ Mettre en place un plan de migration pour les environnements de développement et production
-- ⬜ Documenter le processus de migration et les changements de schéma
-- ⬜ Préparer un script de rollback en cas d'échec de migration
+  - ✅ Fonction knowledge-bases
+  - ⬜ Déployer les autres fonctions pour webhook, etc.
 
-Ces actions préliminaires permettront de valider le backend de manière indépendante avant de commencer le développement frontend, facilitant ainsi la détection et la résolution des problèmes potentiels liés à l'infrastructure.
+### Bonnes pratiques découvertes pour les Edge Functions :
+- ✅ Utiliser un seul dossier pour les utilitaires partagés (`_shared/`)
+- ✅ Toujours utiliser l'extension `.ts` pour les imports internes
+- ✅ Passer systématiquement 4 arguments à `callVapiAPI` (avec `undefined` pour `body` si non utilisé)
+- ✅ Typer explicitement les paramètres et retours de fonctions
+- ✅ Utiliser les schémas de validation pour chaque endpoint
+
+### Prochaines fonctions à déployer :
+- ⬜ webhooks
+- ⬜ files
+- ⬜ workflows
+- ⬜ squads
+- ⬜ functions
+- ⬜ organization
+- ⬜ analytics
+- ⬜ test-suites
+- ⬜ test-suite-tests
+- ⬜ test-suite-runs
 
 ### Instructions détaillées pour le déploiement des fonctions Edge
 
@@ -228,6 +236,43 @@ Pour déployer correctement toutes les fonctions Edge dans Supabase, suivez ces 
    - Créer des fonctions de test simples pour isoler les problèmes
 
 En suivant ce processus méthodique, vous pourrez déployer et tester efficacement toutes les fonctions Edge.
+
+---
+
+## 🛠️ Consignes de migration Edge Functions Vapi
+
+### Bonnes pratiques pour la migration
+- **Utiliser uniquement des appels HTTP directs** (`fetch`) vers l'API Vapi dans les Edge Functions, pas le SDK Vapi (incompatible avec Deno/Supabase).
+- Centraliser la logique d'appel HTTP dans une fonction utilitaire partagée (`callVapiAPI`).
+- Factoriser les headers CORS, l'authentification, la gestion d'erreur et la validation dans le dossier `_shared/`.
+- Toujours typer explicitement les paramètres de fonction (évite les erreurs TypeScript/Deno).
+- Utiliser des schémas de validation pour chaque endpoint (création, update, query, etc.).
+
+### Erreurs courantes à éviter
+- **Noms réservés** : ne jamais utiliser `delete`, `update`, etc. comme noms de variables ou fonctions. Préférer `deleteAssistant`, `updateKnowledgeBase`, etc.
+- **Imports** :
+  - Toujours utiliser des chemins relatifs avec l'extension `.ts` pour les imports dans Deno/Supabase (ex : `../shared/cors.ts`).
+  - Ne pas importer de `.js` ou de modules non compatibles Deno.
+- **Appels à callVapiAPI** :
+  - Toujours passer 4 arguments (`endpoint`, `apiKey`, `method`, `body`), même si `body` est `undefined` pour les requêtes GET/DELETE.
+  - **Pas de double await** : ne pas faire `await (await callVapiAPI(...))`.
+  - **Pas de VapiClient** : ne pas instancier ou utiliser `VapiClient` dans les Edge Functions (SDK non supporté).
+
+### Processus de migration recommandé
+1. **Copier la structure de la fonction `/assistants`** (qui fonctionne) pour chaque nouvelle fonction.
+2. **Supprimer tout import ou usage du SDK Vapi**.
+3. **Injecter la fonction utilitaire `callVapiAPI`** si elle n'est pas déjà partagée.
+4. **Adapter tous les endpoints** pour correspondre à la documentation Vapi (vérifier les chemins et méthodes HTTP).
+5. **Renommer les variables/fonctions problématiques** (reserved words).
+6. **Déployer et tester chaque fonction individuellement** avec `supabase functions deploy <nom>` et un outil comme Postman/cURL.
+7. **Vérifier les logs** avec `supabase functions logs <nom>` en cas d'erreur.
+8. **Documenter chaque endpoint** (format, params, réponses) pour faciliter l'intégration frontend.
+
+### Rappels
+- Toujours relire et tester manuellement après migration automatique.
+- Mettre à jour la documentation technique à chaque modification majeure.
+- Utiliser le dashboard Supabase pour vérifier le bon déploiement et l'authentification.
+- Préparer des scripts de rollback en cas de problème de migration.
 
 ---
 

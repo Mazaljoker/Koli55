@@ -42,10 +42,10 @@ async function callVapiAPI(
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { corsHeaders } from '../_shared/cors.ts'
-import { errorResponse, notFoundError, validationError } from '../_shared/errors.ts'
-import { authenticate } from '../_shared/auth.ts'
-import { validateInput, validatePagination, ValidationSchema } from '../_shared/validation.ts'
+import { corsHeaders } from '../shared/cors.ts'
+import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
+import { authenticate } from '../shared/auth.ts'
+import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
 
 // Configuration de l'accès à l'API Vapi
 

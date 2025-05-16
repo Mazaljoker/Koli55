@@ -186,11 +186,13 @@ La Phase 5 est maintenant complète ! Nous avons implémenté avec succès :
   - ⬜ Déployer les autres fonctions pour webhook, etc.
 
 ### Bonnes pratiques découvertes pour les Edge Functions :
-- ✅ Utiliser un seul dossier pour les utilitaires partagés (`_shared/`)
+- ✅ Utiliser un seul dossier pour les utilitaires partagés (`shared/` sans underscore)
 - ✅ Toujours utiliser l'extension `.ts` pour les imports internes
 - ✅ Passer systématiquement 4 arguments à `callVapiAPI` (avec `undefined` pour `body` si non utilisé)
 - ✅ Typer explicitement les paramètres et retours de fonctions
 - ✅ Utiliser les schémas de validation pour chaque endpoint
+- ✅ Ne pas utiliser le SDK Vapi (incompatible avec Deno/Supabase)
+- ✅ Utiliser des appels HTTP directs via `fetch` avec la fonction utilitaire `callVapiAPI`
 
 ### Prochaines fonctions à déployer :
 - ⬜ webhooks
@@ -203,6 +205,13 @@ La Phase 5 est maintenant complète ! Nous avons implémenté avec succès :
 - ⬜ test-suites
 - ⬜ test-suite-tests
 - ⬜ test-suite-runs
+
+### Leçons apprises :
+- Les imports dans Deno/Supabase doivent avoir l'extension `.ts` explicite
+- Le dossier partagé doit s'appeler `shared/` (pas `_shared/`)
+- Les imports internes doivent être relatifs (ex: `../shared/cors.ts`)
+- Les imports externes doivent être complets (ex: `https://deno.land/std@0.168.0/http/server.ts`)
+- Pas de SDK externe non compatible avec Deno (comme le SDK Vapi)
 
 ### Instructions détaillées pour le déploiement des fonctions Edge
 

@@ -8,10 +8,10 @@
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { corsHeaders } from './_shared/cors.js'
-import { errorResponse, notFoundError } from './_shared/errors.js'
-import { authenticate } from './_shared/auth.js'
-import { validateInput, ValidationSchema } from './_shared/validation.js'
+import { corsHeaders } from '../shared/cors.ts'
+import { errorResponse, validationError } from '../shared/errors.ts'
+import { authenticate } from '../shared/auth.ts'
+import { validateInput, ValidationSchema } from '../shared/validation.ts'
 
 // Configuration de l'accès à l'API Vapi
 // @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
@@ -129,7 +129,7 @@ serve(async (req: Request) => {
       const timeline = await vapiClient.analytics.getCallTimeline(callId)
       
       if (!timeline) {
-        throw notFoundError(`Chronologie de l'appel avec l'ID ${callId} non trouvée`)
+        throw validationError(`Chronologie de l'appel avec l'ID ${callId} non trouvée`)
       }
       
       return new Response(JSON.stringify({ data: timeline }), {

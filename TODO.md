@@ -184,7 +184,7 @@ La Phase 5 est maintenant complète ! Nous avons implémenté avec succès :
   - ✅ Tester la function assistant jusque vapi si possble
   - ⬜ Déployer les autres fonctions pour webhook, knowledge-bases, etc.
 - ⬜ Créer les tables et relations nécessaires dans la base de données Supabase
-- ⬜ Tester les fonctions déployées avec Postman ou d'autres outils API
+- ⬜ Tester les fonctions déployées avec powershell
   - ✅ Configurer l'authentification pour les tests
   - ⬜ Tester différents endpoints avec des paramètres variés
 - ⬜ Documenter les endpoints pour faciliter l'intégration frontend

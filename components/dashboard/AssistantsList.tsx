@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { 
   Table, 
   TableHead, 
@@ -9,9 +10,24 @@ import {
   TableBody, 
   TableCell, 
   Text, 
-  Button 
+  Button,
+  Badge,
+  TextInput,
+  Select,
+  SelectItem,
+  Flex,
+  Card,
+  Title
 } from '@tremor/react';
 import { AssistantData } from '../../lib/api/assistantsService';
+import { 
+  EyeIcon, 
+  PencilIcon, 
+  TrashIcon, 
+  ChartBarIcon,
+  PlayIcon,
+  MagnifyingGlassIcon
+} from '@heroicons/react/24/outline';
 
 // Utiliser le type AssistantData du service
 type Assistant = AssistantData;
@@ -31,6 +47,55 @@ export default function AssistantsList({
   deletingId,
   onDelete,
 }: AssistantsListProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('created_at');
+
+  // Fonction pour determiner le statut d'un assistant
+  const getAssistantStatus = (assistant: Assistant): { status: 'active' | 'config' | 'error', label: string } => {
+    // Ici vous pouvez implémenter la logique pour déterminer le statut
+    // Par exemple, vérifier si tous les champs obligatoires sont remplis
+    
+    if (!assistant.model || !assistant.language) {
+      return { status: 'config', label: 'Configuration requise' };
+    }
+    
+    // Vérifier s'il y a une erreur dans les métadonnées ou d'autres indicateurs
+    // La propriété vapi_error n'existe pas directement sur AssistantData, on vérifie dans metadata
+    if (assistant.metadata && 'error' in assistant.metadata) {
+      return { status: 'error', label: 'Erreur' };
+    }
+    
+    return { status: 'active', label: 'Actif' };
+  };
+
+  // Filtrer et trier les assistants
+  const filteredAssistants = assistants
+    .filter(assistant => {
+      // Filtre de recherche
+      const matchesSearch = assistant.name.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Filtre par statut
+      const { status } = getAssistantStatus(assistant);
+      const matchesStatus = statusFilter === 'all' || statusFilter === status;
+      
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      // Tri
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'last_activity':
+          // Utiliser updated_at ou un champ plus spécifique si disponible
+          return new Date(b.updated_at || b.created_at).getTime() - 
+                 new Date(a.updated_at || a.created_at).getTime();
+        case 'created_at':
+        default:
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+    });
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-8">
@@ -62,52 +127,144 @@ export default function AssistantsList({
     );
   }
 
+  // Function pour afficher le badge de statut
+  const renderStatusBadge = (assistant: Assistant) => {
+    const { status, label } = getAssistantStatus(assistant);
+    
+    const colorMap = {
+      active: 'green',
+      config: 'yellow',
+      error: 'red'
+    };
+    
+    return (
+      <Badge color={colorMap[status]} size="sm">
+        <div className="flex items-center">
+          <div className={`w-2 h-2 rounded-full bg-${colorMap[status]}-500 mr-1.5`}></div>
+          {label}
+        </div>
+      </Badge>
+    );
+  };
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Mes Assistants</h2>
+    <Card>
+      <div className="mb-6">
+        <Title className="text-xl font-bold text-gray-800 mb-4">Mes Assistants</Title>
+        
+        {/* Outils de filtrage et recherche */}
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <TextInput
+            icon={MagnifyingGlassIcon}
+            placeholder="Rechercher un assistant..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full md:w-1/3"
+          />
+          
+          <div className="flex flex-1 gap-3">
+            <Select
+              placeholder="Filtrer par statut"
+              value={statusFilter}
+              onValueChange={setStatusFilter}
+              className="w-full md:w-1/2"
+            >
+              <SelectItem value="all">Tous les statuts</SelectItem>
+              <SelectItem value="active">Actifs</SelectItem>
+              <SelectItem value="config">Configuration requise</SelectItem>
+              <SelectItem value="error">Erreur</SelectItem>
+            </Select>
+            
+            <Select
+              placeholder="Trier par"
+              value={sortBy}
+              onValueChange={setSortBy}
+              className="w-full md:w-1/2"
+            >
+              <SelectItem value="created_at">Date de création</SelectItem>
+              <SelectItem value="name">Nom</SelectItem>
+              <SelectItem value="last_activity">Dernière activité</SelectItem>
+            </Select>
+          </div>
+        </div>
+      </div>
+      
       <Table>
         <TableHead>
           <TableRow>
-            <TableHeaderCell>Nom</TableHeaderCell>
-            <TableHeaderCell>Modèle</TableHeaderCell>
-            <TableHeaderCell>Langue</TableHeaderCell>
-            <TableHeaderCell>Créé le</TableHeaderCell>
+            <TableHeaderCell>Statut</TableHeaderCell>
+            <TableHeaderCell>Nom de l'Assistant</TableHeaderCell>
+            <TableHeaderCell>Modèle LLM</TableHeaderCell>
+            <TableHeaderCell>Numéro(s) de Téléphone</TableHeaderCell>
+            <TableHeaderCell>Appels Récents (7j)</TableHeaderCell>
+            <TableHeaderCell>Dernière Activité</TableHeaderCell>
             <TableHeaderCell className="text-right">Actions</TableHeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {assistants.map((assistant) => (
-            <TableRow key={assistant.id}>
-              <TableCell>{assistant.name}</TableCell>
-              <TableCell><Text>{assistant.model || 'N/A'}</Text></TableCell>
-              <TableCell><Text>{assistant.language || 'N/A'}</Text></TableCell>
-              <TableCell><Text>{new Date(assistant.created_at).toLocaleDateString()}</Text></TableCell>
-              <TableCell className="text-right space-x-2">
-                <Link href={`/assistants/${assistant.id}`} passHref>
-                  <Button size="xs" variant="secondary" className="text-blue-600 hover:text-blue-700">
-                    Voir
-                  </Button>
-                </Link>
-                <Link href={`/assistants/${assistant.id}/edit`} passHref>
-                  <Button size="xs" variant="secondary" className="text-yellow-600 hover:text-yellow-700">
-                    Éditer
-                  </Button>
-                </Link>
-                <Button 
-                  size="xs" 
-                  variant="secondary" 
-                  color="red"
-                  onClick={() => onDelete(assistant.id)}
-                  disabled={deletingId === assistant.id}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  {deletingId === assistant.id ? 'Suppression...' : 'Supprimer'}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {filteredAssistants.map((assistant) => {
+            const modelName = typeof assistant.model === 'string' 
+              ? assistant.model 
+              : assistant.model?.model || 'N/A';
+              
+            return (
+              <TableRow key={assistant.id}>
+                <TableCell>{renderStatusBadge(assistant)}</TableCell>
+                <TableCell>
+                  <Link href={`/assistants/${assistant.id}`} className="hover:text-blue-600 font-medium">
+                    {assistant.name}
+                  </Link>
+                </TableCell>
+                <TableCell><Text>{modelName}</Text></TableCell>
+                <TableCell>
+                  <Text>
+                    {assistant.forwarding_phone_number || 'Non assigné'}
+                  </Text>
+                </TableCell>
+                <TableCell>
+                  <Text>0 appels</Text> {/* Placeholder - à remplacer par les données réelles */}
+                </TableCell>
+                <TableCell>
+                  <Text>
+                    {new Date(assistant.updated_at || assistant.created_at).toLocaleDateString()}
+                  </Text>
+                </TableCell>
+                <TableCell>
+                  <Flex className="justify-end gap-2">
+                    <Link href={`/assistants/${assistant.id}`}>
+                      <Button size="xs" variant="secondary" icon={EyeIcon} tooltip="Voir les détails" />
+                    </Link>
+                    <Link href={`/assistants/${assistant.id}/edit`}>
+                      <Button size="xs" variant="secondary" icon={PencilIcon} tooltip="Modifier" />
+                    </Link>
+                    <Link href={`/assistants/${assistant.id}?tab=analytics`}>
+                      <Button size="xs" variant="secondary" icon={ChartBarIcon} tooltip="Analytics" />
+                    </Link>
+                    <Button 
+                      size="xs" 
+                      variant="secondary" 
+                      color="green"
+                      icon={PlayIcon}
+                      tooltip="Test rapide"
+                      onClick={() => alert('Fonction de test à implémenter')}
+                    />
+                    <Button 
+                      size="xs" 
+                      variant="secondary" 
+                      color="red"
+                      icon={TrashIcon}
+                      tooltip="Supprimer"
+                      onClick={() => onDelete(assistant.id)}
+                      disabled={deletingId === assistant.id}
+                      loading={deletingId === assistant.id}
+                    />
+                  </Flex>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
-    </div>
+    </Card>
   );
 } 

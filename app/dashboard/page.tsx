@@ -19,9 +19,11 @@ export default function DashboardPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const router = useRouter();
 
-  // Placeholder counts for DashboardOverview
+  // Métriques pour DashboardOverview (à compléter avec des données réelles)
   const [conversationsCount, setConversationsCount] = useState(0);
   const [apiCallsCount, setApiCallsCount] = useState(0);
+  const [conversationsTrend, setConversationsTrend] = useState<'up' | 'down' | null>(null);
+  const [apiCallsTrend, setApiCallsTrend] = useState<'up' | 'down' | null>(null);
 
   useEffect(() => {
     // Vérification de l'authentification au chargement de la page
@@ -48,10 +50,22 @@ export default function DashboardPage() {
       
       // La session est confirmée, continuer avec le chargement des données
       fetchAssistants();
+      fetchDashboardMetrics();
+      
+      // Définir un timeout pour masquer le loader si la requête prend trop de temps
+      const timeoutId = setTimeout(() => {
+        if (loading) {
+          console.log("Timeout atteint pour le chargement des assistants, arrêt du chargement");
+          setLoading(false);
+          setError("Le chargement des données a pris trop de temps. Vérifiez votre connexion ou réessayez plus tard.");
+        }
+      }, 10000); // 10 secondes de timeout
+      
+      return () => clearTimeout(timeoutId);
     };
     
     checkAuthAndFetch();
-  }, [router]);
+  }, [router]); // Ne pas inclure loading pour éviter une boucle infinie
 
   async function fetchAssistants() {
     setLoading(true);
@@ -72,6 +86,43 @@ export default function DashboardPage() {
       setAssistants([]); // Clear assistants on error
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchDashboardMetrics() {
+    try {
+      // Cette fonction sera implémentée pour récupérer les métriques du dashboard
+      // Pour l'instant, utilisons des données de test
+      
+      // Simulation de données pour les métriques
+      setConversationsCount(15); // Exemple: 15 appels ces 30 derniers jours
+      setApiCallsCount(120); // Exemple: 120 appels API ces 30 derniers jours
+      
+      // Tendances pour les indicateurs (à remplacer par des calculs réels)
+      setConversationsTrend('up'); // Exemple: tendance à la hausse
+      setApiCallsTrend('up'); // Exemple: tendance à la hausse
+      
+      // Plus tard, vous pourriez implémenter un appel à une API pour récupérer ces données
+      // try {
+      //   const response = await fetch('/api/dashboard/metrics');
+      //   const data = await response.json();
+      //   if (data.success) {
+      //     setConversationsCount(data.conversationsCount);
+      //     setApiCallsCount(data.apiCallsCount);
+      //     setConversationsTrend(data.conversationsTrend);
+      //     setApiCallsTrend(data.apiCallsTrend);
+      //   }
+      // } catch (apiError) {
+      //   console.error('Error fetching metrics from API:', apiError);
+      //   // En cas d'erreur, on utilise des valeurs par défaut (ci-dessus)
+      // }
+    } catch (err) {
+      console.error('Error fetching dashboard metrics:', err);
+      // Toujours afficher des données même en cas d'erreur
+      setConversationsCount(0);
+      setApiCallsCount(0);
+      setConversationsTrend(null);
+      setApiCallsTrend(null);
     }
   }
 
@@ -104,19 +155,35 @@ export default function DashboardPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Tableau de bord</h1>
         <Link href="/assistants/new">
-          <Button variant="primary">Créer un assistant</Button>
+          <Button variant="primary">+ Créer un Assistant</Button>
         </Link>
       </div>
 
       <DashboardOverview 
         assistantsCount={assistants.length} 
         conversationsCount={conversationsCount} 
-        apiCallsCount={apiCallsCount} 
+        apiCallsCount={apiCallsCount}
+        conversationsTrend={conversationsTrend}
+        apiCallsTrend={apiCallsTrend}
       />
 
       {error && !loading && (
-        <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-md">
-          Erreur générale: {error}
+        <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-md flex flex-col md:flex-row md:items-center justify-between">
+          <div>
+            <p className="font-medium mb-1">Erreur:</p>
+            <p>{error}</p>
+          </div>
+          <Button 
+            variant="secondary" 
+            className="mt-2 md:mt-0"
+            onClick={() => {
+              fetchAssistants();
+              fetchDashboardMetrics();
+            }}
+            disabled={loading}
+          >
+            {loading ? 'Chargement...' : 'Réessayer'}
+          </Button>
         </div>
       )}
       

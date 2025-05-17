@@ -35,3 +35,26 @@ next-env.d.ts
 
 # Supabase
 .supabase
+.supabase/.branches/
+.supabase/.temp/
+
+# Cache and temporary files
+.cache/
+.temp/
+**/.cache
+**/.temp
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log

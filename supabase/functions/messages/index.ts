@@ -65,10 +65,7 @@ import { corsHeaders } from '../shared/cors.ts'
 import { errorResponse, notFoundError, validationError } from '../shared/errors.ts'
 import { authenticate } from '../shared/auth.ts'
 import { validateInput, validatePagination, ValidationSchema } from '../shared/validation.ts'
-
-// Configuration de l'accès à l'API Vapi
-// @deno-types="https://esm.sh/@vapi-ai/server-sdk@1.2.1"
-import { VapiClient } from 'https://esm.sh/@vapi-ai/server-sdk@1.2.1'
+import { callVapiAPI } from '../shared/vapi.ts'
 
 // Utilitaire pour accéder à Deno avec typage
 const DenoEnv = {
@@ -79,7 +76,6 @@ const DenoEnv = {
 };
 
 const vapiApiKey = DenoEnv.get('VAPI_API_KEY') || ''
-const vapiClient = new VapiClient({ token: vapiApiKey })
 
 // Schéma de validation pour l'ajout d'un message
 const createMessageSchema: ValidationSchema = {
@@ -123,18 +119,20 @@ serve(async (req: Request) => {
     const messageId = pathSegments.length >= 3 ? pathSegments[2] : null
     
     // Vérifier que l'appel existe
-    const call = await vapiClient.calls.retrieve(callId)
-    if (!call) {
+    const callResponse = await callVapiAPI(`calls/${callId}`, vapiApiKey, 'GET', undefined)
+    const call = await callResponse.json()
+    if (!call || callResponse.status === 404) {
       throw notFoundError(`Appel avec l'ID ${callId} non trouvé`)
     }
     
     // GET /messages/:callId/:messageId - Récupérer un message spécifique
     if (req.method === 'GET' && messageId) {
       // Récupération des messages de l'appel
-      const messagesResponse = await vapiClient.calls.messages.list(callId)
+      const messagesResponse = await callVapiAPI(`calls/${callId}/messages`, vapiApiKey, 'GET', undefined)
+      const messagesData = await messagesResponse.json()
       
       // Recherche du message spécifique
-      const message = messagesResponse.data.find(msg => msg.id === messageId)
+      const message = messagesData.data.find((msg: any) => msg.id === messageId)
       
       if (!message) {
         throw notFoundError(`Message avec l'ID ${messageId} non trouvé`)
@@ -151,13 +149,17 @@ serve(async (req: Request) => {
       const limit = parseInt(url.searchParams.get('limit') || '50', 10)
       
       // Récupération des messages de l'appel
-      const messagesResponse = await vapiClient.calls.messages.list(callId, {
-        limit
-      })
+      const messagesResponse = await callVapiAPI(
+        `calls/${callId}/messages?limit=${limit}`, 
+        vapiApiKey, 
+        'GET', 
+        undefined
+      )
+      const messagesData = await messagesResponse.json()
       
       return new Response(JSON.stringify({
-        data: messagesResponse.data,
-        pagination: messagesResponse.pagination || { has_more: false }
+        data: messagesData.data,
+        pagination: messagesData.pagination || { has_more: false }
       }), {
         headers: { 'Content-Type': 'application/json', ...corsHeaders }
       })
@@ -178,7 +180,13 @@ serve(async (req: Request) => {
       }
       
       // Ajout du message à l'appel via l'API Vapi
-      const message = await vapiClient.calls.messages.create(callId, validatedData)
+      const messageResponse = await callVapiAPI(
+        `calls/${callId}/messages`, 
+        vapiApiKey, 
+        'POST', 
+        validatedData
+      )
+      const message = await messageResponse.json()
       
       return new Response(JSON.stringify({ data: message }), {
         status: 201,

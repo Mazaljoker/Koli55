@@ -32,17 +32,14 @@ export default function DashboardOverview({
         <Text>Bientôt disponible</Text>
       </Card>
 
-      {/* Placeholder for Trend Charts */}
-      {/* 
+      {/* Placeholder pour les graphiques de tendance 
       <Card className="col-span-full lg:col-span-2">
         <Title>Volume d'appels</Title>
-        {/* <LineChart data={}/> */}
         <Text className="text-center py-8">Graphique de tendance des appels à venir...</Text>
       </Card>
       */}
 
-      {/* Placeholder for Alerts */}
-      {/* 
+      {/* Placeholder pour les alertes 
       <Card className="col-span-full">
         <Title>Alertes Récentes</Title>
         <Text className="text-center py-8">Section des alertes à venir...</Text>

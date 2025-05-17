@@ -25,27 +25,14 @@ import { ArrowLeftIcon, PencilIcon, DocumentPlusIcon, TrashIcon, ArrowUpTrayIcon
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import KnowledgeBaseFileUpload from './KnowledgeBaseFileUpload';
+import { knowledgeBaseService, KnowledgeBaseFile, KnowledgeBaseData } from '../../lib/api/knowledgeBaseService';
 
 // Interface pour un fichier associé à une base de connaissances
-interface KnowledgeBaseFile {
-  id: string; // ID du fichier lui-même
-  name: string;
-  type?: string; // e.g., 'application/pdf'
-  size?: number; // en octets
-  created_at?: string;
-  // D'autres métadonnées pertinentes pourraient être ajoutées ici
-}
+// Utiliser le type KnowledgeBaseFile du service
 
 // Mise à jour de l'interface KnowledgeBase pour inclure les fichiers
-interface KnowledgeBase {
-  id: string; // ID de la base de connaissances
-  name: string;
-  description?: string;
-  created_at: string;
-  updated_at?: string;
-  file_count?: number; // Peut être dérivé de files.length
-  files?: KnowledgeBaseFile[]; // Tableau des fichiers associés
-}
+// Utiliser le type KnowledgeBaseData du service
+type KnowledgeBase = KnowledgeBaseData;
 
 interface KnowledgeBaseDetailProps {
   knowledgeBase: KnowledgeBase | null;
@@ -68,16 +55,16 @@ const KnowledgeBaseDetail: React.FC<KnowledgeBaseDetailProps> = ({ knowledgeBase
 
   const handleDeleteFile = async (fileId: string) => {
     if (!knowledgeBase || !knowledgeBase.id) return;
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer le fichier "${knowledgeBase.files?.find(f => f.id === fileId)?.name || fileId}" ? Cette action est irréversible.`)) {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer le fichier "${knowledgeBase.files?.find(f => f.id === fileId)?.filename || fileId}" ? Cette action est irréversible.`)) {
       setIsDeletingFile(fileId);
       try {
-        const { error } = await supabase.functions.invoke(
-          `knowledge-bases/${knowledgeBase.id}/files/${fileId}`,
-          {
-            method: 'DELETE',
-          }
-        );
-        if (error) throw error;
+        // Utiliser le service plutôt que l'appel direct à l'API
+        const response = await knowledgeBaseService.deleteFile(knowledgeBase.id, fileId);
+        
+        if (!response.success) {
+          throw new Error(response.message || `Failed to delete file ${fileId}`);
+        }
+        
         alert('Fichier supprimé avec succès.');
         if (onFileChange) {
             onFileChange(); // Appeler le callback pour rafraîchir
@@ -161,7 +148,7 @@ const KnowledgeBaseDetail: React.FC<KnowledgeBaseDetailProps> = ({ knowledgeBase
           )}
           <Card>
             <Text>Nombre de Fichiers</Text>
-            <Metric>{knowledgeBase.files?.length ?? knowledgeBase.file_count ?? 0}</Metric>
+            <Metric>{knowledgeBase.files?.length ?? 0}</Metric>
           </Card>
         </Grid>
       </Card>
@@ -192,9 +179,9 @@ const KnowledgeBaseDetail: React.FC<KnowledgeBaseDetailProps> = ({ knowledgeBase
             <TableBody>
               {knowledgeBase.files.map((file) => (
                 <TableRow key={file.id}>
-                  <TableCell>{file.name}</TableCell>
-                  <TableCell>{file.type || 'N/A'}</TableCell>
-                  <TableCell>{formatFileSize(file.size)}</TableCell>
+                  <TableCell>{file.filename}</TableCell>
+                  <TableCell>{file.metadata?.type || 'N/A'}</TableCell>
+                  <TableCell>{formatFileSize(file.size_bytes)}</TableCell>
                   <TableCell>{file.created_at ? new Date(file.created_at).toLocaleDateString('fr-FR') : 'N/A'}</TableCell>
                   <TableCell>
                     <Button 

@@ -1,13 +1,108 @@
 /**
  * Fonction Supabase Edge pour la gestion des webhooks Vapi
+ * 
  * Endpoints:
- * - GET / - Liste tous les webhooks
- * - GET /:id - Récupère un webhook par ID
- * - POST / - Crée un nouveau webhook
- * - PATCH /:id - Met à jour un webhook
- * - DELETE /:id - Supprime un webhook
- * - POST /:id/ping - Teste un webhook
- * - POST /receive - Point d'entrée pour les événements Vapi (sans auth)
+ * - GET /webhooks - Liste tous les webhooks
+ * - GET /webhooks/:id - Récupère un webhook par ID
+ * - POST /webhooks - Crée un nouveau webhook
+ * - PATCH /webhooks/:id - Met à jour un webhook
+ * - DELETE /webhooks/:id - Supprime un webhook
+ * - POST /webhooks/:id/ping - Teste un webhook
+ * - POST /webhooks/receive - Point d'entrée pour les événements Vapi (sans auth)
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * GET /webhooks:
+ *   - Query params: page (numéro de page), limit (nombre d'éléments par page)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * GET /webhooks/:id:
+ *   - Path params: id (identifiant du webhook)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * POST /webhooks:
+ *   - Body: {
+ *       url: string (obligatoire, URL valide),
+ *       events: string[] (obligatoire, liste des événements à écouter),
+ *       description?: string (max 255 caractères),
+ *       enabled?: boolean
+ *     }
+ *   - Headers: Authorization (JWT token obligatoire, rôle admin recommandé)
+ *   - Validation: createWebhookSchema
+ * 
+ * PATCH /webhooks/:id:
+ *   - Path params: id (identifiant du webhook)
+ *   - Body: {
+ *       url?: string (URL valide),
+ *       events?: string[],
+ *       description?: string (max 255 caractères),
+ *       enabled?: boolean
+ *     }
+ *   - Headers: Authorization (JWT token obligatoire, rôle admin recommandé)
+ *   - Validation: updateWebhookSchema
+ * 
+ * DELETE /webhooks/:id:
+ *   - Path params: id (identifiant du webhook)
+ *   - Headers: Authorization (JWT token obligatoire, rôle admin recommandé)
+ * 
+ * POST /webhooks/:id/ping:
+ *   - Path params: id (identifiant du webhook)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * POST /webhooks/receive:
+ *   - Body: Événement Vapi JSON (structure dépend du type d'événement)
+ *   - Headers: 
+ *     - x-vapi-signature (signature pour vérification)
+ *     - x-vapi-timestamp (horodatage de l'événement)
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * GET /webhooks:
+ *   - Succès: {
+ *       data: Webhook[],
+ *       pagination: {
+ *         page: number,
+ *         limit: number,
+ *         total: number,
+ *         has_more: boolean
+ *       }
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * GET /webhooks/:id:
+ *   - Succès: { data: Webhook }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * POST /webhooks:
+ *   - Succès: { data: Webhook }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * PATCH /webhooks/:id:
+ *   - Succès: { data: Webhook }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * DELETE /webhooks/:id:
+ *   - Succès: { success: true }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * POST /webhooks/:id/ping:
+ *   - Succès: { success: true, message: string }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * POST /webhooks/receive:
+ *   - Succès: { success: true }
+ *   - Erreur: { error: string }
+ * 
+ * Structure Webhook conforme à l'interface Webhook de shared/vapi.ts:
+ * {
+ *   id: string,
+ *   url: string,
+ *   events: string[],
+ *   description?: string,
+ *   enabled: boolean,
+ *   created_at: string,
+ *   updated_at: string
+ * }
  */
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"

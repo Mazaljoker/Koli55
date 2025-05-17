@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import supabase from '../../../lib/supabaseClient';
 
 export default function LoginPage() {
@@ -11,27 +11,79 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Vérifier si l'utilisateur est déjà connecté au chargement de la page
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        console.log("Session détectée au chargement de la page de login, redirection vers dashboard");
+        // Si l'utilisateur est déjà connecté, le rediriger vers le dashboard
+        localStorage.setItem('auth_redirect_attempted', 'true');
+        router.push('/dashboard');
+      } else {
+        // Vérifier si nous venons d'essayer de nous connecter
+        const justAuthenticated = localStorage.getItem('just_authenticated');
+        if (justAuthenticated === 'true') {
+          console.log("Retour sur login après authentification réussie, tentative de secours");
+          localStorage.removeItem('just_authenticated');
+          // Ajouter un token temporaire pour contourner le problème
+          localStorage.setItem('temp_auth_token', 'true');
+          router.push('/dashboard');
+        }
+      }
+    };
+    
+    checkSession();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Login handleSubmit started');
     setError('');
     setLoading(true);
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      console.log('Attempting Supabase sign-in with email:', email);
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
+      console.log('Supabase sign-in completed. Data:', data, 'Error:', signInError);
 
       if (signInError) {
+        console.error('Supabase signInError:', signInError);
         throw signInError;
       }
-      // Connexion réussie, rediriger vers la page d'accueil ou un tableau de bord
-      router.push('/'); 
+      
+      console.log('Sign-in successful, attempting to redirect to /dashboard');
+      
+      // Attendre un court instant pour permettre à la session d'être complètement établie
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Vérifier que la session est bien établie avant de rediriger
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      console.log('Session après login:', currentSession);
+      
+      // Marquer que nous venons de nous authentifier avec succès
+      localStorage.setItem('just_authenticated', 'true');
+      
+      if (currentSession) {
+        // Stockage temporaire pour contourner les problèmes de middleware
+        localStorage.setItem('temp_auth_token', 'true');
+        router.push('/dashboard');
+        console.log('Redirection to /dashboard initiated');
+      } else {
+        console.error('Session not established after login');
+        setError('Problème de session. Veuillez réessayer.');
+      }
     } catch (err: any) {
-      console.error('Login error:', err);
+      console.error('Login error in catch block:', err);
       setError(err.message || 'Failed to login. Please check your credentials.');
     }
     setLoading(false);
+    console.log('Login handleSubmit finished');
   };
 
   return (

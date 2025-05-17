@@ -1,11 +1,98 @@
 /**
  * Fonction Supabase Edge pour la gestion des exécutions de suites de tests Vapi
+ * 
  * Endpoints:
- * - GET /:suiteId - Liste toutes les exécutions d'une suite
- * - GET /:suiteId/:runId - Récupère une exécution par ID
- * - POST /:suiteId - Démarre une nouvelle exécution de tests
- * - PATCH /:suiteId/:runId - Met à jour une exécution
- * - DELETE /:suiteId/:runId - Supprime une exécution
+ * - GET /test-suite-runs/:suiteId - Liste toutes les exécutions d'une suite
+ * - GET /test-suite-runs/:suiteId/:runId - Récupère une exécution par ID
+ * - POST /test-suite-runs/:suiteId - Démarre une nouvelle exécution de tests
+ * - PATCH /test-suite-runs/:suiteId/:runId - Met à jour une exécution
+ * - DELETE /test-suite-runs/:suiteId/:runId - Supprime une exécution
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * GET /test-suite-runs/:suiteId:
+ *   - Path params: suiteId (identifiant de la suite de tests)
+ *   - Query params: page (numéro de page), limit (nombre d'éléments par page)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * GET /test-suite-runs/:suiteId/:runId:
+ *   - Path params: suiteId (identifiant de la suite de tests), runId (identifiant de l'exécution)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * POST /test-suite-runs/:suiteId:
+ *   - Path params: suiteId (identifiant de la suite de tests)
+ *   - Body: {
+ *       test_ids: string[] (obligatoire, liste des IDs de tests à exécuter),
+ *       metadata?: object
+ *     }
+ *   - Headers: Authorization (JWT token obligatoire)
+ *   - Validation: startRunSchema
+ * 
+ * PATCH /test-suite-runs/:suiteId/:runId:
+ *   - Path params: suiteId (identifiant de la suite de tests), runId (identifiant de l'exécution)
+ *   - Body: {
+ *       status?: string (enum: 'running', 'completed', 'failed', 'cancelled'),
+ *       results?: object,
+ *       metadata?: object
+ *     }
+ *   - Headers: Authorization (JWT token obligatoire)
+ *   - Validation: updateRunSchema
+ * 
+ * DELETE /test-suite-runs/:suiteId/:runId:
+ *   - Path params: suiteId (identifiant de la suite de tests), runId (identifiant de l'exécution)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * GET /test-suite-runs/:suiteId:
+ *   - Succès: {
+ *       data: TestSuiteRun[], // Liste des exécutions de la suite
+ *       pagination: {
+ *         page: number,
+ *         limit: number,
+ *         total: number,
+ *         has_more: boolean
+ *       }
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * GET /test-suite-runs/:suiteId/:runId:
+ *   - Succès: { data: TestSuiteRun }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * POST /test-suite-runs/:suiteId:
+ *   - Succès: { data: TestSuiteRun }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * PATCH /test-suite-runs/:suiteId/:runId:
+ *   - Succès: { data: TestSuiteRun }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * DELETE /test-suite-runs/:suiteId/:runId:
+ *   - Succès: { success: true }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * Structure TestSuiteRun:
+ * {
+ *   id: string,
+ *   test_suite_id: string,
+ *   status: string, // 'running', 'completed', 'failed', 'cancelled'
+ *   test_ids: string[],
+ *   results?: {
+ *     passed: number,
+ *     failed: number,
+ *     total: number,
+ *     test_results: Array<{
+ *       test_id: string,
+ *       status: string, // 'passed', 'failed'
+ *       actual_output?: string,
+ *       error?: string
+ *     }>
+ *   },
+ *   metadata?: Record<string, any>,
+ *   created_at: string,
+ *   updated_at: string
+ * }
  */
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"

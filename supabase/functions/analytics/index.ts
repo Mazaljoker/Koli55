@@ -1,9 +1,77 @@
 /**
  * Fonction Supabase Edge pour les métriques et statistiques d'utilisation Vapi
+ * 
  * Endpoints:
- * - GET /calls - Obtient des métriques sur les appels
- * - GET /usage - Récupère les statistiques d'utilisation
- * - GET /calls/:id/timeline - Obtient la chronologie d'un appel
+ * - GET /analytics/calls - Obtient des métriques sur les appels
+ * - GET /analytics/usage - Récupère les statistiques d'utilisation
+ * - GET /analytics/calls/:id/timeline - Obtient la chronologie d'un appel
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * GET /analytics/calls:
+ *   - Query params:
+ *     - start_date?: string (format YYYY-MM-DD)
+ *     - end_date?: string (format YYYY-MM-DD)
+ *     - assistant_id?: string (filtre par assistant)
+ *     - phone_number_id?: string (filtre par numéro de téléphone)
+ *   - Headers: Authorization (JWT token obligatoire)
+ *   - Validation: callMetricsSchema
+ * 
+ * GET /analytics/usage:
+ *   - Query params:
+ *     - start_date?: string (format YYYY-MM-DD)
+ *     - end_date?: string (format YYYY-MM-DD)
+ *   - Headers: Authorization (JWT token obligatoire)
+ *   - Validation: usageStatsSchema
+ * 
+ * GET /analytics/calls/:id/timeline:
+ *   - Path params: id (identifiant de l'appel)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * GET /analytics/calls:
+ *   - Succès: { 
+ *       data: VapiCallMetrics // Statistiques d'appels
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * GET /analytics/usage:
+ *   - Succès: { 
+ *       data: VapiUsageStats // Statistiques d'utilisation
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * GET /analytics/calls/:id/timeline:
+ *   - Succès: { 
+ *       data: VapiCallTimeline // Chronologie détaillée de l'appel
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * Structure VapiCallMetrics conforme à l'interface VapiCallMetrics de shared/vapi.ts:
+ * {
+ *   total_calls: number,
+ *   total_duration_ms: number,
+ *   average_duration_ms: number,
+ *   [autres métriques spécifiques]: any
+ * }
+ * 
+ * Structure VapiUsageStats conforme à l'interface VapiUsageStats de shared/vapi.ts:
+ * {
+ *   total_requests: number,
+ *   total_tokens_processed: number,
+ *   [autres statistiques spécifiques]: any
+ * }
+ * 
+ * Structure VapiCallTimeline conforme à l'interface VapiCallTimeline de shared/vapi.ts:
+ * {
+ *   call_id: string,
+ *   events: Array<{
+ *     type: string,
+ *     timestamp: string,
+ *     data?: any
+ *   }>
+ * }
  */
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"

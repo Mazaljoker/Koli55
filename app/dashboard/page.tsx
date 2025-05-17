@@ -2,49 +2,70 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import supabase from '../../lib/supabaseClient';
 import DashboardOverview from '../../components/dashboard/DashboardOverview';
 import AssistantsList from '../../components/dashboard/AssistantsList';
 import { Button } from '@tremor/react';
+import { assistantsService, AssistantData } from '../../lib/api/assistantsService';
 
-interface Assistant {
-  id: string;
-  name: string;
-  model: string;
-  language: string;
-  created_at: string;
-}
+// Utiliser directement AssistantData du service pour éviter les incompatibilités de types
+type Assistant = AssistantData;
 
 export default function DashboardPage() {
   const [assistants, setAssistants] = useState<Assistant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const router = useRouter();
 
   // Placeholder counts for DashboardOverview
   const [conversationsCount, setConversationsCount] = useState(0);
   const [apiCallsCount, setApiCallsCount] = useState(0);
 
   useEffect(() => {
-    fetchAssistants();
-    // In a real app, you would also fetch conversation and API call counts
-    // For now, we use placeholder values.
-    // fetchDashboardStats(); 
-  }, []);
+    // Vérification de l'authentification au chargement de la page
+    const checkAuthAndFetch = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // Si l'utilisateur a un token d'authentification temporaire dans localStorage
+      // (voir la page de login), considérer qu'il est authentifié, même si la session
+      // n'est pas encore disponible
+      const tempAuthToken = typeof window !== 'undefined' ? localStorage.getItem('temp_auth_token') : null;
+      
+      if (!session && !tempAuthToken) {
+        console.log("Aucune session détectée dans la page dashboard, redirection vers login");
+        router.push('/auth/login');
+        return;
+      }
+      
+      // Si nous avons un token temporaire, envoyons un en-tête pour le middleware
+      if (tempAuthToken) {
+        console.log("Token d'authentification temporaire détecté dans la page dashboard");
+        // Le token temporaire ne sera utilisé qu'une fois
+        localStorage.removeItem('temp_auth_token');
+      }
+      
+      // La session est confirmée, continuer avec le chargement des données
+      fetchAssistants();
+    };
+    
+    checkAuthAndFetch();
+  }, [router]);
 
   async function fetchAssistants() {
     setLoading(true);
     setError(null); // Reset error on new fetch
     try {
-      const { data, error: supabaseError } = await supabase.functions.invoke('assistants', {
-        body: { action: 'listMine' }
-      });
+      // Utiliser le service Assistants pour récupérer la liste des assistants
+      const response = await assistantsService.list({ action: 'listMine' });
 
-      if (supabaseError) {
-        throw new Error(supabaseError.message);
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to list assistants');
       }
-      // Ensure data is an array, even if it's null/undefined from the function
-      setAssistants(Array.isArray(data) ? data : []); 
+      
+      // S'assurer que response.data est un tableau, même s'il est null/undefined
+      setAssistants(Array.isArray(response.data) ? response.data : []);
     } catch (err: any) {
       console.error('Error fetching assistants:', err);
       setError(err.message || 'Failed to load assistants');
@@ -62,12 +83,11 @@ export default function DashboardPage() {
     setDeletingId(assistantId);
     setError(null); // Reset error before new action
     try {
-      const { error: supabaseError } = await supabase.functions.invoke('assistants', {
-        body: { action: 'delete', id: assistantId }
-      });
+      // Utiliser le service Assistants pour supprimer un assistant
+      const response = await assistantsService.delete(assistantId);
 
-      if (supabaseError) {
-        throw new Error(supabaseError.message);
+      if (!response.success) {
+        throw new Error(response.message || `Failed to delete assistant with ID ${assistantId}`);
       }
       
       setAssistants(prevAssistants => prevAssistants.filter(a => a.id !== assistantId));

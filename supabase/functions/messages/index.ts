@@ -1,9 +1,62 @@
 /**
  * Fonction Supabase Edge pour la gestion des messages dans les appels Vapi
+ * 
  * Endpoints:
- * - GET /:callId - Liste tous les messages d'un appel
- * - POST /:callId - Ajoute un message à un appel
- * - GET /:callId/:messageId - Récupère un message spécifique par ID
+ * - GET /messages/:callId - Liste tous les messages d'un appel
+ * - POST /messages/:callId - Ajoute un message à un appel
+ * - GET /messages/:callId/:messageId - Récupère un message spécifique par ID
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * GET /messages/:callId:
+ *   - Path params: callId (identifiant de l'appel)
+ *   - Query params: limit (nombre maximum de messages à retourner)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * POST /messages/:callId:
+ *   - Path params: callId (identifiant de l'appel)
+ *   - Body: {
+ *       role: string (obligatoire, enum: 'system', 'user', 'assistant', 'function', 'tool'),
+ *       content: string (obligatoire, contenu du message),
+ *       name?: string (nom optionnel, utile pour les messages de type function),
+ *       metadata?: object (métadonnées personnalisées)
+ *     }
+ *   - Headers: Authorization (JWT token obligatoire)
+ *   - Validation: createMessageSchema
+ * 
+ * GET /messages/:callId/:messageId:
+ *   - Path params: callId (identifiant de l'appel), messageId (identifiant du message)
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * GET /messages/:callId:
+ *   - Succès: {
+ *       data: Message[], // Liste des messages de l'appel
+ *       pagination: {
+ *         has_more: boolean
+ *       }
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * POST /messages/:callId:
+ *   - Succès: { data: Message }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * GET /messages/:callId/:messageId:
+ *   - Succès: { data: Message }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * Structure Message conforme à l'interface de l'API Vapi
+ * {
+ *   id: string,
+ *   role: 'system' | 'user' | 'assistant' | 'function' | 'tool',
+ *   content: string,
+ *   name?: string,
+ *   call_id: string,
+ *   metadata?: object,
+ *   created_at: string
+ * }
  */
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"

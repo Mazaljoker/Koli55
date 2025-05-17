@@ -9,6 +9,7 @@ import {
 } from '@tremor/react';
 import { ArrowUpTrayIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { knowledgeBaseService } from '../../lib/api/knowledgeBaseService';
 
 interface KnowledgeBaseFileUploadProps {
   knowledgeBaseId: string;
@@ -45,28 +46,12 @@ const KnowledgeBaseFileUpload: React.FC<KnowledgeBaseFileUploadProps> = ({
     setError(null);
     setSuccess(null);
 
-    const formData = new FormData();
-    formData.append('file', selectedFile); // Le nom 'file' doit correspondre à ce que votre API attend
-
     try {
-      // Note: Supabase functions.invoke avec FormData peut nécessiter des ajustements
-      // dans la fonction Edge pour gérer correctement `multipart/form-data`.
-      // Il est souvent plus simple de passer le contenu du fichier en base64 ou d'utiliser
-      // Supabase Storage pour l'upload, puis de lier le fichier à la KB.
-      // Pour l'instant, on tente avec FormData.
-      const { data, error: supabaseError } = await supabase.functions.invoke(
-        `knowledge-bases/${knowledgeBaseId}/files`,
-        {
-          method: 'POST',
-          body: formData,
-          // Les headers 'Content-Type': 'multipart/form-data' sont généralement gérés par le navigateur
-          // lors de l'envoi de FormData, mais avec functions.invoke, cela peut être plus complexe.
-          // Si cela échoue, envisagez Supabase Storage.
-        }
-      );
+      // Utiliser le service au lieu de l'appel direct à l'API
+      const response = await knowledgeBaseService.uploadFile(knowledgeBaseId, selectedFile);
 
-      if (supabaseError) {
-        throw supabaseError;
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to upload file');
       }
 
       setSuccess(`Fichier "${selectedFile.name}" téléversé avec succès !`);

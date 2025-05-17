@@ -18,6 +18,7 @@
   - `shared/auth.ts` - Vérification de l'authentification
   - `shared/errors.ts` - Gestion standardisée des erreurs
   - `shared/validation.ts` - Validation des données entrantes
+  - `shared/vapi.ts` - Interfaces, types et fonctions pour l'API Vapi
 
 - **Entités principales**
   - `assistants.ts` - Gestion des assistants Vapi
@@ -36,6 +37,18 @@
   - `test-suite-tests.ts` - Tests individuels
   - `test-suite-runs.ts` - Exécutions des tests
 
+### Documentation des Edge Functions
+Toutes les fonctions Edge ont été documentées avec un format standardisé qui comprend :
+- Une description générale de la fonction
+- La liste des endpoints gérés et leur description
+- Pour chaque endpoint :
+  - Les paramètres d'entrée (path params, query params, body, headers)
+  - Les schémas de validation utilisés
+  - La structure des réponses en cas de succès ou d'erreur
+- Les interfaces TypeScript des structures de données manipulées
+
+Cette documentation permet aux développeurs front-end de comprendre facilement comment interagir avec les fonctions Edge et quelles données attendre en retour.
+
 ## Flux de données
 1. Le frontend appelle une fonction Edge via `supabase.functions.invoke()`
 2. La fonction Edge authentifie la requête et vérifie les permissions
@@ -51,4 +64,4 @@
 - Toutes les clés API Vapi sont stockées côté serveur uniquement
 - Authentification via Supabase Auth avec middleware Next.js
 - Règles RLS sur les tables Supabase
-- Validation des entrées sur toutes les fonctions Edge
+- Validation des entrées sur toutes les fonctions Edge 

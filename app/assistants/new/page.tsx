@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import supabase from '../../../lib/supabaseClient';
+import { assistantsService, CreateAssistantPayload } from '../../../lib/api/assistantsService';
 
 // Define a type for the assistant form data (can be expanded)
 interface AssistantFormData {
@@ -40,25 +40,42 @@ export default function NewAssistantPage() {
     setError(null);
     setLoading(true);
     try {
-      const { data: responseData, error: apiError } = await supabase.functions.invoke('assistants', {
-        body: formData,
-      });
+      // Préparer les données pour l'API en utilisant le type défini dans assistantsService
+      const apiPayload: CreateAssistantPayload = {
+        name: formData.name,
+      };
 
-      if (apiError) {
-        console.error('Supabase function invoke error:', apiError);
-        throw new Error(apiError.message || 'Failed to create assistant.');
+      // Vérification préalable des données
+      if (!apiPayload.name.trim()) {
+        throw new Error("Le nom de l'assistant est requis");
       }
 
-      if (responseData && responseData.success) {
-        router.push(`/assistants/${responseData.data.id}`);
+      console.log('Submitting assistant data:', apiPayload);
+      
+      // Utiliser le service au lieu de l'appel direct à l'API
+      const response = await assistantsService.create(apiPayload);
+
+      console.log('Response from API:', response);
+      
+      if (!response.success) {
+        console.error('API error creating assistant:', response);
+        throw new Error(
+          response.message || 
+          (response.vapi_error ? `Vapi error: ${response.vapi_error}` : 'Failed to create assistant due to an API error.')
+        );
+      }
+
+      if (response.data) {
+        console.log('Assistant created successfully:', response.data);
+        router.push(`/assistants/${response.data.id}`);
       } else {
-        console.error('API error creating assistant:', responseData?.message);
-        throw new Error(responseData?.message || 'Failed to create assistant due to an API error.');
+        throw new Error('No assistant data returned from API');
       }
 
     } catch (err: any) {
       console.error('Client-side error creating assistant:', err);
-      setError(err.message || 'An unexpected error occurred.');
+      const errorMessage = err.message || 'An unexpected error occurred.';
+      setError(`Error: ${errorMessage}`);
     }
     setLoading(false);
   };
@@ -73,7 +90,21 @@ export default function NewAssistantPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md">
-        {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+            <p className="font-semibold">Error:</p>
+            <p>{error}</p>
+            <details className="mt-2">
+              <summary className="cursor-pointer text-sm font-medium">Voir les détails techniques</summary>
+              <pre className="mt-2 p-2 bg-red-50 text-xs overflow-auto whitespace-pre-wrap">
+                Si cette erreur persiste, vérifiez les éléments suivants:
+                1. La variable VAPI_API_KEY est configurée dans les variables d'environnement de Supabase
+                2. Vous êtes correctement authentifié
+                3. Les données du formulaire sont valides (nom non vide, etc.)
+              </pre>
+            </details>
+          </div>
+        )}
 
         {/* Assistant Name */}
         <div className="mb-4">
@@ -103,6 +134,7 @@ export default function NewAssistantPage() {
             <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
             <option value="gpt-4">GPT-4</option>
             <option value="gpt-4-turbo">GPT-4 Turbo</option>
+            <option value="gpt-4o">GPT-4o</option>
             {/* Add other models as needed */}
           </select>
         </div>

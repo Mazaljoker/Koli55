@@ -11,14 +11,10 @@ import {
   Text, 
   Button 
 } from '@tremor/react';
+import { AssistantData } from '../../lib/api/assistantsService';
 
-interface Assistant {
-  id: string;
-  name: string;
-  model: string;
-  language: string;
-  created_at: string;
-}
+// Utiliser le type AssistantData du service
+type Assistant = AssistantData;
 
 interface AssistantsListProps {
   assistants: Assistant[];
@@ -83,8 +79,8 @@ export default function AssistantsList({
           {assistants.map((assistant) => (
             <TableRow key={assistant.id}>
               <TableCell>{assistant.name}</TableCell>
-              <TableCell><Text>{assistant.model}</Text></TableCell>
-              <TableCell><Text>{assistant.language}</Text></TableCell>
+              <TableCell><Text>{assistant.model || 'N/A'}</Text></TableCell>
+              <TableCell><Text>{assistant.language || 'N/A'}</Text></TableCell>
               <TableCell><Text>{new Date(assistant.created_at).toLocaleDateString()}</Text></TableCell>
               <TableCell className="text-right space-x-2">
                 <Link href={`/assistants/${assistant.id}`} passHref>

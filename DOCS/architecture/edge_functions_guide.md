@@ -7,6 +7,51 @@ La Phase 5 est maintenant complète ! Nous avons implémenté avec succès :
 - Chaque Edge Function suit la même architecture avec authentification, validation, et gestion d'erreurs standardisée
 - Le frontend pourra interagir avec ces fonctions via `supabase.functions.invoke()` sans jamais accéder directement à l'API Vapi
 
+## Documentation standardisée des Edge Functions
+Pour faciliter l'intégration et la maintenance, chaque Edge Function a été documentée avec un format standardisé :
+
+```typescript
+/**
+ * Fonction Supabase Edge pour [description de la fonction]
+ * 
+ * Endpoints:
+ * - [MÉTHODE] [CHEMIN] - [Description de l'endpoint]
+ * ...
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * [MÉTHODE] [CHEMIN]:
+ *   - Path params: [paramètres d'URL]
+ *   - Query params: [paramètres de requête]
+ *   - Body: {
+ *       [structure du corps de la requête avec types et descriptions]
+ *     }
+ *   - Headers: [en-têtes requis]
+ *   - Validation: [schéma de validation utilisé]
+ * ...
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * [MÉTHODE] [CHEMIN]:
+ *   - Succès: {
+ *       [structure de la réponse en cas de succès]
+ *     }
+ *   - Erreur: [structure de la réponse en cas d'erreur]
+ * ...
+ * 
+ * Structure [NomInterface] conforme à l'interface [RéférenceInterface]:
+ * {
+ *   [détail des propriétés avec types et descriptions]
+ * }
+ */
+```
+
+Cette documentation standardisée permet :
+- Une compréhension claire des endpoints et de leur fonctionnement
+- Une référence directe pour l'intégration frontend
+- Une visibilité complète des structures de données utilisées
+- Une maintenance facilitée avec les schémas de validation référencés
+
 ## Bonnes pratiques découvertes pour les Edge Functions :
 - ✅ Utiliser un seul dossier pour les utilitaires partagés (`shared/` sans underscore)
 - ✅ Toujours utiliser l'extension `.ts` pour les imports internes

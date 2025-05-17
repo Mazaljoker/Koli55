@@ -60,3 +60,19 @@
 - Paramétré via `lib/vapiServerClient.ts`
 - Authentification sécurisée côté serveur
 - Permet d'accéder à toutes les fonctionnalités de l'API Vapi
+
+## Documentation des Edge Functions
+Toutes les Edge Functions ont été soigneusement documentées avec un format standardisé qui détaille :
+- Les endpoints gérés par chaque fonction
+- Les variables d'entrée (Request) pour chaque endpoint, y compris :
+  - Les paramètres de chemin (path params)
+  - Les paramètres de requête (query params)
+  - La structure du corps de la requête (body)
+  - Les en-têtes requis (headers)
+  - Les schémas de validation utilisés
+- Les variables de sortie (Response) pour chaque endpoint, y compris :
+  - La structure de la réponse en cas de succès
+  - La structure de la réponse en cas d'erreur
+- Les interfaces TypeScript des structures de données manipulées
+
+Cette documentation facilite l'intégration frontend en fournissant une référence claire des données attendues et retournées par chaque endpoint. 

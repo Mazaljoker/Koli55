@@ -286,6 +286,166 @@ export interface VapiCallTimeline {
   // ... autres informations
 }
 
+// Types pour les Assistants Vapi
+export interface VapiAssistant {
+  id: string;
+  name: string;
+  model?: {
+    provider: string; // 'openai', 'anthropic', 'cohere', 'azure', etc.
+    model: string; // 'gpt-4o', 'claude-3-opus-20240229', etc.
+    systemPrompt?: string;
+    temperature?: number;
+    topP?: number;
+    maxTokens?: number;
+  };
+  voice?: {
+    provider: string; // 'elevenlabs', 'deepgram', 'openai', etc.
+    voiceId: string; // ID spécifique au provider
+  };
+  firstMessage?: string;
+  tools?: {
+    functions?: string[]; // IDs des fonctions
+    knowledgeBases?: string[]; // IDs des bases de connaissances
+    workflows?: string[]; // IDs des workflows
+  };
+  forwardingPhoneNumber?: string;
+  recordingSettings?: {
+    createRecording: boolean;
+    saveRecording: boolean;
+  };
+  metadata?: Record<string, any>;
+  silenceTimeoutSeconds?: number;
+  maxDurationSeconds?: number;
+  endCallAfterSilence?: boolean;
+  voiceReflection?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AssistantCreateParams {
+  name: string;
+  model?: {
+    provider: string;
+    model: string;
+    systemPrompt?: string;
+    temperature?: number;
+    topP?: number;
+    maxTokens?: number;
+  };
+  voice?: {
+    provider: string;
+    voiceId: string;
+  };
+  firstMessage?: string;
+  tools?: {
+    functions?: string[];
+    knowledgeBases?: string[];
+    workflows?: string[];
+  };
+  forwardingPhoneNumber?: string;
+  recordingSettings?: {
+    createRecording: boolean;
+    saveRecording: boolean;
+  };
+  metadata?: Record<string, any>;
+  silenceTimeoutSeconds?: number;
+  maxDurationSeconds?: number;
+  endCallAfterSilence?: boolean;
+  voiceReflection?: boolean;
+}
+
+export interface AssistantUpdateParams {
+  name?: string;
+  model?: {
+    provider?: string;
+    model?: string;
+    systemPrompt?: string;
+    temperature?: number;
+    topP?: number;
+    maxTokens?: number;
+  };
+  voice?: {
+    provider?: string;
+    voiceId?: string;
+  };
+  firstMessage?: string;
+  tools?: {
+    functions?: string[];
+    knowledgeBases?: string[];
+    workflows?: string[];
+  };
+  forwardingPhoneNumber?: string;
+  recordingSettings?: {
+    createRecording?: boolean;
+    saveRecording?: boolean;
+  };
+  metadata?: Record<string, any>;
+  silenceTimeoutSeconds?: number;
+  maxDurationSeconds?: number;
+  endCallAfterSilence?: boolean;
+  voiceReflection?: boolean;
+}
+
+// Types pour les Knowledge Bases Vapi
+export interface VapiKnowledgeBase {
+  id: string;
+  name: string;
+  description?: string;
+  model?: {
+    provider: string; // ex: "openai"
+    model: string;    // ex: "text-embedding-3-small"
+    dimensions?: number;
+  };
+  files?: string[]; // IDs des fichiers associés
+  file_count?: number; // Nombre de fichiers associés
+  chunks_count?: number; // Nombre de chunks (segments de texte) extraits
+  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KnowledgeBaseCreateParams {
+  name: string;
+  description?: string;
+  model?: {
+    provider: string;
+    model: string;
+    dimensions?: number;
+  };
+  metadata?: Record<string, any>;
+}
+
+export interface KnowledgeBaseUpdateParams {
+  name?: string;
+  description?: string;
+  model?: {
+    provider?: string;
+    model?: string;
+    dimensions?: number;
+  };
+  metadata?: Record<string, any>;
+}
+
+export interface KnowledgeBaseQueryParams {
+  query: string;
+  top_k?: number;
+  similarity_threshold?: number;
+  metadata_filter?: Record<string, any>;
+}
+
+export interface KnowledgeBaseQueryResult {
+  matches: {
+    text: string;
+    score: number;
+    metadata?: Record<string, any>;
+    source?: string;
+  }[];
+}
+
+export interface KnowledgeBaseAddFileParams {
+  file_id: string;
+}
+
 // Types pour les Test Suites Vapi
 export interface VapiTestSuite {
   id: string;
@@ -338,6 +498,51 @@ export interface TestSuiteTestUpdateParams {
   expected_output?: string;
   input?: string;
   metadata?: Record<string, any>;
+}
+
+/**
+ * Types for Phone Numbers
+ */
+export interface VapiPhoneNumber {
+  id: string;
+  phone_number: string;
+  friendly_name?: string;
+  provider: string;
+  country: string;
+  capabilities: string[];
+  active: boolean;
+  assistant_id?: string;
+  workflow_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PhoneNumberSearchParams {
+  country: string;
+  area_code?: string;
+  capabilities?: string[];
+  limit?: number;
+}
+
+export interface PhoneNumberSearchResult {
+  phone_numbers: Array<{
+    phone_number: string;
+    provider: string;
+    country: string;
+    capabilities: string[];
+  }>;
+}
+
+export interface PhoneNumberProvisionParams {
+  phone_number: string;
+  provider?: string;
+  friendly_name?: string;
+}
+
+export interface PhoneNumberUpdateParams {
+  friendly_name?: string;
+  assistant_id?: string;
+  workflow_id?: string;
 }
 
 /**
@@ -662,5 +867,100 @@ export const vapiTestSuiteTests = {
 
   delete: async (suiteId: string, testId: string): Promise<void> => {
     await callVapiAPI<Record<string, never>>(`test-suites/${suiteId}/tests/${testId}`, 'DELETE');
+  }
+};
+
+/**
+ * Fonctions spécifiques pour les Assistants Vapi
+ */
+export const vapiAssistants = {
+  list: async (params?: PaginationParams): Promise<PaginatedResponse<VapiAssistant>> => {
+    return callVapiAPI<PaginatedResponse<VapiAssistant>>('assistants', 'GET', undefined, params as Record<string, string | number | boolean | undefined>);
+  },
+
+  retrieve: async (id: string): Promise<VapiAssistant> => {
+    return callVapiAPI<VapiAssistant>(`assistants/${id}`);
+  },
+
+  create: async (data: AssistantCreateParams): Promise<VapiAssistant> => {
+    return callVapiAPI<VapiAssistant>('assistants', 'POST', data);
+  },
+
+  update: async (id: string, data: AssistantUpdateParams): Promise<VapiAssistant> => {
+    return callVapiAPI<VapiAssistant>(`assistants/${id}`, 'PATCH', data);
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await callVapiAPI<Record<string, never>>(`assistants/${id}`, 'DELETE');
+  }
+};
+
+/**
+ * Fonctions spécifiques pour les Knowledge Bases Vapi
+ */
+export const vapiKnowledgeBases = {
+  list: async (params?: PaginationParams): Promise<PaginatedResponse<VapiKnowledgeBase>> => {
+    return callVapiAPI<PaginatedResponse<VapiKnowledgeBase>>('knowledge-base', 'GET', undefined, params as Record<string, string | number | boolean | undefined>);
+  },
+
+  retrieve: async (id: string): Promise<VapiKnowledgeBase> => {
+    return callVapiAPI<VapiKnowledgeBase>(`knowledge-base/${id}`);
+  },
+
+  create: async (data: KnowledgeBaseCreateParams): Promise<VapiKnowledgeBase> => {
+    return callVapiAPI<VapiKnowledgeBase>('knowledge-base', 'POST', data);
+  },
+
+  update: async (id: string, data: KnowledgeBaseUpdateParams): Promise<VapiKnowledgeBase> => {
+    return callVapiAPI<VapiKnowledgeBase>(`knowledge-base/${id}`, 'PATCH', data);
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await callVapiAPI<Record<string, never>>(`knowledge-base/${id}`, 'DELETE');
+  },
+
+  query: async (id: string, data: KnowledgeBaseQueryParams): Promise<KnowledgeBaseQueryResult> => {
+    return callVapiAPI<KnowledgeBaseQueryResult>(`knowledge-base/${id}/query`, 'POST', data);
+  },
+
+  addFile: async (id: string, file_id: string): Promise<void> => {
+    await callVapiAPI<Record<string, never>>(`knowledge-base/${id}/files`, 'POST', { file_id });
+  },
+
+  removeFile: async (id: string, file_id: string): Promise<void> => {
+    await callVapiAPI<Record<string, never>>(`knowledge-base/${id}/files/${file_id}`, 'DELETE');
+  }
+};
+
+/**
+ * Fonctions spécifiques pour les Phone Numbers Vapi
+ */
+export const vapiPhoneNumbers = {
+  list: async (params?: PaginationParams): Promise<PaginatedResponse<VapiPhoneNumber>> => {
+    return callVapiAPI<PaginatedResponse<VapiPhoneNumber>>('phone-numbers', 'GET', undefined, params as Record<string, string | number | boolean | undefined>);
+  },
+
+  retrieve: async (id: string): Promise<VapiPhoneNumber> => {
+    return callVapiAPI<VapiPhoneNumber>(`phone-numbers/${id}`);
+  },
+
+  create: async (data: PhoneNumberProvisionParams): Promise<VapiPhoneNumber> => {
+    return callVapiAPI<VapiPhoneNumber>('phone-numbers', 'POST', data);
+  },
+
+  update: async (id: string, data: PhoneNumberUpdateParams): Promise<VapiPhoneNumber> => {
+    return callVapiAPI<VapiPhoneNumber>(`phone-numbers/${id}`, 'PATCH', data);
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await callVapiAPI<Record<string, never>>(`phone-numbers/${id}`, 'DELETE');
+  },
+
+  search: async (params: PhoneNumberSearchParams): Promise<PhoneNumberSearchResult> => {
+    return callVapiAPI<PhoneNumberSearchResult>('phone-numbers/search', 'POST', params);
+  },
+
+  provision: async (data: PhoneNumberProvisionParams): Promise<VapiPhoneNumber> => {
+    return callVapiAPI<VapiPhoneNumber>('phone-numbers/provision', 'POST', data);
   }
 }; 

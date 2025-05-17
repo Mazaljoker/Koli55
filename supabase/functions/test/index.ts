@@ -1,3 +1,28 @@
+/**
+ * Fonction Supabase Edge pour tester le déploiement et la configuration
+ * 
+ * Endpoints:
+ * - GET /test - Vérifie que la fonction est correctement déployée et que la clé API Vapi est configurée
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * GET /test:
+ *   - Headers: aucun header spécifique requis (fonction accessible sans authentification)
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * GET /test:
+ *   - Succès: {
+ *       success: true,
+ *       message: string, // Message de confirmation
+ *       vapi_key_status: string, // 'Set' ou 'Not set'
+ *       vapi_key_preview: string // Version masquée de la clé API
+ *     }
+ *   - Erreur: {
+ *       error: string // Message d'erreur
+ *     }
+ */
+
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 

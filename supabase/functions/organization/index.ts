@@ -1,9 +1,63 @@
 /**
  * Fonction Supabase Edge pour la gestion de l'organisation Vapi
+ * 
  * Endpoints:
- * - GET / - Récupère les détails de l'organisation
- * - PATCH / - Met à jour l'organisation
- * - GET /limits - Obtient les limites d'utilisation
+ * - GET /organization - Récupère les détails de l'organisation
+ * - PATCH /organization - Met à jour l'organisation
+ * - GET /organization/limits - Obtient les limites d'utilisation
+ * 
+ * Variables d'Entrée (Request):
+ * 
+ * GET /organization:
+ *   - Headers: Authorization (JWT token obligatoire)
+ * 
+ * PATCH /organization:
+ *   - Body: {
+ *       name?: string (3-100 caractères),
+ *       description?: string (max 500 caractères),
+ *       webhook_url?: string (URL valide),
+ *       trusted_origins?: string[],
+ *       metadata?: object
+ *     }
+ *   - Headers: Authorization (JWT token obligatoire, rôle admin requis)
+ *   - Validation: updateOrganizationSchema
+ * 
+ * GET /organization/limits:
+ *   - Headers: Authorization (JWT token obligatoire, rôle admin requis)
+ * 
+ * Variables de Sortie (Response):
+ * 
+ * GET /organization:
+ *   - Succès: { 
+ *       data: VapiOrganization // Structure détaillée de l'organisation
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * PATCH /organization:
+ *   - Succès: { 
+ *       data: VapiOrganization // Structure détaillée de l'organisation mise à jour
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * GET /organization/limits:
+ *   - Succès: { 
+ *       data: VapiLimits // Structure des limites d'utilisation de l'API Vapi
+ *     }
+ *   - Erreur: FormattedError de shared/errors.ts
+ * 
+ * Structure VapiOrganization conforme à l'interface VapiOrganization de shared/vapi.ts:
+ * {
+ *   id: string,
+ *   name: string,
+ *   description?: string,
+ *   webhook_url?: string,
+ *   trusted_origins?: string[],
+ *   metadata?: Record<string, any>,
+ *   created_at: string,
+ *   updated_at: string
+ * }
+ * 
+ * Structure VapiLimits conforme à l'interface VapiLimits de shared/vapi.ts.
  */
 
 // @deno-types="https://deno.land/std@0.168.0/http/server.ts"

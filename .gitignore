@@ -58,3 +58,12 @@ Desktop.ini
 # Logs
 logs/
 *.log
+# caches Bolt et Next
+.next/
+.bolt-cache/
+# dépendances
+node_modules/
+# artefacts Cursor (logs, .cursor)
+.cursor/
+# sortie Bolt si tu l’utilises
+/out/

@@ -20,6 +20,10 @@ Allokoli est une plateforme no-code permettant à des professionnels de créer u
 - 🔄 **Phase 7** : Documentation complète (en cours)
 - 📅 **Phase 8-9** : Déploiement et lancement (à venir)
 
+## ⚠️ Note importante : Migration de structure
+
+Le dossier `/app` est désormais **déprécié**. Tous les nouveaux développements doivent être effectués dans le dossier `/frontend`. Le dossier `/app` est conservé temporairement pour des raisons de compatibilité, mais sera supprimé dans une version future.
+
 ## Documentation
 
 Une documentation complète est disponible dans le dossier `/DOCS` :

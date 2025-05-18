@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 // URL et clé pour l'instance Supabase Docker locale
 // Par défaut, Supabase en local utilise ces valeurs
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reWh3cWJvaGRqZWNodXh0Y3RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc4NzI2NDEsImV4cCI6MjAwMzQ0ODY0MX0.R7Sezuhy-s4xSE__vHx7X5eQwJNAp-8B_5q1qO4SzSU';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 // Création du client Supabase
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

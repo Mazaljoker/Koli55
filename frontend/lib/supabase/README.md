@@ -9,10 +9,19 @@ Pour que l'application fonctionne correctement avec l'instance Supabase locale, 
 ```
 # Variables d'environnement pour Supabase local (Docker)
 NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reWh3cWJvaGRqZWNodXh0Y3RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc4NzI2NDEsImV4cCI6MjAwMzQ0ODY0MX0.R7Sezuhy-s4xSE__vHx7X5eQwJNAp-8B_5q1qO4SzSU
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
 ```
 
 Ces valeurs correspondent aux paramètres par défaut d'une instance Supabase en local.
+
+## Clés API Supabase locales
+
+Si vous avez besoin de trouver les clés API spécifiques à votre instance locale :
+
+1. Accédez au Supabase Studio : http://localhost:54323
+2. Connectez-vous (email et mot de passe par défaut : `admin@admin.com` / `admin`)
+3. Allez dans "Project Settings" > "API"
+4. Vous y trouverez votre "anon public key" et "service_role key"
 
 ## Ports Supabase Docker
 

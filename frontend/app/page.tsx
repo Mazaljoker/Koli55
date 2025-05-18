@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Bot, ArrowRight, Check, Phone, Code, Lock, Rocket, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import AuthForm from '../components/auth/auth-form';
+import { SupabaseStatus } from '../components/ui/supabase-status';
 
 // Données des témoignages
 const testimonials = [
@@ -443,6 +444,9 @@ export default function Home() {
           </div>
           <div className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-600">
             <p>© {new Date().getFullYear()} AlloKoli. Tous droits réservés.</p>
+            <div className="mt-4 flex justify-center">
+              <SupabaseStatus />
+            </div>
           </div>
         </div>
       </footer>

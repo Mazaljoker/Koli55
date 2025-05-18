@@ -3,13 +3,7 @@
 import React from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialiser le client Supabase
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+import { supabase } from '../../lib/supabase/client';
 
 const AuthForm = () => {
   return (

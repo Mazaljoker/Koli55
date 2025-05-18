@@ -1,0 +1,26 @@
+{
+  "name": "Assistant Test Simple Plans",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Tu es un assistant francophone serviable."
+      }
+    ]
+  },
+  "voice": {
+    "provider": "azure",
+    "voiceId": "fr-FR-DeniseNeural"
+  },
+  "firstMessage": "Bonjour, comment puis-je vous aider aujourd'hui?",
+  "stopSpeakingPlan": {
+    "interruptionPhrases": [
+      "stop",
+      "attends",
+      "excuse-moi",
+      "un instant"
+    ]
+  }
+} 

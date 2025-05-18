@@ -1,0 +1,25 @@
+{
+  "name": "Assistant Test Message Plan",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Tu es un assistant francophone serviable."
+      }
+    ]
+  },
+  "voice": {
+    "provider": "azure",
+    "voiceId": "fr-FR-DeniseNeural"
+  },
+  "firstMessage": "Bonjour, comment puis-je vous aider aujourd'hui?",
+  "messagePlan": {
+    "idleMessages": [
+      "Êtes-vous toujours là?",
+      "Avez-vous besoin d'aide supplémentaire?"
+    ],
+    "idleTimeoutSeconds": 15
+  }
+} 

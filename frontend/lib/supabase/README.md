@@ -8,11 +8,18 @@ Pour que l'application fonctionne correctement avec l'instance Supabase locale, 
 
 ```
 # Variables d'environnement pour Supabase local (Docker)
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:8000
+NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9reWh3cWJvaGRqZWNodXh0Y3RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODc4NzI2NDEsImV4cCI6MjAwMzQ0ODY0MX0.R7Sezuhy-s4xSE__vHx7X5eQwJNAp-8B_5q1qO4SzSU
 ```
 
 Ces valeurs correspondent aux paramètres par défaut d'une instance Supabase en local.
+
+## Ports Supabase Docker
+
+- **54321** : API REST et authentification
+- **54323** : Interface Supabase Studio (dashboard d'administration)
+
+Pour accéder au Studio Supabase, ouvrez `http://localhost:54323` dans votre navigateur.
 
 ## Utilisation
 

@@ -1,8 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Informations d'authentification Supabase
-const supabaseUrl = 'https://aiurboizarbbcpynmmgv.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpdXJib2l6YXJiYmNweW5tbWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczOTUxNzUsImV4cCI6MjA2Mjk3MTE3NX0.5uZKJkSS656znzAd0VFLQ0vE3s2cEfpZfn5SCsFTBGM';
+// Utiliser des variables d'environnement pour les informations d'authentification
+// Pour le backend, on utilise les variables sans NEXT_PUBLIC_
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
+
+// Vérifier que les variables d'environnement sont définies
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('ERREUR: Variables d\'environnement SUPABASE_URL et SUPABASE_ANON_KEY non définies');
+}
 
 // Mode démo complètement désactivé - toujours utiliser les données réelles
 const isBrowser = typeof window !== 'undefined';

@@ -1,72 +1,134 @@
 # Dependencies
 /node_modules
+**/node_modules
 /.pnp
 .pnp.js
 
 # Testing
 /coverage
+**/coverage
 
 # Next.js
 /.next/
 /out/
+**/.next/
+**/out/
 
 # Production
 /build
+**/build
+/dist
+**/dist
 
 # Misc
 .DS_Store
 *.pem
+*thumbs.db
+.thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+**/*.log
 
 # Local env files
 .env*.local
 .env
+.env.*
+**/.env*
+!.env.example
 
 # Vercel
 .vercel
+**/.vercel
 
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+**/*.tsbuildinfo
 
 # Supabase
 .supabase
+**/.supabase
 .supabase/.branches/
 .supabase/.temp/
+**/supabase/.branches/
+**/supabase/.temp/
 
 # Cache and temporary files
 .cache/
 .temp/
 **/.cache
 **/.temp
+**/.cache/
+**/.temp/
 
 # IDE specific files
 .idea/
 .vscode/
 *.swp
 *.swo
+**/.idea/
+**/.vscode/
+**/*.swp
+**/*.swo
 
 # OS specific
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+**/.directory
 
 # Logs
 logs/
 *.log
-# caches Bolt et Next
+**/logs/
+
+# Caches Bolt et Next
 .next/
 .bolt-cache/
-# dépendances
-node_modules/
-# artefacts Cursor (logs, .cursor)
+**/.bolt-cache/
+
+# Artefacts Cursor (logs, .cursor)
 .cursor/
-# sortie Bolt si tu l'utilises
+**/.cursor/
+
+# Sortie Bolt si tu l'utilises
 /out/
+**/out/
 
 # Dossier project (ancien code)
 /project/
+
+# Fichiers de sauvegarde
+*~
+*.bak
+*.backup
+**/*~
+**/*.bak
+**/*.backup
+
+# Fichiers temporaires
+*.tmp
+**/*.tmp
+temp/
+**/temp/
+
+# Fichiers de clés et secrets
+**/*config*/**/secret*
+**/*secret*
+**/*key*
+**/*password*
+**/*credential*
+**/*.pem
+**/*.key
+**/*.cert
+**/*.crt
+
+# Exceptions pour les exemples
+!**/*.example
+!**/*.template
+!**/*.sample

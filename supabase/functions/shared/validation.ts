@@ -177,4 +177,219 @@ export function extractId(url: URL, position = -1): string {
   }
   
   return id;
+}
+
+/**
+ * Module de validation des données pour les fonctions Edge
+ * 
+ * Ce module fournit des fonctions pour valider les entrées avant traitement
+ * et prévenir les injections SQL, XSS, etc.
+ */
+
+/**
+ * Sanitize une chaîne pour éviter les injections SQL et XSS
+ * @param input Chaîne à sanitizer
+ * @returns Chaîne sanitizée
+ */
+export function sanitizeString(input: string | null | undefined): string {
+  if (input === null || input === undefined) {
+    return '';
+  }
+  
+  // Convertir en chaîne si nécessaire
+  const str = String(input);
+  
+  // Échapper les caractères spéciaux pour éviter les injections
+  return str
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/`/g, '&#96;')
+    .replace(/\$/g, '&#36;')
+    .trim();
+}
+
+/**
+ * Vérifie si une chaîne est un UUID valide
+ * @param uuid Chaîne à vérifier
+ * @returns true si la chaîne est un UUID valide, false sinon
+ */
+export function isValidUUID(uuid: string): boolean {
+  if (!uuid) return false;
+  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return regex.test(uuid);
+}
+
+/**
+ * Vérifie si une valeur est un nombre valide
+ * @param value Valeur à vérifier
+ * @returns true si la valeur est un nombre valide, false sinon
+ */
+export function isValidNumber(value: any): boolean {
+  if (value === undefined || value === null) return false;
+  return !isNaN(Number(value)) && isFinite(Number(value));
+}
+
+/**
+ * Vérifie si un objet est sûr pour insertion en base de données
+ * @param obj Objet à vérifier
+ * @returns Objet nettoyé
+ */
+export function sanitizeObject(obj: any): any {
+  if (!obj || typeof obj !== 'object') {
+    return {};
+  }
+  
+  const result: any = {};
+  
+  // Parcourir les propriétés de l'objet
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = obj[key];
+      
+      // Sanitizer récursivement selon le type
+      if (typeof value === 'string') {
+        result[key] = sanitizeString(value);
+      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        result[key] = sanitizeObject(value);
+      } else if (Array.isArray(value)) {
+        result[key] = value.map(item => {
+          if (typeof item === 'string') {
+            return sanitizeString(item);
+          } else if (typeof item === 'object' && item !== null) {
+            return sanitizeObject(item);
+          }
+          return item;
+        });
+      } else {
+        // Valeurs primitives (number, boolean, null, undefined)
+        result[key] = value;
+      }
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Interface pour les résultats de validation
+ */
+export interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+/**
+ * Valide les données d'un assistant
+ * @param data Données à valider
+ * @returns Résultat de la validation
+ */
+export function validateAssistantData(data: any): ValidationResult {
+  const errors: string[] = [];
+  
+  // Vérifier les champs obligatoires
+  if (!data) {
+    errors.push('No data provided');
+    return { isValid: false, errors };
+  }
+  
+  // Vérifier le nom (obligatoire)
+  if (!data.name) {
+    errors.push('Name is required');
+  } else if (typeof data.name !== 'string') {
+    errors.push('Name must be a string');
+  } else if (data.name.length < 1 || data.name.length > 100) {
+    errors.push('Name must be between 1 and 100 characters');
+  }
+  
+  // Vérifier le modèle si spécifié
+  if (data.model !== undefined) {
+    if (typeof data.model !== 'string' && typeof data.model !== 'object') {
+      errors.push('Model must be a string or an object');
+    }
+  }
+  
+  // Vérifier la langue si spécifiée
+  if (data.language !== undefined && typeof data.language !== 'string') {
+    errors.push('Language must be a string');
+  }
+  
+  // Vérifier la voix si spécifiée
+  if (data.voice !== undefined) {
+    if (typeof data.voice !== 'string' && typeof data.voice !== 'object') {
+      errors.push('Voice must be a string or an object');
+    }
+  }
+  
+  // Vérifier les paramètres numériques
+  if (data.silence_timeout_seconds !== undefined && !isValidNumber(data.silence_timeout_seconds)) {
+    errors.push('Silence timeout seconds must be a valid number');
+  }
+  
+  if (data.max_duration_seconds !== undefined && !isValidNumber(data.max_duration_seconds)) {
+    errors.push('Max duration seconds must be a valid number');
+  }
+  
+  // Vérifier les paramètres booléens
+  if (data.end_call_after_silence !== undefined && typeof data.end_call_after_silence !== 'boolean') {
+    errors.push('End call after silence must be a boolean');
+  }
+  
+  if (data.voice_reflection !== undefined && typeof data.voice_reflection !== 'boolean') {
+    errors.push('Voice reflection must be a boolean');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+/**
+ * Valide une requête d'API pour vérifier les permissions
+ * @param userRole Rôle de l'utilisateur
+ * @param userId ID de l'utilisateur
+ * @param assistantUserId ID de l'utilisateur propriétaire de l'assistant (optionnel)
+ * @param metadata Métadonnées de l'assistant (optionnel)
+ * @returns Résultat de la validation
+ */
+export function validatePermissions(
+  userRole: string, 
+  userId: string | null,
+  assistantUserId?: string | null,
+  metadata?: any
+): ValidationResult {
+  const errors: string[] = [];
+  
+  // Vérifier si l'utilisateur est authentifié
+  if (!userId) {
+    errors.push('User must be authenticated');
+    return { isValid: false, errors };
+  }
+  
+  // Cas où on vérifie l'accès à un assistant existant
+  if (assistantUserId) {
+    // Les administrateurs ont accès à tous les assistants
+    if (userRole === 'admin') {
+      return { isValid: true, errors: [] };
+    }
+    
+    // Les utilisateurs standard ont accès uniquement à leurs propres assistants
+    if (userRole === 'authenticated' && userId !== assistantUserId) {
+      errors.push('User does not have permission to access this assistant');
+    }
+    
+    // Les utilisateurs de test ont accès uniquement aux assistants marqués comme 'is_test'
+    if (userRole === 'test') {
+      if (!metadata || metadata.is_test !== 'true') {
+        errors.push('Test users can only access test assistants');
+      }
+    }
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 } 

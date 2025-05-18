@@ -1,0 +1,13 @@
+Ceci est un fichier texte de test pour l'upload vers une base de connaissances.
+
+Il contient quelques informations sur Koli55:
+
+Koli55 est une plateforme d'intégration Vapi et Supabase pour créer des assistants vocaux IA.
+
+Fonctionnalités principales:
+- Création d'assistants vocaux personnalisés
+- Gestion de bases de connaissances
+- Intégration avec l'API Vapi
+- Dashboard d'analyse et de suivi
+
+Ce fichier peut être utilisé pour tester l'upload et le traitement des fichiers dans les bases de connaissances. 

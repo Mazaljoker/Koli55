@@ -65,6 +65,12 @@
 - [x] Analytics (`analytics.ts`)
 - [x] Organisation (`organization.ts`)
 
+### 🔹 Tests et qualité
+- [x] Créer une structure de test pour les Edge Functions (`supabase/functions/test/`)
+- [x] Développer des fichiers de test HTTP pour chaque fonction principale
+- [x] Créer des scripts d'aide au test (`run-tests.ps1`, `test-env.js`)
+- [x] Documenter la procédure de test des Edge Functions
+
 ---
 
 ## 💿 Phase 6.0 — Création de la Base de Données (Supabase Tables)
@@ -74,14 +80,43 @@
 
 ---
 
-## 🧪 Phase 6.1 — Intégration frontend initiale
-- [x] **Layout Principal** (`app/layout.tsx`)
-- [x] **Dashboard/Home Page** (`app/page.tsx`)
-- [x] **Authentification** (login, register)
-- [ ] **Création et gestion des assistants**
-- [ ] **Gestion des bases de connaissances**
-- [ ] **Configuration des workflows**
-- [ ] **Visualisation des métriques d'appel**
+## 🔄 Phase 6.1 — Refonte complète du frontend
+- [x] **Migration du code déprécié**
+  - [x] Déplacer le dossier `app/` vers `DEPRECATED/`
+  - [x] Supprimer le dossier `frontend/` temporaire
+  - [x] Mettre à jour la documentation pour refléter ces changements
+- [ ] **Planification de la nouvelle architecture**
+  - [x] Définir la structure de dossiers (voir `MIGRATION.md`)
+  - [ ] Définir les standards de composants et de code
+  - [ ] Créer des maquettes ou wireframes pour les interfaces clés
+- [ ] **Création de la nouvelle structure**
+  - [ ] Initialiser le nouveau projet Next.js
+  - [ ] Configurer TailwindCSS avec les thèmes et styles de base
+  - [ ] Mettre en place les composants UI de base
+- [ ] **Développement des fonctionnalités principales**
+  - [ ] **Authentification**
+    - [ ] Page de connexion
+    - [ ] Page d'inscription
+    - [ ] Récupération de mot de passe
+  - [ ] **Layout et navigation**
+    - [ ] Layout principal avec sidebar responsive
+    - [ ] Navigation entre les différentes sections
+  - [ ] **Gestion des assistants**
+    - [ ] Liste des assistants
+    - [ ] Création d'assistant
+    - [ ] Détail d'un assistant
+    - [ ] Test d'un assistant
+    - [ ] Édition d'un assistant
+  - [ ] **Gestion des bases de connaissances**
+    - [ ] Création et édition de bases de connaissances
+    - [ ] Upload de fichiers
+  - [ ] **Dashboard et statistiques**
+    - [ ] Vue d'ensemble des assistants
+    - [ ] Métriques d'utilisation
+  - [ ] **Paramètres et configuration**
+    - [ ] Profil utilisateur
+    - [ ] Paramètres du compte
+    - [ ] Clés API
 
 ---
 
@@ -89,27 +124,59 @@
 - [x] **Structure de documentation** dans `/DOCS`
 - [x] **README principal** pour présenter le projet
 - [x] **Documentation des assistants** (`DOCS/assistants.md`)
+- [x] **Documentation du processus de migration** (`MIGRATION.md`)
 - [x] **Guide de déploiement** (`DOCS/deployment.md`)
 - [x] **Guide d'intégration API** (`DOCS/api_integration.md`)
 - [x] **Guide de développement** (`DOCS/development_guide.md`)
-- [ ] **Génération de diagrammes** pour la documentation
-- [ ] **Exemples complets** pour chaque entité
+- [x] **Documentation des routes** (`ROUTES.md`)
+- [ ] **Exemples et guides d'utilisation**
+  - [ ] **TODO PRIORITAIRE:** Guide complet de création d'un assistant avec options avancées
+  - [ ] **TODO PRIORITAIRE:** Tutoriel d'intégration d'une base de connaissances
+  - [ ] Tutoriel d'utilisation des webhooks
+  - [ ] Exemples de personnalisation d'assistants
+- [ ] **Diagrammes et visuels**
+  - [ ] **TODO PRIORITAIRE:** Diagramme de l'architecture complète
+  - [ ] Diagramme du flux utilisateur
+  - [ ] Diagramme des interactions API
 - [ ] **Tutoriels pas-à-pas** pour les cas d'usage courants
+- [ ] **Documentation de la nouvelle architecture frontend**
+  - [ ] Guide des composants
+  - [ ] Standards de code
+  - [ ] Workflow de développement
 
 ---
 
 ## 🚀 Phase 8 — Déploiement et tests finaux
-- [ ] **Tests d'intégration** pour les fonctionnalités clés
-- [ ] **Déploiement sur Vercel** (frontend)
-- [ ] **Déploiement sur Supabase** (Edge Functions)
-- [ ] **Tests utilisateurs** avec un groupe restreint
-- [ ] **Correction des bugs** identifiés lors des tests
+- [ ] **Mise en place des environnements**
+  - [ ] **TODO PRIORITAIRE:** Configuration de l'environnement de staging
+  - [ ] Configuration de l'environnement de production
+- [ ] **Tests unitaires et d'intégration**
+  - [ ] **TODO PRIORITAIRE:** Tests des fonctionnalités clés (authentification, création d'assistant)
+  - [ ] Tests des Edge Functions
+  - [ ] Tests de l'interface utilisateur
+- [ ] **Déploiement**
+  - [ ] Déploiement sur Vercel (frontend)
+  - [ ] Déploiement sur Supabase (Edge Functions)
+- [ ] **Tests utilisateurs**
+  - [ ] **TODO PRIORITAIRE:** Tests avec un groupe restreint (5-10 utilisateurs)
+  - [ ] Collecte et analyse du feedback
+  - [ ] Correction des bugs identifiés
 
 ---
 
 ## 🎯 Phase 9 — Lancement et amélioration continue
-- [ ] **Lancement officiel** de la plateforme
-- [ ] **Collecte de feedback** des premiers utilisateurs
-- [ ] **Itérations rapides** sur les fonctionnalités prioritaires
-- [ ] **Optimisation des performances** (frontend et backend)
-- [ ] **Documentation utilisateur** complète et tutoriels vidéo 
+- [ ] **Préparation au lancement**
+  - [ ] Finalisation des corrections de bugs critiques
+  - [ ] Mise en place des outils de monitoring (Sentry, Datadog, etc.)
+  - [ ] Préparation des documents légaux (CGU, mentions légales)
+- [ ] **Lancement officiel**
+  - [ ] Annonce sur les réseaux sociaux
+  - [ ] Communication aux partenaires et beta-testeurs
+- [ ] **Suivi post-lancement**
+  - [ ] Collecte de feedback des premiers utilisateurs
+  - [ ] Analyse des métriques d'utilisation
+  - [ ] Identification des axes d'amélioration prioritaires
+- [ ] **Itérations et évolutions**
+  - [ ] Améliorations de l'UI/UX basées sur le feedback
+  - [ ] Ajout de fonctionnalités demandées par les utilisateurs
+  - [ ] Optimisation des performances (frontend et backend) 

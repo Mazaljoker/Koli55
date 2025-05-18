@@ -1,6 +1,58 @@
-# Allokoli
+# Koli55
 
-Allokoli est une plateforme no-code permettant à des professionnels de créer un assistant vocal IA en quelques minutes.
+Projet d'intégration Vapi et Supabase pour créer des assistants IA vocaux.
+
+## Structure du projet
+
+Le projet est en cours de réorganisation majeure:
+
+- **`DEPRECATED/`**: Contient l'ancien code qui était auparavant dans le dossier `app/`
+  - Ce code est conservé à des fins de référence mais ne doit pas être modifié
+
+- **`supabase/`**: Configuration et code côté serveur pour Supabase
+  - `functions/`: Edge Functions Supabase
+  - `migrations/`: Migrations de base de données
+
+- **`lib/`**: Bibliothèques et utilitaires partagés
+  - `api/`: Fonctions d'accès à l'API
+
+## ⚠️ Refonte en cours
+
+**ATTENTION**: Le frontend est en cours de refonte complète.
+
+- ✅ Le dossier `app/` a été déplacé vers `DEPRECATED/`
+- ✅ Le dossier `frontend/` a été supprimé
+- 🔄 Un nouveau frontend sera développé prochainement
+
+## Développement
+
+Pour lancer le projet en développement (après la reconstruction du frontend) :
+
+```bash
+pnpm dev
+```
+
+## Construction
+
+Pour construire le projet :
+
+```bash
+pnpm build
+```
+
+## Déploiement
+
+Pour déployer le projet :
+
+```bash
+pnpm start
+```
+
+## Notes importantes
+
+1. **Ne pas utiliser le dossier `app/`** - Ce dossier est déprécié
+2. **Ne pas modifier les fichiers dans `DEPRECATED/`** - Ces fichiers sont conservés uniquement pour référence
+3. **Attendre la nouvelle structure frontend** avant de commencer tout nouveau développement
 
 ## Stack
 - Frontend : Next.js + Supabase
@@ -16,13 +68,9 @@ Allokoli est une plateforme no-code permettant à des professionnels de créer u
 - ✅ **Phase 4** : Intégration des SDKs Vapi (client et serveur)
 - ✅ **Phase 5** : Développement des Supabase Edge Functions
 - ✅ **Phase 6.0** : Création des tables de base de données
-- 🔄 **Phase 6.1** : Intégration frontend (en cours)
+- 🔄 **Phase 6.1** : Refonte complète du frontend (en cours)
 - 🔄 **Phase 7** : Documentation complète (en cours)
 - 📅 **Phase 8-9** : Déploiement et lancement (à venir)
-
-## ⚠️ Note importante : Migration de structure
-
-Le dossier `/app` est désormais **déprécié**. Tous les nouveaux développements doivent être effectués dans le dossier `/frontend`. Le dossier `/app` est conservé temporairement pour des raisons de compatibilité, mais sera supprimé dans une version future.
 
 ## Documentation
 
@@ -42,9 +90,6 @@ Une documentation complète est disponible dans le dossier `/DOCS` :
 - [**Intégration API Vapi**](/DOCS/api_integration.md) - Pattern standardisé d'intégration
 - [**Assistants**](/DOCS/assistants.md) - Documentation spécifique sur les assistants vocaux
 
-### Contexte du projet
-- [**Contexte du projet**](/DOCS/context/project_context.md) - Objectifs, principes et technologies
-
 ### Diagrammes et visuels
 - [**Architecture globale**](/DOCS/assets/architecture.md) - Diagramme d'architecture du projet
 - [**Architecture des services API**](/DOCS/assets/api_service_architecture.md) - Diagramme des services API
@@ -61,7 +106,7 @@ L'architecture du projet suit une approche en couches :
 
 ```
 ┌────────────────┐
-│  UI (Next.js)  │
+│  UI (Next.js)  │ ← EN COURS DE REFONTE
 ├────────────────┤
 │ Frontend APIs  │ ← lib/api/*.ts
 ├────────────────┤
@@ -78,7 +123,7 @@ Cette architecture garantit la sécurité des clés API et permet une séparatio
 # Installation des dépendances
 pnpm install
 
-# Lancement du serveur de développement
+# Lancement du serveur de développement (après reconstruction du frontend)
 pnpm dev
 ```
 

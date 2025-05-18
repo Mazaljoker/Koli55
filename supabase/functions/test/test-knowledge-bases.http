@@ -1,0 +1,66 @@
+###
+# @name ListKnowledgeBases
+GET http://localhost:54321/functions/v1/knowledge-bases
+Authorization: Bearer {{supabase_token}}
+
+###
+# @name GetKnowledgeBaseById
+# @prompt id ID de la base de connaissances à récupérer
+GET http://localhost:54321/functions/v1/knowledge-bases/{{id}}
+Authorization: Bearer {{supabase_token}}
+
+###
+# @name CreateKnowledgeBase
+POST http://localhost:54321/functions/v1/knowledge-bases
+Content-Type: application/json
+Authorization: Bearer {{supabase_token}}
+
+{
+  "name": "Base de connaissances test",
+  "description": "Base de connaissances pour les tests"
+}
+
+###
+# @name UpdateKnowledgeBase
+# @prompt id ID de la base de connaissances à mettre à jour
+PATCH http://localhost:54321/functions/v1/knowledge-bases/{{id}}
+Content-Type: application/json
+Authorization: Bearer {{supabase_token}}
+
+{
+  "name": "Base de connaissances test modifiée",
+  "description": "Description mise à jour pour les tests"
+}
+
+###
+# @name DeleteKnowledgeBase
+# @prompt id ID de la base de connaissances à supprimer
+DELETE http://localhost:54321/functions/v1/knowledge-bases/{{id}}
+Authorization: Bearer {{supabase_token}}
+
+###
+# @name UploadFile
+# @prompt kb_id ID de la base de connaissances
+POST http://localhost:54321/functions/v1/knowledge-bases/{{kb_id}}/files
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer {{supabase_token}}
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.pdf"
+Content-Type: application/pdf
+
+< ./test-data/test.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+# @name ListFiles
+# @prompt kb_id ID de la base de connaissances
+GET http://localhost:54321/functions/v1/knowledge-bases/{{kb_id}}/files
+Authorization: Bearer {{supabase_token}}
+
+###
+# @name DeleteFile
+# @prompt kb_id ID de la base de connaissances
+# @prompt file_id ID du fichier à supprimer
+DELETE http://localhost:54321/functions/v1/knowledge-bases/{{kb_id}}/files/{{file_id}}
+Authorization: Bearer {{supabase_token}} 

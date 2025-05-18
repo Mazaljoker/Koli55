@@ -130,3 +130,35 @@ Les logs du serveur incluent des informations détaillées avec des préfixes st
 - `[MAPPING]` - Transformation des données
 - `[VAPI_SUCCESS]` - Appel API réussi
 - `[VAPI_ERROR]` - Erreur dans l'appel API
+
+## TODO Prioritaires
+
+Pour compléter l'implémentation des assistants, les tâches suivantes sont prioritaires :
+
+1. **Compléter le formulaire de création d'assistant**
+   - Ajouter toutes les options disponibles via Vapi
+   - Inclure la sélection de modèle LLM (GPT-4, Claude, etc.)
+   - Ajouter la sélection de voix et de langue
+   - Intégrer l'option de personnalisation des instructions/prompt système
+   - Permettre la liaison avec des bases de connaissances
+
+2. **Implémenter la page de détail des assistants**
+   - Afficher toutes les informations de l'assistant
+   - Permettre de visualiser les statistiques d'utilisation
+   - Ajouter un bouton pour tester l'assistant directement
+   - Inclure les logs d'appels récents
+   - Afficher les bases de connaissances associées
+
+3. **Ajouter l'interface de test d'assistant**
+   - Intégrer un composant de test vocal en direct
+   - Permettre l'envoi de messages textuels
+   - Afficher l'historique de la conversation
+   - Visualiser les étapes de raisonnement de l'assistant
+   - Fournir des boutons pour évaluer les réponses
+
+## Étapes d'implémentation recommandées
+
+1. Commencer par améliorer le formulaire de création d'assistant (`app/assistants/new/page.tsx`)
+2. Puis développer la page de détail (`app/assistants/[id]/page.tsx`)
+3. Ensuite créer l'interface de test dans un sous-composant
+4. Finaliser avec la page d'édition (`app/assistants/[id]/edit/page.tsx`)

@@ -265,4 +265,43 @@ Chaque Edge Function doit avoir une documentation complète en tête du fichier 
 - [Documentation Vapi](https://docs.vapi.ai/)
 - [Documentation Supabase Edge Functions](https://supabase.com/docs/guides/functions)
 - [Documentation Next.js](https://nextjs.org/docs)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/) 
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+
+## Priorités de développement actuelles
+
+Suite à l'analyse de l'état du projet, les priorités de développement sont les suivantes :
+
+### 1. Compléter les fonctionnalités essentielles
+
+#### Assistants
+- Compléter le formulaire de création d'assistant avec toutes les options Vapi
+- Implémenter la page de détail des assistants
+- Ajouter une interface pour tester les assistants directement dans l'application
+- Finaliser la page d'édition des assistants
+
+#### Bases de connaissances
+- Finaliser la création des bases de connaissances
+- Implémenter l'upload de fichiers dans les bases de connaissances
+- Permettre la liaison entre assistants et bases de connaissances
+
+### 2. Améliorations techniques
+
+- Mettre en place un environnement de staging
+- Compléter la suite de tests pour les fonctionnalités clés
+- Optimiser les requêtes aux Edge Functions
+- Améliorer la gestion des erreurs et l'expérience utilisateur
+
+### 3. Documentation
+
+- Créer des guides d'utilisation détaillés
+- Produire des diagrammes d'architecture et de flux
+- Documenter l'API complète
+
+## Comment contribuer aux priorités actuelles
+
+1. Référez-vous au fichier `DOCS/guides/todo.md` pour voir les tâches marquées comme prioritaires
+2. Consultez les documents spécifiques comme `DOCS/assistants.md` pour les détails d'implémentation
+3. Suivez les conventions de code et les bonnes pratiques décrites dans ce guide
+4. Effectuez des tests approfondis avant de soumettre votre code
+
+Avant de commencer à travailler sur une nouvelle fonctionnalité, assurez-vous qu'elle fait partie des priorités actuelles et qu'elle n'est pas déjà en cours de développement par un autre membre de l'équipe. 

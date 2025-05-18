@@ -2,6 +2,9 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// NOTE: Ce middleware s'applique maintenant à la nouvelle structure d'application
+// dans le dossier frontend/src/app au lieu de l'ancien dossier app/ qui est déprécié.
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const supabase = createMiddlewareClient({ req, res });

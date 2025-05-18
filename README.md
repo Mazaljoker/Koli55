@@ -16,13 +16,40 @@ Allokoli est une plateforme no-code permettant à des professionnels de créer u
 - ✅ **Phase 4** : Intégration des SDKs Vapi (client et serveur)
 - ✅ **Phase 5** : Développement des Supabase Edge Functions
 - ✅ **Phase 6.0** : Création des tables de base de données
-- 🔄 **Phase 6.1** : Intégration frontend (en cours)
+- ✅ **Phase 6.1** : Intégration frontend
+- ✅ **Phase 6.2** : Migration structurelle complète
 - 🔄 **Phase 7** : Documentation complète (en cours)
 - 📅 **Phase 8-9** : Déploiement et lancement (à venir)
 
-## ⚠️ Note importante : Migration de structure
+## Structure du projet
 
-Le dossier `/app` est désormais **déprécié**. Tous les nouveaux développements doivent être effectués dans le dossier `/frontend`. Le dossier `/app` est conservé temporairement pour des raisons de compatibilité, mais sera supprimé dans une version future.
+La structure du projet est organisée de la façon suivante :
+
+- `/frontend` : Application Next.js principale (App Router)
+- `/supabase` : Fonctions Edge et migrations Supabase
+- `/lib` : Bibliothèques partagées
+- `/DOCS` : Documentation complète du projet
+
+## Configuration des variables d'environnement
+
+Pour démarrer le projet, vous devez configurer les variables d'environnement nécessaires :
+
+1. Créez un fichier `.env.local` à la racine du projet en vous basant sur `.env.example`
+2. Configurez les variables Supabase et Vapi avec les valeurs appropriées :
+
+```
+# Frontend (publiques mais limitées)
+NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=votre-cle-anon-publique
+
+# Backend (privées)
+SUPABASE_URL=https://votre-projet.supabase.co
+SUPABASE_ANON_KEY=votre-cle-anon-publique
+SUPABASE_SERVICE_ROLE_KEY=votre-cle-service-role-secrete
+VAPI_API_KEY=votre-cle-api-vapi
+```
+
+⚠️ **IMPORTANT** : Ne jamais commiter les fichiers `.env.local` ou `.env` contenant des clés réelles.
 
 ## Documentation
 

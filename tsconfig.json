@@ -20,7 +20,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./frontend/*"],
+      "@lib/*": ["./frontend/lib/*"],
+      "@api/*": ["./frontend/lib/api/*"],
+      "@components/*": ["./frontend/components/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

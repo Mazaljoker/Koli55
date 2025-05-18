@@ -1,4 +1,39 @@
-import supabase, { USE_DEMO_DATA } from '../supabaseClient';
+import supabase from '../supabaseClient';
+
+// Fonction utilitaire pour logger les appels API
+const logApiCall = (action: string, endpoint: string, payload?: any, response?: any, error?: any) => {
+  // Si nous sommes côté client, enregistrer dans le localStorage
+  if (typeof window !== 'undefined') {
+    try {
+      const logs = JSON.parse(localStorage.getItem('koli55_api_logs') || '[]');
+      logs.unshift({
+        timestamp: new Date().toISOString(),
+        action,
+        endpoint,
+        payload: payload ? JSON.stringify(payload) : null,
+        response: response ? JSON.stringify(response) : null,
+        error: error ? (typeof error === 'object' ? JSON.stringify(error) : error.toString()) : null
+      });
+      
+      // Limiter à 50 entrées
+      if (logs.length > 50) {
+        logs.length = 50;
+      }
+      
+      localStorage.setItem('koli55_api_logs', JSON.stringify(logs));
+    } catch (err) {
+      console.error('Error logging API call to localStorage:', err);
+    }
+  }
+  
+  // Toujours logger dans la console pour débogage
+  console.group(`API Call: ${action} - ${endpoint}`);
+  console.log('Timestamp:', new Date().toISOString());
+  if (payload) console.log('Payload:', payload);
+  if (response) console.log('Response:', response);
+  if (error) console.error('Error:', error);
+  console.groupEnd();
+};
 
 // Types avancés pour model et voice
 
@@ -138,22 +173,90 @@ export interface AssistantsListApiResponse extends ApiResponse<AssistantData[]> 
  */
 export async function createAssistant(payload: CreateAssistantPayload): Promise<AssistantApiResponse> {
   try {
-    const { data, error } = await supabase.functions.invoke('assistants', {
+    logApiCall('CREATE', 'assistants', payload);
+    
+    // Ajouter un timeout pour la requête réelle
+    const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('Request timeout: Edge Function did not respond in time'));
+      }, 8000); // 8 secondes de timeout pour la création
+    });
+    
+    // Préparer la requête à la fonction Edge
+    const fetchPromise = supabase.functions.invoke('assistants', {
       method: 'POST',
       body: payload,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
     });
-
-    if (error) {
-      throw new Error(error.message || 'Failed to create assistant');
+    
+    logApiCall('FETCH', 'assistants', {method: 'POST', body: payload, headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache'
+    }});
+    
+    try {
+      // Race entre le timeout et la requête
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+      
+      if (error) {
+        console.warn('Edge Function error in createAssistant:', error);
+        logApiCall('ERROR', 'assistants', payload, null, error);
+        throw new Error(error.message || 'Failed to create assistant - Edge Function error');
+      }
+      
+      // Vérifier que la réponse est valide
+      if (!data) {
+        const noDataError = new Error('No data received from Edge Function');
+        logApiCall('ERROR', 'assistants', payload, null, noDataError);
+        throw noDataError;
+      }
+      
+      if (typeof data !== 'object' || !('success' in data)) {
+        console.error('Invalid response format:', data);
+        const invalidFormatError = new Error('Invalid response format from Edge Function');
+        logApiCall('ERROR', 'assistants', payload, data, invalidFormatError);
+        throw invalidFormatError;
+      }
+      
+      logApiCall('SUCCESS', 'assistants', payload, data);
+      return data as AssistantApiResponse;
+    } catch (innerError: any) {
+      // Capture les erreurs spécifiques à la requête
+      console.error('Network or timeout error:', innerError);
+      logApiCall('NETWORK_ERROR', 'assistants', payload, null, innerError);
+      
+      throw innerError;
     }
-
-    return data as AssistantApiResponse;
   } catch (error: any) {
     console.error('Error in createAssistant:', error);
-    return {
+    
+    // Message d'erreur détaillé pour faciliter le débogage
+    let errorMessage = 'Une erreur inattendue est survenue lors de la création de l\'assistant.';
+    
+    if (error.message) {
+      errorMessage = error.message;
+      
+      // Améliorer les messages d'erreur spécifiques
+      if (error.message.includes('non-2xx status code')) {
+        errorMessage = 'La fonction Edge a retourné une erreur. Vérifiez que les fonctions Edge sont correctement déployées et que VAPI_API_KEY est configurée.';
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Délai d\'attente dépassé lors de la connexion à la fonction Edge. Vérifiez votre connexion réseau et l\'état des services Supabase.';
+      } else if (error.message.includes('failed to fetch')) {
+        errorMessage = 'Impossible de contacter les services Supabase. Vérifiez votre connexion internet.';
+      }
+    }
+    
+    const errorResponse = {
       success: false,
-      message: error.message || 'An unexpected error occurred',
+      message: errorMessage,
+      vapi_error: error.vapi_error || undefined,
     };
+    
+    logApiCall('ERROR_RESPONSE', 'assistants', null, errorResponse, error);
+    return errorResponse;
   }
 }
 
@@ -190,31 +293,6 @@ export async function getAssistantById(id: string): Promise<AssistantApiResponse
     return data as AssistantApiResponse;
   } catch (error: any) {
     console.error(`Error in getAssistantById(${id}):`, error);
-    
-    // Si on est en mode développement et que l'ID est un ID démo connu, renvoyer des données de test
-    if (USE_DEMO_DATA && (id.startsWith('demo-') || error.message?.includes('Edge Function'))) {
-      console.log(`Using mock data for assistant ID ${id} in development mode`);
-      
-      // Créer un assistant mock en fonction de l'ID
-      const mockAssistant: AssistantData = {
-        id,
-        name: id === 'demo-1' ? 'Assistant Commercial' : 
-              id === 'demo-2' ? 'Support Technique' : 
-              id === 'demo-3' ? 'Service Client' : `Assistant ${id}`,
-        model: id === 'demo-1' ? 'gpt-4o' : 
-               id === 'demo-2' ? 'claude-3-opus-20240229' : 'gpt-3.5-turbo',
-        language: 'fr-FR',
-        forwarding_phone_number: id === 'demo-1' ? '+33755558899' : undefined,
-        created_at: new Date().toISOString(),
-        updated_at: id !== 'demo-3' ? new Date().toISOString() : undefined,
-      };
-      
-      return {
-        success: true,
-        message: 'Mock data returned due to Edge Function failure',
-        data: mockAssistant,
-      };
-    }
     
     return {
       success: false,
@@ -272,44 +350,6 @@ export async function listAssistants(params?: ListAssistantsParams): Promise<Ass
   } catch (error: any) {
     console.error('Error in listAssistants:', error);
     
-    // Si on est en mode développement, renvoyer des données de test
-    if (USE_DEMO_DATA) {
-      console.log('Using mock data for assistants in development mode');
-      
-      const mockAssistants: AssistantData[] = [
-        {
-          id: "demo-1",
-          name: "Assistant Commercial",
-          model: "gpt-4o",
-          language: "fr-FR",
-          forwarding_phone_number: "+33755558899",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: "demo-2",
-          name: "Support Technique",
-          model: "claude-3-opus-20240229", 
-          language: "fr-FR",
-          created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-          updated_at: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          id: "demo-3",
-          name: "Service Client",
-          language: "fr-FR",
-          created_at: new Date(Date.now() - 86400000 * 10).toISOString(),
-        }
-      ];
-      
-      return {
-        success: true,
-        message: 'Mock data returned due to Edge Function failure',
-        data: mockAssistants,
-      };
-    }
-    
-    // En production, renvoyer une réponse d'erreur
     return {
       success: false,
       message: error.message?.includes('Edge Function') 
@@ -367,6 +407,70 @@ export async function deleteAssistant(id: string): Promise<ApiResponse<null>> {
   }
 }
 
+/**
+ * Test de connectivité avec les fonctions Edge
+ * Utile pour diagnostiquer les problèmes de connexion aux fonctions Edge
+ */
+export async function testEdgeFunctionConnectivity(): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('Testing Edge Function connectivity...');
+    
+    // Définir un timeout court pour le test
+    const timeoutPromise = new Promise<{ data: null, error: Error }>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('Request timeout during connectivity test'));
+      }, 5000); // 5 secondes pour le test
+    });
+    
+    // Essayer d'appeler une fonction Edge simple avec un court timeout
+    const fetchPromise = supabase.functions.invoke('test', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+    });
+    
+    try {
+      // Race entre le timeout et la requête
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+      
+      if (error) {
+        console.error('Edge Function connectivity test failed:', error.message);
+        return { 
+          success: false, 
+          error: `Failed to send a request to the Edge Function: ${error.message}`
+        };
+      }
+      
+      // Vérifier que la réponse est valide
+      if (!data || !data.success) {
+        console.error('Invalid response from Edge Function test:', data);
+        return {
+          success: false,
+          error: 'Invalid response from Edge Function test'
+        };
+      }
+      
+      // Test réussi
+      console.log('Edge Function connectivity test successful');
+      return { success: true };
+    } catch (timeoutError: any) {
+      console.error('Edge Function connectivity test failed:', timeoutError.message);
+      return {
+        success: false,
+        error: 'Failed to send a request to the Edge Function'
+      };
+    }
+  } catch (error: any) {
+    console.error('Error during connectivity test:', error);
+    return { 
+      success: false, 
+      error: 'Failed to send a request to the Edge Function'
+    };
+  }
+}
+
 // Regrouper toutes les fonctions dans un objet exporté pour faciliter l'usage
 export const assistantsService = {
   create: createAssistant,
@@ -374,6 +478,7 @@ export const assistantsService = {
   list: listAssistants,
   update: updateAssistant,
   delete: deleteAssistant,
+  testConnectivity: testEdgeFunctionConnectivity
 };
 
 export default assistantsService; 

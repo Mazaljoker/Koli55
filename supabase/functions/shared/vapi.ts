@@ -13,7 +13,9 @@ const DenoEnv = {
 
 // Configuration de base pour l'API Vapi
 const VAPI_API_BASE = 'https://api.vapi.ai';
-const VAPI_API_VERSION = 'v1';
+// Mise à jour : L'API Vapi utilise directement les ressources sans préfixe "v1"
+// selon la documentation: https://docs.vapi.ai/api-reference/assistants/create
+// Ancien préfixe: const VAPI_API_VERSION = 'v1'; (désormais déprécié)
 
 // Types pour les webhooks et la pagination générique
 export interface Webhook {
@@ -43,6 +45,7 @@ export interface WebhookUpdateParams {
 export interface PaginationParams {
   limit?: number;
   offset?: number;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface PaginatedResponse<T> {
@@ -297,12 +300,20 @@ export interface VapiAssistant {
     temperature?: number;
     topP?: number;
     maxTokens?: number;
+    messages?: Array<{
+      role: string;
+      content: string;
+    }>;
   };
   voice?: {
     provider: string; // 'elevenlabs', 'deepgram', 'openai', etc.
     voiceId: string; // ID spécifique au provider
   };
   firstMessage?: string;
+  voicemailMessage?: string;
+  endCallMessage?: string;
+  endCallFunctionEnabled?: boolean;
+  recordingEnabled?: boolean;
   tools?: {
     functions?: string[]; // IDs des fonctions
     knowledgeBases?: string[]; // IDs des bases de connaissances
@@ -318,6 +329,10 @@ export interface VapiAssistant {
   maxDurationSeconds?: number;
   endCallAfterSilence?: boolean;
   voiceReflection?: boolean;
+  transcriber?: {
+    provider: string;
+    keywords?: string[];
+  };
   created_at: string;
   updated_at: string;
 }
@@ -331,25 +346,173 @@ export interface AssistantCreateParams {
     temperature?: number;
     topP?: number;
     maxTokens?: number;
+    messages?: Array<{
+      role: string;
+      content: string;
+    }>;
+    tools?: any[];
+    emotionRecognitionEnabled?: boolean;
+    knowledgeBaseId?: string;
+    knowledgeBase?: {
+      server?: {
+        url?: string;
+        timeoutSeconds?: number;
+        backoffPlan?: {
+          maxRetries?: number;
+          type?: Record<string, any>;
+          baseDelaySeconds?: number;
+        };
+      };
+    };
+    numFastTurns?: number;
   };
   voice?: {
     provider: string;
     voiceId: string;
+    speed?: number;
+    cachingEnabled?: boolean;
+    chunkPlan?: {
+      enabled?: boolean;
+      minCharacters?: number;
+      punctuationBoundaries?: string[];
+      formatPlan?: {
+        enabled?: boolean;
+        numberToDigitsCutoff?: number;
+      };
+    };
+    fallbackPlan?: {
+      voices?: Array<{
+        provider: string;
+        voiceId: string;
+        cachingEnabled?: boolean;
+      }>;
+    };
   };
   firstMessage?: string;
+  firstMessageInterruptionsEnabled?: boolean;
+  firstMessageMode?: 'assistant-speaks-first' | 'assistant-speaks-first-with-model-generated-message' | 'assistant-waits-for-user';
+  voicemailMessage?: string;
+  endCallMessage?: string;
+  endCallFunctionEnabled?: boolean;
+  recordingEnabled?: boolean;
+  silenceTimeoutSeconds?: number;
+  maxDurationSeconds?: number;
+  backgroundSound?: string | 'off' | 'office';
+  backgroundDenoisingEnabled?: boolean;
+  modelOutputInMessagesEnabled?: boolean;
+  endCallPhrases?: string[];
   tools?: {
     functions?: string[];
     knowledgeBases?: string[];
     workflows?: string[];
   };
+  clientMessages?: string[];
+  serverMessages?: string[];
+  transportConfigurations?: Array<{
+    provider: string;
+    config: Record<string, any>;
+    phoneNumbersFilter?: string[];
+    countriesFilter?: string[];
+  }>;
+  observabilityPlan?: {
+    langfuseEnabled?: boolean;
+    langfuseConfig?: {
+      publicKey?: string;
+      privateKey?: string;
+      host?: string;
+    };
+  };
+  hooks?: Array<{
+    event: string;
+    action: Record<string, any>;
+    condition?: Record<string, any>;
+  }>;
+  compliancePlan?: {
+    piiRedactionEnabled?: boolean;
+  };
+  metadata?: Record<string, any>;
+  analysisPlan?: {
+    sentimentEnabled?: boolean;
+    topicsEnabled?: boolean;
+    entitiesEnabled?: boolean;
+    summaryEnabled?: boolean;
+  };
+  artifactPlan?: {
+    recordingEnabled?: boolean;
+    transcriptEnabled?: boolean;
+    callReportEnabled?: boolean;
+    sentimentEnabled?: boolean;
+    topicsEnabled?: boolean;
+    entitiesEnabled?: boolean;
+    summaryEnabled?: boolean;
+  };
+  messagePlan?: {
+    idleMessages?: string[];
+    idleMessageIntervalSeconds?: number;
+  };
+  startSpeakingPlan?: {
+    confidenceThreshold?: number;
+    delayMs?: number;
+    stopTracking?: {
+      durationMs?: number;
+      confidenceThreshold?: number;
+    };
+    preferContentCompletion?: boolean;
+  };
+  stopSpeakingPlan?: {
+    confidenceThreshold?: number;
+    delayMs?: number;
+    waitForPauseInInterruption?: boolean;
+    allowedInterruptions?: string[];
+    blacklistInterruptions?: string[];
+  };
+  monitorPlan?: {
+    listenEnabled?: boolean;
+    controlEnabled?: boolean;
+  };
+  server?: {
+    url?: string;
+    urlSecret?: string;
+    webhookTimeoutMs?: number;
+    webhookRetries?: number;
+    baseDelayMs?: number;
+  };
+  keypadInputPlan?: {
+    enabled?: boolean;
+    timeoutSeconds?: number;
+    endKeys?: string[];
+  };
+  transcriber?: {
+    provider: string;
+    confidenceThreshold?: number;
+    disablePartialTranscripts?: boolean;
+    endUtteranceSilenceThreshold?: number;
+    fallbackPlan?: {
+      transcribers?: Array<{
+        provider: string;
+        confidenceThreshold?: number;
+      }>;
+    };
+    language?: string;
+    realtimeUrl?: string;
+    wordBoost?: string[];
+  };
+  voicemailDetection?: {
+    provider?: string;
+    backoffPlan?: {
+      startAtSeconds?: number;
+      type?: Record<string, any>;
+      baseDelaySeconds?: number;
+    };
+    noiseThreshold?: number;
+  };
+  credentials?: Array<Record<string, any>>;
+  credentialIds?: string[];
   forwardingPhoneNumber?: string;
   recordingSettings?: {
     createRecording: boolean;
     saveRecording: boolean;
   };
-  metadata?: Record<string, any>;
-  silenceTimeoutSeconds?: number;
-  maxDurationSeconds?: number;
   endCallAfterSilence?: boolean;
   voiceReflection?: boolean;
 }
@@ -363,12 +526,61 @@ export interface AssistantUpdateParams {
     temperature?: number;
     topP?: number;
     maxTokens?: number;
+    messages?: Array<{
+      role: string;
+      content: string;
+    }>;
+    tools?: any[];
+    emotionRecognitionEnabled?: boolean;
+    knowledgeBaseId?: string;
+    knowledgeBase?: {
+      server?: {
+        url?: string;
+        timeoutSeconds?: number;
+        backoffPlan?: {
+          maxRetries?: number;
+          type?: Record<string, any>;
+          baseDelaySeconds?: number;
+        };
+      };
+    };
+    numFastTurns?: number;
   };
   voice?: {
     provider?: string;
     voiceId?: string;
+    speed?: number;
+    cachingEnabled?: boolean;
+    chunkPlan?: {
+      enabled?: boolean;
+      minCharacters?: number;
+      punctuationBoundaries?: string[];
+      formatPlan?: {
+        enabled?: boolean;
+        numberToDigitsCutoff?: number;
+      };
+    };
+    fallbackPlan?: {
+      voices?: Array<{
+        provider: string;
+        voiceId: string;
+        cachingEnabled?: boolean;
+      }>;
+    };
   };
   firstMessage?: string;
+  firstMessageInterruptionsEnabled?: boolean;
+  firstMessageMode?: 'assistant-speaks-first' | 'assistant-speaks-first-with-model-generated-message' | 'assistant-waits-for-user';
+  voicemailMessage?: string;
+  endCallMessage?: string;
+  endCallFunctionEnabled?: boolean;
+  recordingEnabled?: boolean;
+  silenceTimeoutSeconds?: number;
+  maxDurationSeconds?: number;
+  backgroundSound?: string | 'off' | 'office';
+  backgroundDenoisingEnabled?: boolean;
+  modelOutputInMessagesEnabled?: boolean;
+  endCallPhrases?: string[];
   tools?: {
     functions?: string[];
     knowledgeBases?: string[];
@@ -379,11 +591,110 @@ export interface AssistantUpdateParams {
     createRecording?: boolean;
     saveRecording?: boolean;
   };
+  clientMessages?: string[];
+  serverMessages?: string[];
+  transportConfigurations?: Array<{
+    provider: string;
+    config: Record<string, any>;
+    phoneNumbersFilter?: string[];
+    countriesFilter?: string[];
+  }>;
+  observabilityPlan?: {
+    langfuseEnabled?: boolean;
+    langfuseConfig?: {
+      publicKey?: string;
+      privateKey?: string;
+      host?: string;
+    };
+  };
+  hooks?: Array<{
+    event: string;
+    action: Record<string, any>;
+    condition?: Record<string, any>;
+  }>;
+  compliancePlan?: {
+    piiRedactionEnabled?: boolean;
+  };
   metadata?: Record<string, any>;
-  silenceTimeoutSeconds?: number;
-  maxDurationSeconds?: number;
   endCallAfterSilence?: boolean;
   voiceReflection?: boolean;
+  analysisPlan?: {
+    sentimentEnabled?: boolean;
+    topicsEnabled?: boolean;
+    entitiesEnabled?: boolean;
+    summaryEnabled?: boolean;
+  };
+  artifactPlan?: {
+    recordingEnabled?: boolean;
+    transcriptEnabled?: boolean;
+    callReportEnabled?: boolean;
+    sentimentEnabled?: boolean;
+    topicsEnabled?: boolean;
+    entitiesEnabled?: boolean;
+    summaryEnabled?: boolean;
+  };
+  messagePlan?: {
+    idleMessages?: string[];
+    idleMessageIntervalSeconds?: number;
+  };
+  startSpeakingPlan?: {
+    confidenceThreshold?: number;
+    delayMs?: number;
+    stopTracking?: {
+      durationMs?: number;
+      confidenceThreshold?: number;
+    };
+    preferContentCompletion?: boolean;
+  };
+  stopSpeakingPlan?: {
+    confidenceThreshold?: number;
+    delayMs?: number;
+    waitForPauseInInterruption?: boolean;
+    allowedInterruptions?: string[];
+    blacklistInterruptions?: string[];
+  };
+  monitorPlan?: {
+    listenEnabled?: boolean;
+    controlEnabled?: boolean;
+  };
+  server?: {
+    url?: string;
+    urlSecret?: string;
+    webhookTimeoutMs?: number;
+    webhookRetries?: number;
+    baseDelayMs?: number;
+  };
+  keypadInputPlan?: {
+    enabled?: boolean;
+    timeoutSeconds?: number;
+    endKeys?: string[];
+  };
+  transcriber?: {
+    provider: string;
+    confidenceThreshold?: number;
+    disablePartialTranscripts?: boolean;
+    endUtteranceSilenceThreshold?: number;
+    fallbackPlan?: {
+      transcribers?: Array<{
+        provider: string;
+        confidenceThreshold?: number;
+      }>;
+    };
+    language?: string;
+    realtimeUrl?: string;
+    wordBoost?: string[];
+  };
+  voicemailDetection?: {
+    provider?: string;
+    backoffPlan?: {
+      startAtSeconds?: number;
+      type?: Record<string, any>;
+      baseDelaySeconds?: number;
+    };
+    noiseThreshold?: number;
+  };
+  credentials?: Array<Record<string, any>>;
+  credentialIds?: string[];
 }
 
 // Types pour les Knowledge Bases Vapi
@@ -546,59 +857,84 @@ export interface PhoneNumberUpdateParams {
 }
 
 /**
- * Fonction utilitaire pour les appels à l'API Vapi
+ * Fonction généralisée pour appeler l'API Vapi
  */
 export async function callVapiAPI<T = any>(
   endpoint: string,
-  method: string = 'GET',
+  method: string = 'GET', 
   data?: any,
-  params?: Record<string, string | number | boolean | undefined> // Etendu pour accepter boolean et undefined
+  params?: Record<string, string | number | boolean | undefined>
 ): Promise<T> {
-  const apiKey = DenoEnv.get('VAPI_API_KEY');
+  const apiKey = DenoEnv.get('VAPI_API_KEY') || '';
   if (!apiKey) {
-    throw new Error('Clé API Vapi manquante. Veuillez la définir dans les secrets Supabase : VAPI_API_KEY');
+    throw new Error('VAPI_API_KEY is not set in environment variables');
   }
 
-  const url = new URL(`${VAPI_API_BASE}/${VAPI_API_VERSION}/${endpoint}`);
+  // Construire l'URL avec les paramètres
+  let url = `${VAPI_API_BASE}${endpoint}`;
   
-  if (params) {
+  // Ajouter des paramètres de requête si nécessaire
+  if (params && Object.keys(params).length > 0) {
+    const queryParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) { // S'assurer que les paramètres undefined ne sont pas ajoutés
-        url.searchParams.append(key, String(value));
+      if (value !== undefined) {
+        queryParams.append(key, String(value));
       }
     });
+    url += `?${queryParams.toString()}`;
   }
 
-  const requestInit: RequestInit = {
+  console.log(`[VAPI_REQUEST] ${method} ${url}`);
+
+  const options: RequestInit = {
     method,
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-    },
+    }
   };
 
-  if (data && ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase())) {
-    requestInit.body = JSON.stringify(data);
+  if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options.body = JSON.stringify(data);
+    // console.log(`[VAPI_REQUEST_BODY] ${JSON.stringify(data)}`);
   }
 
-  const response = await fetch(url.toString(), requestInit);
-  
-  if (!response.ok) {
-    let errorData = { message: response.statusText };
-    try {
-      errorData = await response.json();
-    } catch (e) {
-      // Ignorer l'erreur si le corps n'est pas JSON
+  try {
+    const response = await fetch(url, options);
+    const responseText = await response.text();
+    
+    if (!response.ok) {
+      let errorData: any = { 
+        message: `API request failed with status ${response.status}`, 
+        raw_error: responseText 
+      };
+      
+      try {
+        errorData = JSON.parse(responseText);
+      } catch (parseError) {
+        // Keep the initial error if parsing fails
+        console.warn('[VAPI_ERROR_PARSE] Failed to parse error response as JSON');
+      }
+      
+      console.error(`[VAPI_ERROR] ${method} ${url} failed with status ${response.status}:`, errorData);
+      throw new Error(`Erreur API Vapi (${endpoint.replace('/', '')}): ${response.status} - ${errorData.message || errorData.raw_error || 'Unknown error'}`);
     }
-    throw new Error(`Erreur API Vapi (${endpoint}): ${response.status} - ${errorData.message || response.statusText}`);
-  }
 
-  if (response.status === 204) { // No Content
+    if (responseText) {
+      try {
+        return JSON.parse(responseText);
+      } catch (e: any) {
+        console.error(`[VAPI_ERROR] Failed to parse JSON response: ${e.message}`);
+        throw new Error(`Invalid JSON response from Vapi: ${responseText.substring(0, 100)}`);
+      }
+    }
+    
     return {} as T;
+  } catch (error: any) {
+    console.error(`[VAPI_REQUEST_FAILED] ${method} ${url}: ${error.message}`);
+    throw error;
   }
-
-  return response.json();
 }
 
 /**
@@ -656,12 +992,15 @@ export const vapiFiles = {
   },
 
   upload: async (data: FileUploadParams): Promise<VapiFile> => {
-    // Pour l'upload de fichiers, Vapi s'attend à du multipart/form-data.
-    // Notre callVapiAPI actuel envoie du application/json.
-    // Cela nécessitera une adaptation de callVapiAPI ou une fonction fetch dédiée.
-    // Pour l'instant, nous allons simuler l'appel, mais cela échouera probablement.
-    console.warn("L'upload de fichiers via callVapiAPI n'est pas encore complètement implémenté pour multipart/form-data.");
+    // Appel direct avec fetch pour gérer FormData
+    // Récupérer la clé API depuis les variables d'environnement
+    const apiKey = DenoEnv.get('VAPI_API_KEY');
     
+    if (!apiKey) {
+      console.error('[API_ERROR] VAPI_API_KEY is missing from environment variables');
+      throw new Error('Clé API Vapi manquante.');
+    }
+
     const formData = new FormData();
     formData.append('file', new Blob([data.file]), data.filename);
     formData.append('purpose', data.purpose);
@@ -669,12 +1008,7 @@ export const vapiFiles = {
       formData.append('metadata', JSON.stringify(data.metadata));
     }
 
-    // Appel direct avec fetch pour gérer FormData
-    const apiKey = DenoEnv.get('VAPI_API_KEY');
-    if (!apiKey) {
-      throw new Error('Clé API Vapi manquante.');
-    }
-    const url = new URL(`${VAPI_API_BASE}/${VAPI_API_VERSION}/files`);
+    const url = new URL(`${VAPI_API_BASE}/files`);
     const response = await fetch(url.toString(), {
       method: 'POST',
       headers: {
@@ -689,6 +1023,7 @@ export const vapiFiles = {
       try {
         errorData = await response.json();
       } catch (e) { /* ignorer */ }
+      console.error(`[VAPI_ERROR] POST ${url.toString()} failed with status ${response.status}: ${JSON.stringify(errorData)}`);
       throw new Error(`Erreur API Vapi (files upload): ${response.status} - ${errorData.message || response.statusText}`);
     }
     return response.json();
@@ -874,24 +1209,45 @@ export const vapiTestSuiteTests = {
  * Fonctions spécifiques pour les Assistants Vapi
  */
 export const vapiAssistants = {
-  list: async (params?: PaginationParams): Promise<PaginatedResponse<VapiAssistant>> => {
-    return callVapiAPI<PaginatedResponse<VapiAssistant>>('assistants', 'GET', undefined, params as Record<string, string | number | boolean | undefined>);
+  // Créer un assistant - URL correcte: /assistant (pas /v1/assistants)
+  create: async (data: AssistantCreateParams, apiKey?: string): Promise<VapiAssistant> => {
+    if (apiKey) {
+      // Si une clé API est fournie, l'utiliser directement
+      return callVapiAPIWithKey('/assistant', apiKey, 'POST', data);
+    }
+    return callVapiAPI<VapiAssistant>('/assistant', 'POST', data);
   },
-
-  retrieve: async (id: string): Promise<VapiAssistant> => {
-    return callVapiAPI<VapiAssistant>(`assistants/${id}`);
+  
+  // Récupérer un assistant
+  get: async (assistantId: string, apiKey?: string): Promise<VapiAssistant> => {
+    if (apiKey) {
+      return callVapiAPIWithKey(`/assistant/${assistantId}`, apiKey, 'GET');
+    }
+    return callVapiAPI<VapiAssistant>(`/assistant/${assistantId}`, 'GET');
   },
-
-  create: async (data: AssistantCreateParams): Promise<VapiAssistant> => {
-    return callVapiAPI<VapiAssistant>('assistants', 'POST', data);
+  
+  // Mettre à jour un assistant
+  update: async (assistantId: string, data: AssistantUpdateParams, apiKey?: string): Promise<VapiAssistant> => {
+    if (apiKey) {
+      return callVapiAPIWithKey(`/assistant/${assistantId}`, apiKey, 'PATCH', data);
+    }
+    return callVapiAPI<VapiAssistant>(`/assistant/${assistantId}`, 'PATCH', data);
   },
-
-  update: async (id: string, data: AssistantUpdateParams): Promise<VapiAssistant> => {
-    return callVapiAPI<VapiAssistant>(`assistants/${id}`, 'PATCH', data);
+  
+  // Supprimer un assistant
+  delete: async (assistantId: string, apiKey?: string): Promise<void> => {
+    if (apiKey) {
+      return callVapiAPIWithKey(`/assistant/${assistantId}`, apiKey, 'DELETE');
+    }
+    return callVapiAPI<void>(`/assistant/${assistantId}`, 'DELETE');
   },
-
-  delete: async (id: string): Promise<void> => {
-    await callVapiAPI<Record<string, never>>(`assistants/${id}`, 'DELETE');
+  
+  // Lister les assistants - URL correcte: /assistants (sans préfixe v1)
+  list: async (params?: PaginationParams, apiKey?: string): Promise<{ assistants: VapiAssistant[] }> => {
+    if (apiKey) {
+      return callVapiAPIWithKey('/assistants', apiKey, 'GET', undefined, params);
+    }
+    return callVapiAPI<{ assistants: VapiAssistant[] }>('/assistants', 'GET', undefined, params);
   }
 };
 
@@ -963,4 +1319,300 @@ export const vapiPhoneNumbers = {
   provision: async (data: PhoneNumberProvisionParams): Promise<VapiPhoneNumber> => {
     return callVapiAPI<VapiPhoneNumber>('phone-numbers/provision', 'POST', data);
   }
-}; 
+};
+
+/**
+ * Convertit les données de l'assistant du format DB/frontend au format attendu par l'API Vapi
+ * 
+ * @param assistantData - Données de l'assistant depuis la DB ou la requête frontend
+ * 
+ * Cette fonction a été mise à jour pour prendre en charge les nouvelles fonctionnalités de l'API Vapi,
+ * incluant les plans avancés comme analysisPlan, messagePlan, etc. 
+ * Les champs legacy (endCallAfterSilence, voiceReflection) sont conservés pour la compatibilité.
+ */
+export function mapToVapiAssistantFormat(assistantData: any): AssistantCreateParams | AssistantUpdateParams {
+  console.log(`[MAPPING] mapToVapiAssistantFormat - Input: ${JSON.stringify(assistantData, null, 2)}`);
+  
+  const payload: AssistantCreateParams | AssistantUpdateParams = {
+    name: assistantData.name
+  };
+  
+  // === Configuration du modèle et du système prompt ===
+  if (assistantData.model !== undefined || assistantData.system_prompt || assistantData.instructions) {
+    let modelConfig: any = {};
+    
+    // Si model est un objet, l'utiliser comme base
+    if (typeof assistantData.model === 'object' && assistantData.model !== null) {
+      modelConfig = { ...assistantData.model };
+    } 
+    // Si model est une chaîne, la considérer comme le nom du modèle
+    else if (typeof assistantData.model === 'string') {
+      // Inférer le provider basé sur le préfixe du modèle
+      let provider = 'openai'; // par défaut
+      if (assistantData.model.startsWith('claude')) {
+        provider = 'anthropic';
+      } else if (assistantData.model.startsWith('command')) {
+        provider = 'cohere';
+      } else if (assistantData.model.startsWith('gemini')) {
+        provider = 'google';
+      }
+      
+      modelConfig = {
+        provider: provider,
+        model: assistantData.model
+      };
+    } 
+    // Fallback avec valeurs par défaut
+    else {
+      modelConfig = {
+        provider: 'openai',
+        model: 'gpt-4o'
+      };
+    }
+    
+    // Récupérer le systemprompt de l'une des propriétés disponibles
+    const systemPrompt = assistantData.system_prompt || assistantData.instructions || "";
+    
+    // Créer le format 'messages' attendu par Vapi
+    modelConfig.messages = [
+      {
+        role: "system",
+        content: systemPrompt
+      }
+    ];
+    
+    // Ajouter configuration des outils si disponible
+    if (assistantData.tools_config) {
+      modelConfig.tools = assistantData.tools_config;
+    }
+    
+    payload.model = modelConfig;
+  }
+  
+  // === Configuration de la voix ===
+  if (assistantData.voice) {
+    let voiceConfig: any = {};
+    
+    if (typeof assistantData.voice === 'object' && assistantData.voice !== null) {
+      // L'objet est déjà potentiellement au bon format
+      voiceConfig = { ...assistantData.voice };
+      
+      // Correction des noms de provider
+      if (voiceConfig.provider === 'elevenlabs') {
+        voiceConfig.provider = '11labs';
+      } else if (voiceConfig.provider === 'playht') {
+        voiceConfig.provider = 'play.ht';
+      }
+    } 
+    else if (typeof assistantData.voice === 'string') {
+      // Format: "provider-voiceId" (ex: "elevenlabs-rachel")
+      const parts = assistantData.voice.split('-');
+      if (parts.length >= 2) {
+        let provider = parts[0];
+        // Correction du nom du provider
+        if (provider === 'elevenlabs') {
+          provider = '11labs';
+        } else if (provider === 'playht') {
+          provider = 'play.ht';
+        }
+        
+        voiceConfig = {
+          provider: provider,
+          voiceId: parts.slice(1).join('-') // Rejoindre au cas où le voiceId contient des tirets
+        };
+      } else {
+        // Fallback: On utilise azure par défaut qui est plus fiable
+        voiceConfig = {
+          provider: 'azure',
+          voiceId: 'en-US-JennyNeural'
+        };
+      }
+    }
+    
+    payload.voice = voiceConfig;
+  }
+  
+  // === Configuration des messages et options d'appel ===
+  
+  // Premier message
+  if (assistantData.first_message || assistantData.firstMessage) {
+    payload.firstMessage = assistantData.first_message || assistantData.firstMessage;
+  }
+  
+  // Gestion du mode du premier message
+  if (assistantData.first_message_mode || assistantData.firstMessageMode) {
+    payload.firstMessageMode = assistantData.first_message_mode || assistantData.firstMessageMode;
+  }
+  
+  // Interruptions du premier message
+  if (assistantData.first_message_interruptions_enabled !== undefined || assistantData.firstMessageInterruptionsEnabled !== undefined) {
+    payload.firstMessageInterruptionsEnabled = 
+      !!assistantData.first_message_interruptions_enabled || 
+      !!assistantData.firstMessageInterruptionsEnabled;
+  }
+  
+  // Message vocal
+  if (assistantData.voicemail_message) {
+    payload.voicemailMessage = assistantData.voicemail_message;
+  }
+  
+  // Message de fin d'appel
+  if (assistantData.end_call_message) {
+    payload.endCallMessage = assistantData.end_call_message;
+  }
+  
+  // Activation de la fonction de fin d'appel
+  if (assistantData.end_call_function_enabled !== undefined) {
+    payload.endCallFunctionEnabled = !!assistantData.end_call_function_enabled;
+  }
+  
+  // Activation de l'enregistrement
+  if (assistantData.recording_settings) {
+    payload.recordingEnabled = 
+      typeof assistantData.recording_settings === 'object' && 
+      assistantData.recording_settings !== null ? 
+      !!assistantData.recording_settings.createRecording : false;
+  } else if (assistantData.recording_enabled !== undefined) {
+    payload.recordingEnabled = !!assistantData.recording_enabled;
+  }
+  
+  // === Configuration du numéro de transfert ===
+  if (assistantData.forwarding_phone_number) {
+    payload.forwardingPhoneNumber = assistantData.forwarding_phone_number;
+  }
+  
+  // === Paramètres avancés d'appel ===
+  if (assistantData.silence_timeout_seconds !== undefined) {
+    payload.silenceTimeoutSeconds = assistantData.silence_timeout_seconds;
+  }
+  
+  if (assistantData.max_duration_seconds !== undefined) {
+    payload.maxDurationSeconds = assistantData.max_duration_seconds;
+  }
+  
+  if (assistantData.end_call_after_silence !== undefined) {
+    payload.endCallAfterSilence = !!assistantData.end_call_after_silence;
+  }
+  
+  if (assistantData.voice_reflection !== undefined) {
+    payload.voiceReflection = !!assistantData.voice_reflection;
+  }
+  
+  // === Métadonnées ===
+  if (assistantData.metadata) {
+    payload.metadata = assistantData.metadata;
+  }
+  
+  // === Transcripteur (optionnel) ===
+  if (assistantData.transcriber) {
+    payload.transcriber = assistantData.transcriber;
+  }
+  
+  // === Plans avancés (optionnels) ===
+  // analysisPlan
+  if (assistantData.analysis_plan) {
+    payload.analysisPlan = assistantData.analysis_plan;
+  }
+  
+  // artifactPlan
+  if (assistantData.artifact_plan) {
+    payload.artifactPlan = assistantData.artifact_plan;
+  }
+  
+  // messagePlan
+  if (assistantData.message_plan) {
+    payload.messagePlan = assistantData.message_plan;
+  }
+  
+  // startSpeakingPlan
+  if (assistantData.start_speaking_plan) {
+    payload.startSpeakingPlan = assistantData.start_speaking_plan;
+  }
+  
+  // stopSpeakingPlan
+  if (assistantData.stop_speaking_plan) {
+    payload.stopSpeakingPlan = assistantData.stop_speaking_plan;
+  }
+  
+  // monitorPlan
+  if (assistantData.monitor_plan) {
+    payload.monitorPlan = assistantData.monitor_plan;
+  }
+  
+  console.log(`[MAPPING] mapToVapiAssistantFormat - Output: ${JSON.stringify(payload, null, 2)}`);
+  return payload;
+}
+
+// Utilitaire pour appeler l'API avec une clé spécifiée
+async function callVapiAPIWithKey<T = any>(
+  endpoint: string, 
+  apiKey: string, 
+  method: string = 'GET', 
+  data?: any,
+  params?: Record<string, string | number | boolean | undefined>
+): Promise<T> {
+  // Construire l'URL avec les paramètres
+  let url = `${VAPI_API_BASE}${endpoint}`;
+  
+  // Ajouter des paramètres de requête si nécessaire
+  if (params && Object.keys(params).length > 0) {
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        queryParams.append(key, String(value));
+      }
+    });
+    url += `?${queryParams.toString()}`;
+  }
+
+  console.log(`[VAPI_REQUEST] ${method} ${url}`);
+
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    }
+  };
+
+  if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options.body = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(url, options);
+    const responseText = await response.text();
+    
+    if (!response.ok) {
+      let errorData: any = { 
+        message: `API request failed with status ${response.status}`, 
+        raw_error: responseText 
+      };
+      
+      try {
+        errorData = JSON.parse(responseText);
+      } catch (parseError) {
+        // Keep the initial error if parsing fails
+        console.warn('[VAPI_ERROR_PARSE] Failed to parse error response as JSON');
+      }
+      
+      console.error(`[VAPI_ERROR] ${method} ${url} failed with status ${response.status}:`, errorData);
+      throw new Error(`Erreur API Vapi (${endpoint.replace('/', '')}): ${response.status} - ${errorData.message || errorData.raw_error || 'Unknown error'}`);
+    }
+
+    if (responseText) {
+      try {
+        return JSON.parse(responseText);
+      } catch (e: any) {
+        console.error(`[VAPI_ERROR] Failed to parse JSON response: ${e.message}`);
+        throw new Error(`Invalid JSON response from Vapi: ${responseText.substring(0, 100)}`);
+      }
+    }
+    
+    return {} as T;
+  } catch (error: any) {
+    console.error(`[VAPI_REQUEST_FAILED] ${method} ${url}: ${error.message}`);
+    throw error;
+  }
+} 

@@ -1,0 +1,51 @@
+###
+# @name ListAssistants
+GET http://localhost:54321/functions/v1/assistants
+Authorization: Bearer {{supabase_token}}
+
+###
+# @name GetAssistantById
+# @prompt id ID de l'assistant à récupérer
+GET http://localhost:54321/functions/v1/assistants/{{id}}
+Authorization: Bearer {{supabase_token}}
+
+###
+# @name CreateAssistant
+POST http://localhost:54321/functions/v1/assistants
+Content-Type: application/json
+Authorization: Bearer {{supabase_token}}
+
+{
+  "name": "Assistant Test",
+  "model": "gpt-4o",
+  "language": "fr",
+  "voice": "shimmer",
+  "firstMessage": "Bonjour, comment puis-je vous aider aujourd'hui?",
+  "instructions": "Tu es un assistant francophone serviable et amical.",
+  "silenceTimeoutSeconds": 5,
+  "maxDurationSeconds": 300,
+  "endCallAfterSilence": true,
+  "voiceReflection": true,
+  "recordingSettings": {
+    "createRecording": true,
+    "saveRecording": true
+  }
+}
+
+###
+# @name UpdateAssistant
+# @prompt id ID de l'assistant à mettre à jour
+PATCH http://localhost:54321/functions/v1/assistants/{{id}}
+Content-Type: application/json
+Authorization: Bearer {{supabase_token}}
+
+{
+  "name": "Assistant Test Mis à Jour",
+  "firstMessage": "Bonjour, je suis ravi de vous aider."
+}
+
+###
+# @name DeleteAssistant
+# @prompt id ID de l'assistant à supprimer
+DELETE http://localhost:54321/functions/v1/assistants/{{id}}
+Authorization: Bearer {{supabase_token}} 

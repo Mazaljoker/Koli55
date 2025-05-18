@@ -4,10 +4,10 @@
   "description": "Projet d'intégration Vapi et Supabase",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+    "dev": "cd frontend && next dev",
+    "build": "cd frontend && next build",
+    "start": "cd frontend && next start",
+    "lint": "cd frontend && next lint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

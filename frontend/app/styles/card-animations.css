@@ -1,0 +1,29 @@
+@keyframes glowingPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(119, 69, 255, 0.4), 0 0 10px rgba(119, 69, 255, 0.2);
+    border-color: rgba(119, 69, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(119, 69, 255, 0.6), 0 0 20px rgba(119, 69, 255, 0.4);
+    border-color: rgba(119, 69, 255, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(119, 69, 255, 0.4), 0 0 10px rgba(119, 69, 255, 0.2);
+    border-color: rgba(119, 69, 255, 0.7);
+  }
+}
+
+.elevated-card {
+  transition: all 0.4s ease;
+}
+
+.elevated-card.in-view {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 30px rgba(119, 69, 255, 0.2);
+  border: 2px solid rgba(119, 69, 255, 0.4);
+}
+
+.elevated-card:hover {
+  transform: translateY(-16px);
+  animation: glowingPulse 2s infinite alternate;
+} 

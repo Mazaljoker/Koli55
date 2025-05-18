@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Bot, ArrowRight, Check, Phone, Code, Lock, Rocket, Sparkles } from 'lucide-react';
 import { 
   Typography, 
@@ -14,6 +14,7 @@ import {
   Layout, 
   ConfigProvider
 } from 'antd';
+import './styles/card-animations.css';
 
 const { Title, Text, Paragraph } = Typography;
 const { Header, Content, Footer } = Layout;
@@ -110,21 +111,45 @@ const glassmorphismStyle = {
   border: '1px solid rgba(255, 255, 255, 0.2)',
 };
 
+// Style personnalisé pour la bordure violette scintillante
+const glowingBorderStyle = {
+  boxShadow: '0 8px 32px rgba(119, 69, 255, 0.3)',
+  border: '2px solid #7745FF',
+  animation: 'glowingPulse 2s infinite alternate',
+};
+
 export default function LandingPage() {
   const featuresRef = useRef(null);
+  const isInView = useInView(featuresRef, { once: false, amount: 0.2 });
   const [scrolled, setScrolled] = useState(false);
+  const [activeFeatures, setActiveFeatures] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   
   // Détecter le scroll pour ajouter des effets
   useEffect(() => {
     const handleScroll = () => {
+      // Effet header
       if (window.scrollY > 50) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
+      
+      // Effet features cards
+      if (featuresRef.current) {
+        const rect = (featuresRef.current as HTMLElement).getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.75) {
+          setActiveFeatures(true);
+        } else {
+          setActiveFeatures(false);
+        }
+      }
     };
     
     window.addEventListener('scroll', handleScroll);
+    // Déclencher une fois au chargement
+    handleScroll();
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -153,15 +178,48 @@ export default function LandingPage() {
     borderRadius: '9999px',
     transition: 'all 0.3s ease',
     boxShadow: scrolled 
-      ? '0 8px 24px rgba(0, 0, 0, 0.15)' 
+      ? '0 8px 24px rgba(119, 69, 255, 0.15)' 
       : '0 4px 15px rgba(0, 0, 0, 0.05)',
     border: scrolled 
-      ? '1px solid rgba(255, 255, 255, 0.3)'
+      ? '1px solid rgba(119, 69, 255, 0.3)'
       : '1px solid rgba(255, 255, 255, 0.2)',
   };
 
   return (
     <ConfigProvider theme={theme}>
+      {/* Style pour l'animation de pulse */}
+      <style jsx global>{`
+        @keyframes glowingPulse {
+          0% {
+            box-shadow: 0 0 5px rgba(119, 69, 255, 0.4), 0 0 10px rgba(119, 69, 255, 0.2);
+            border-color: rgba(119, 69, 255, 0.7);
+          }
+          50% {
+            box-shadow: 0 0 10px rgba(119, 69, 255, 0.6), 0 0 20px rgba(119, 69, 255, 0.4);
+            border-color: rgba(119, 69, 255, 0.9);
+          }
+          100% {
+            box-shadow: 0 0 5px rgba(119, 69, 255, 0.4), 0 0 10px rgba(119, 69, 255, 0.2);
+            border-color: rgba(119, 69, 255, 0.7);
+          }
+        }
+        
+        .elevated-card {
+          transition: all 0.4s ease;
+        }
+        
+        .elevated-card.in-view {
+          transform: translateY(-10px);
+          box-shadow: 0 12px 30px rgba(119, 69, 255, 0.2);
+          border: 2px solid rgba(119, 69, 255, 0.4);
+        }
+        
+        .elevated-card:hover {
+          transform: translateY(-16px);
+          animation: glowingPulse 2s infinite alternate;
+        }
+      `}</style>
+      
       <Layout style={{ 
         background: 'linear-gradient(to right, rgba(119, 69, 255, 0.1), rgba(87, 105, 255, 0.1))',
         minHeight: '100vh',
@@ -371,21 +429,33 @@ export default function LandingPage() {
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       viewport={{ once: true }}
                       whileHover={{
-                        y: -8,
-                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.12)',
-                        border: '1px solid rgba(255, 255, 255, 0.4)',
+                        y: -16,
                         transition: { duration: 0.3 }
                       }}
+                      style={{
+                        transform: activeFeatures ? 'translateY(-10px)' : 'translateY(0)',
+                        transition: 'transform 0.4s ease',
+                      }}
+                      onMouseEnter={() => setHoveredCard(index)}
+                      onMouseLeave={() => setHoveredCard(null)}
                     >
                       <Card
                         style={{
                           ...glassmorphismStyle,
                           height: '100%',
                           transition: 'all 0.3s ease',
+                          boxShadow: activeFeatures 
+                            ? '0 12px 30px rgba(119, 69, 255, 0.2)' 
+                            : '0 4px 15px rgba(0, 0, 0, 0.05)',
+                          border: activeFeatures 
+                            ? hoveredCard === index 
+                              ? '2px solid #7745FF' 
+                              : '2px solid rgba(119, 69, 255, 0.4)'
+                            : '1px solid rgba(255, 255, 255, 0.2)',
+                          animation: hoveredCard === index ? 'glowingPulse 2s infinite alternate' : 'none',
                         }}
                         bordered={false}
                         hoverable
-                        className="feature-card"
                         bodyStyle={{ 
                           display: 'flex', 
                           flexDirection: 'column', 
@@ -402,7 +472,6 @@ export default function LandingPage() {
                           alignItems: 'center', 
                           justifyContent: 'center',
                           marginBottom: '16px',
-                          border: '1px solid rgba(255, 255, 255, 0.2)',
                         }}>
                           <feature.icon style={{ color: feature.iconColor, width: '28px', height: '28px' }} />
                         </div>
@@ -541,8 +610,8 @@ export default function LandingPage() {
               transition={{ duration: 0.7 }}
               viewport={{ once: true }}
               whileHover={{
-                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
-                border: '1px solid rgba(255, 255, 255, 0.4)',
+                boxShadow: '0 12px 32px rgba(119, 69, 255, 0.2)',
+                border: '2px solid rgba(119, 69, 255, 0.5)',
                 transition: { duration: 0.3 }
               }}
             >

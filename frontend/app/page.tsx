@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Bot, ArrowRight, Check, Shield, Zap, Globe, Headphones, MessageSquare, ChevronDown, ChevronUp, Phone, Code, Lock, Rocket, Sparkles } from 'lucide-react';
+import { Bot, ArrowRight, Check, Phone, Code, Lock, Rocket, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import AuthForm from '../components/auth/auth-form';
 
 // Données des témoignages
 const testimonials = [
@@ -26,7 +27,7 @@ const testimonials = [
     name: 'Sophie Martin',
     role: 'Responsable Innovation',
     company: 'DataFrance',
-    content: 'L\'intégration a été simple et les résultats sont au-delà de nos attentes.',
+    content: "L'intégration a été simple et les résultats sont au-delà de nos attentes.",
     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop',
   },
 ];
@@ -74,7 +75,7 @@ const stats = [
 ];
 
 // Composant animation
-function FadeInWhenVisible({ children }) {
+function FadeInWhenVisible({ children }: { children: React.ReactNode }) {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -94,7 +95,7 @@ function FadeInWhenVisible({ children }) {
 
 // Composant FAQ
 function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const faqs = [
     {
@@ -246,30 +247,7 @@ export default function Home() {
             className="bg-white p-8 rounded-2xl shadow-xl border border-[#e9ecef]"
           >
             <h2 className="text-2xl font-semibold text-[#141616] mb-6">Créer un compte</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#435175] focus:border-[#435175]"
-                  placeholder="exemple@domaine.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-                <input
-                  type="password"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-[#435175] focus:border-[#435175]"
-                  placeholder="Votre mot de passe"
-                />
-              </div>
-              <button className="w-full bg-[#435175] text-white py-3 rounded-lg hover:bg-[#5b6a91] transition-colors">
-                S'inscrire
-              </button>
-              <p className="text-sm text-center text-gray-600 mt-4">
-                Déjà un compte? <Link href="/login" className="text-[#435175] font-medium">Se connecter</Link>
-              </p>
-            </div>
+            <AuthForm />
           </motion.div>
         </div>
 

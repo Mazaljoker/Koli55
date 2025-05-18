@@ -65,5 +65,8 @@ logs/
 node_modules/
 # artefacts Cursor (logs, .cursor)
 .cursor/
-# sortie Bolt si tu l’utilises
+# sortie Bolt si tu l'utilises
 /out/
+
+# Dossier project (ancien code)
+/project/

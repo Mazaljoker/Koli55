@@ -1,0 +1,102 @@
+/* Styles pour la page de création d'assistant */
+
+.assistant-creation-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.header h2 {
+  font-family: 'Sora', sans-serif;
+  color: rgba(27, 29, 42, 0.9);
+  margin-bottom: 8px;
+}
+
+/* Classes pour les inputs stylisés */
+.glassmorphism-input {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s ease !important;
+}
+
+.glassmorphism-input:hover,
+.glassmorphism-input:focus {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(119, 69, 255, 0.5) !important;
+  box-shadow: 0 2px 12px rgba(119, 69, 255, 0.1) !important;
+}
+
+.glassmorphism-card {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.preview-card {
+  margin-top: 24px;
+  padding: 16px;
+}
+
+.input-description {
+  display: block;
+  font-size: 13px;
+  margin-top: -8px;
+  opacity: 0.7;
+}
+
+/* Effet de brillance pour les boutons */
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(119, 69, 255, 0.2) 0%, rgba(119, 69, 255, 0) 70%);
+  z-index: -1;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .assistant-creation-page {
+    padding: 16px 12px;
+  }
+  
+  .header {
+    margin-bottom: 24px;
+  }
+} 

@@ -2,16 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Typography, Alert, Form } from 'antd';
-import { assistantsService, CreateAssistantPayload } from '../../../../lib/api/assistantsService';
-import AssistantWizard from '../../../components/assistants/AssistantWizard';
+import { Typography, Alert, Form, Steps } from 'antd';
+// Migration vers le SDK AlloKoli
+import { useAlloKoliSDKWithAuth } from '../../../lib/hooks/useAlloKoliSDK';
+import { AssistantCreate } from '../../../lib/api/allokoli-sdk';
 import { AssistantFormData } from '../../../components/assistants/AssistantFormTypes';
 
-// Import des composants d'étape créés
+// Import des nouveaux composants d'étape
+import WelcomeStep from './components/WelcomeStep';
+import TemplateStep from './components/TemplateStep';
 import NameStep from './components/NameStep';
 import ModelStep from './components/ModelStep';
 import VoiceStep from './components/VoiceStep';
 import ConfigStep from './components/ConfigStep';
+import SummaryStep from './components/SummaryStep';
 
 // Import des styles
 import './styles/wizard.css';
@@ -20,33 +24,72 @@ import './styles/page.css';
 const { Title } = Typography;
 
 export default function NewAssistantPage() {
+  const [currentStep, setCurrentStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   const router = useRouter();
   const [form] = Form.useForm<AssistantFormData>();
+  
+  // Utilisation du SDK AlloKoli
+  const sdk = useAlloKoliSDKWithAuth();
 
-  const handleSubmit = async (formData: AssistantFormData) => {
+  const handleStart = () => {
+    setShowWelcome(false);
+    setCurrentStep(0);
+  };
+
+  const handleNext = async () => {
+    try {
+      // Valider les champs de l'étape actuelle
+      await form.validateFields();
+      
+      if (currentStep < wizardSteps.length - 1) {
+        setCurrentStep(currentStep + 1);
+      }
+    } catch (errorInfo) {
+      console.log('Validation des champs échouée:', errorInfo);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      setShowWelcome(true);
+    }
+  };
+
+  const handleEditStep = (stepKey: string) => {
+    const stepIndex = wizardSteps.findIndex(step => step.key === stepKey);
+    if (stepIndex !== -1) {
+      setCurrentStep(stepIndex);
+    }
+  };
+
+  const handleSubmit = async () => {
     setError(null);
     setLoading(true);
+    
     try {
-      // Préparer les données pour l'API
-      const apiPayload = {
+      const formData = form.getFieldsValue();
+      
+      // Préparer les données pour le SDK AlloKoli
+      const createRequest: AssistantCreate = {
         name: formData.name,
         model: {
-          provider: formData.modelProvider,
+          provider: formData.modelProvider as 'openai' | 'anthropic' | 'groq' | 'azure-openai',
           model: formData.modelName,
           systemPrompt: formData.systemPrompt,
           temperature: formData.modelTemperature,
           maxTokens: formData.modelMaxTokens,
         },
         voice: {
-          provider: formData.voiceProvider,
+          provider: formData.voiceProvider as 'azure' | 'eleven-labs' | 'playht' | 'deepgram' | 'openai',
           voiceId: formData.voiceId,
         },
         firstMessage: formData.firstMessage,
         instructions: formData.systemPrompt,
-        // Ces propriétés seront gérées par le backend même si elles ne sont pas
-        // dans le type CreateAssistantPayload
         metadata: {
           endCallMessage: formData.endCallMessage,
           endCallPhrases: formData.endCallPhrases
@@ -54,117 +97,166 @@ export default function NewAssistantPage() {
             : [],
           forwardingPhoneNumber: formData.forwardingPhoneNumber
         }
-      } as CreateAssistantPayload;
+      };
 
       // Vérification préalable des données
-      if (!apiPayload.name?.trim()) {
+      if (!createRequest.name?.trim()) {
         throw new Error("Le nom de l'assistant est requis");
       }
 
-      console.log('Submitting assistant data:', apiPayload);
+      console.log('Submitting assistant data with SDK:', createRequest);
       
-      // Utiliser le service pour créer l'assistant
-      const response = await assistantsService.create(apiPayload);
-
-      console.log('Response from API:', response);
+      // Utiliser le SDK pour créer l'assistant
+      const response = await sdk.createAssistant(createRequest);
+      console.log('Assistant created successfully:', response.data);
       
-      if (!response.success) {
-        console.error('API error creating assistant:', response);
-        throw new Error(
-          response.message || 
-          (response.vapi_error ? `Vapi error: ${response.vapi_error}` : 'Failed to create assistant due to an API error.')
-        );
-      }
-
-      if (response.data) {
-        console.log('Assistant created successfully:', response.data);
-        router.push(`/assistants/${response.data.id}`);
-      } else {
-        throw new Error('No assistant data returned from API');
-      }
+      router.push(`/assistants/${response.data.id}`);
 
     } catch (err: unknown) {
-      console.error('Client-side error creating assistant:', err);
+      console.error('Error creating assistant with SDK:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
-      setError(`Error: ${errorMessage}`);
+      setError(`Erreur: ${errorMessage}`);
     }
+    
     setLoading(false);
   };
 
-  // Définition des étapes du formulaire avec nos nouveaux composants
+  // Définition des étapes du wizard (après la bienvenue)
   const wizardSteps = [
     {
+      key: 'template',
+      title: 'Template',
+      description: 'Choisir un modèle',
+      component: <TemplateStep form={form} />
+    },
+    {
       key: 'basic',
-      title: 'Informations de base',
-      description: 'Identifiez votre assistant',
-      content: <NameStep form={form} />,
-      validationSchema: {
-        required: ['name']
-      }
+      title: 'Identité',
+      description: 'Informations de base',
+      component: <NameStep form={form} />
     },
     {
       key: 'model',
       title: 'Modèle IA',
-      description: 'Choisissez le modèle d\'IA',
-      content: <ModelStep form={form} />,
-      validationSchema: {
-        required: ['modelProvider', 'modelName', 'systemPrompt']
-      }
+      description: 'Intelligence artificielle',
+      component: <ModelStep form={form} />
     },
     {
       key: 'voice',
       title: 'Voix',
-      description: 'Personnalisez la voix',
-      content: <VoiceStep form={form} />,
-      validationSchema: {
-        required: ['voiceProvider', 'voiceId']
-      }
+      description: 'Personnalisation vocale',
+      component: <VoiceStep form={form} />
     },
     {
       key: 'advanced',
       title: 'Configuration',
       description: 'Paramètres avancés',
-      content: <ConfigStep form={form} />,
-      validationSchema: {
-        required: ['firstMessage']
-      }
+      component: <ConfigStep form={form} />
+    },
+    {
+      key: 'summary',
+      title: 'Résumé',
+      description: 'Validation finale',
+      component: <SummaryStep 
+        formData={form.getFieldsValue()}
+        onEdit={handleEditStep}
+        onConfirm={handleSubmit}
+        loading={loading}
+      />
     }
   ];
 
-  return (
-    <div className="assistant-creation-page">
-      <div className="header">
-        <Title level={2}>Créer un nouvel assistant</Title>
+  // Rendu de l'étape de bienvenue
+  if (showWelcome) {
+    return (
+      <div className="assistant-creation-page min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+        <div className="container mx-auto px-4 py-8">
+          <WelcomeStep onStart={handleStart} />
+        </div>
       </div>
-      
-      {error && (
-        <Alert
-          message="Erreur"
-          description={error}
-          type="error"
-          showIcon
-          closable
-          onClose={() => setError(null)}
-          style={{ marginBottom: 24 }}
-        />
-      )}
-      
-      <AssistantWizard
-        steps={wizardSteps}
-        onSubmit={handleSubmit}
-        loading={loading}
-        finishButtonText="Créer l'assistant"
-        initialValues={{
-          modelProvider: 'openai',
-          modelName: 'gpt-4o',
-          modelTemperature: 0.7,
-          modelMaxTokens: 1024,
-          voiceProvider: '11labs',
-          voiceId: 'jennifer',
-          firstMessage: "Bonjour, je suis votre assistant. Comment puis-je vous aider aujourd'hui ?"
-        }}
-        form={form}
-      />
+    );
+  }
+
+  // Rendu du wizard principal
+  return (
+    <div className="assistant-creation-page min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          
+          {/* Header avec progression */}
+          <div className="text-center mb-8">
+            <Title level={2} className="!mb-4">
+              Création de votre assistant AlloKoli
+            </Title>
+            
+            <div className="max-w-3xl mx-auto mb-6">
+              <Steps
+                current={currentStep}
+                size="small"
+                items={wizardSteps.map(step => ({
+                  title: step.title,
+                  description: step.description,
+                }))}
+              />
+            </div>
+            
+            <div className="text-sm text-gray-500">
+              Étape {currentStep + 1} sur {wizardSteps.length}
+            </div>
+          </div>
+
+          {error && (
+            <Alert
+              message="Erreur"
+              description={error}
+              type="error"
+              showIcon
+              closable
+              onClose={() => setError(null)}
+              style={{ marginBottom: 24 }}
+            />
+          )}
+
+          {/* Contenu de l'étape actuelle */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+            <Form
+              form={form}
+              layout="vertical"
+              scrollToFirstError
+              initialValues={{
+                modelProvider: 'openai',
+                modelName: 'gpt-4o',
+                modelTemperature: 0.7,
+                modelMaxTokens: 1024,
+                voiceProvider: 'eleven-labs',
+                voiceId: 'jennifer',
+                firstMessage: "Bonjour, je suis votre assistant. Comment puis-je vous aider aujourd'hui ?"
+              }}
+            >
+              {wizardSteps[currentStep].component}
+            </Form>
+          </div>
+
+          {/* Navigation */}
+          {currentStep < wizardSteps.length - 1 && (
+            <div className="flex justify-between items-center">
+              <button
+                onClick={handlePrevious}
+                className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+              >
+                ← Précédent
+              </button>
+              
+              <button
+                onClick={handleNext}
+                className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                Suivant →
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 } 

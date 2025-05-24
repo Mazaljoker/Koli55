@@ -7,7 +7,7 @@ import supabase from '../../../lib/supabaseClient';
 import { 
   Button, Card, Title, Text, Metric, Badge, 
   TabGroup, TabList, Tab, TabPanels, TabPanel, 
-  Grid, Col, Flex
+  Grid, Flex
 } from '@tremor/react';
 import { 
   PhoneIcon, PencilIcon, PlayIcon, 
@@ -16,7 +16,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { AssistantData } from '../../../lib/api/assistantsService';
+
+// Migration vers le SDK AlloKoli
+import { useAlloKoliSDKWithAuth } from '../../../lib/hooks/useAlloKoliSDK';
+import { Assistant } from '../../../lib/api/allokoli-sdk';
 
 // Import Tab Components
 import OverviewTab from '../../../components/dashboard/assistant-details/OverviewTab';
@@ -26,15 +29,15 @@ import KnowledgeBasesTab from '../../../components/dashboard/assistant-details/K
 import TestingTab from '../../../components/dashboard/assistant-details/TestingTab';
 import WebhooksTab from '../../../components/dashboard/assistant-details/WebhooksTab';
 
-// Utiliser le type AssistantData du service
-type Assistant = AssistantData;
-
 export default function AssistantDetailPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const assistantId = params.id as string;
   const tabParam = searchParams.get('tab');
+  
+  // Utilisation du SDK AlloKoli
+  const sdk = useAlloKoliSDKWithAuth();
 
   const [assistant, setAssistant] = useState<Assistant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,65 +90,7 @@ export default function AssistantDetailPage() {
     };
   }, [menuOpen]);
 
-  async function fetchAssistantDetails() {
-    setLoading(true);
-    setError(null);
-    try {
-      // Utiliser le service pour récupérer les détails de l'assistant
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        router.push('/auth/login');
-        return;
-      }
-      
-      const response = await fetch(`/api/assistants/${assistantId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch assistant: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data && data.data) {
-        setAssistant(data.data);
-      } else {
-        throw new Error('Assistant not found or no data returned.');
-      }
-    } catch (err: any) {
-      console.error('Client-side error fetching assistant details:', err);
-      setError(err.message || 'An unexpected error occurred.');
-      
-      // Si en mode développement, utiliser des données de démo
-      if (process.env.NODE_ENV === 'development') {
-        setAssistant({
-          id: assistantId,
-          name: "Assistant Commercial Demo",
-          model: "gpt-4o",
-          language: "fr-FR",
-          forwarding_phone_number: "+33755558899",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          firstMessage: "Bonjour, comment puis-je vous aider aujourd'hui?",
-          instructions: "Vous êtes un assistant commercial qui aide les clients à choisir les meilleurs produits.",
-          tools_config: {
-            knowledgeBases: ["kb_1", "kb_2"],
-            functions: ["function_1", "function_2"]
-          },
-          metadata: {
-            status: "active"
-          }
-        });
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
+      async function fetchAssistantDetails() {    setLoading(true);    setError(null);    try {      // Utiliser le SDK pour récupérer les détails de l'assistant      const { data: { session } } = await supabase.auth.getSession();            if (!session) {        router.push('/auth/login');        return;      }            // Utiliser le SDK AlloKoli      const response = await sdk.getAssistant(assistantId);      setAssistant(response.data);          } catch (err: unknown) {      console.error('Error fetching assistant details with SDK:', err);      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');            // Si en mode développement, utiliser des données de démo      if (process.env.NODE_ENV === 'development') {        setAssistant({          id: assistantId,          name: "Assistant Commercial Demo",          model: "gpt-4o",          voice: "jennifer",          language: "fr-FR",          created_at: new Date().toISOString(),          updated_at: new Date().toISOString(),          firstMessage: "Bonjour, comment puis-je vous aider aujourd'hui?",          instructions: "Vous êtes un assistant commercial qui aide les clients à choisir les meilleurs produits.",          metadata: {            status: "active",            forwardingPhoneNumber: "+33755558899"          }        });      }    } finally {      setLoading(false);    }  }
 
   async function fetchAssistantMetrics() {
     // Cette fonction récupérera les métriques comme le nombre d'appels, la durée moyenne, etc.
@@ -179,7 +124,7 @@ export default function AssistantDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <Text>Chargement des détails de l'assistant...</Text>
+        <Text>Chargement des détails de l&apos;assistant...</Text>
       </div>
     );
   }
@@ -231,17 +176,14 @@ export default function AssistantDetailPage() {
             <h1 className="text-3xl font-bold text-gray-800">{assistant?.name || 'Assistant'}</h1>
             <Badge color={statusColorMap[status]} size="md">{label}</Badge>
           </div>
-          <Text className="text-gray-600 mt-1">
-            ID: {assistant?.id} 
-            {assistant?.vapi_assistant_id && ` / ID Vapi: ${assistant.vapi_assistant_id}`}
-          </Text>
+                              <Text className="text-gray-600 mt-1">            ID: {assistant?.id}          </Text>
         </div>
         <Flex justifyContent="end" className="gap-2 w-full md:w-auto">
           <Link href={`/assistants/${assistantId}/edit`}>
-            <Button variant="primary" icon={PencilIcon}>Modifier l'Assistant</Button>
+            <Button variant="primary" icon={PencilIcon}>Modifier l&apos;Assistant</Button>
           </Link>
           <Button variant="secondary" icon={PlayIcon}>
-            Tester l'Appel
+            Tester l&apos;Appel
           </Button>
           <Menu as="div" className="relative">
             <Menu.Button className="inline-flex justify-center rounded-md p-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none">
@@ -330,7 +272,7 @@ export default function AssistantDetailPage() {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <Text>Appels aujourd'hui</Text>
+              <Text>Appels aujourd&apos;hui</Text>
               <Metric>{callsToday}</Metric>
             </div>
             <PhoneIcon className="h-8 w-8 text-blue-500" />
@@ -339,7 +281,7 @@ export default function AssistantDetailPage() {
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <Text>Temps moyen d'appel</Text>
+              <Text>Temps moyen d&apos;appel</Text>
               <Metric>{avgDuration}</Metric>
             </div>
             <PhoneIcon className="h-8 w-8 text-green-500" />
@@ -349,38 +291,63 @@ export default function AssistantDetailPage() {
       </Grid>
       
       {/* Onglets */}
-      <Card>
-        <TabGroup defaultIndex={selectedTab} onIndexChange={setSelectedTab}>
-          <TabList>
-            <Tab>Vue d'ensemble</Tab>
-            <Tab>Configuration</Tab>
-            <Tab>Historique d'appels</Tab>
-            <Tab>Bases de connaissances</Tab>
-            <Tab>Tests</Tab>
-            <Tab>Webhooks</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <OverviewTab assistant={assistant} />
-            </TabPanel>
-            <TabPanel>
-              <ConfigurationTab assistant={assistant} />
-            </TabPanel>
-            <TabPanel>
-              <CallHistoryTab assistantId={assistantId} />
-            </TabPanel>
-            <TabPanel>
-              <KnowledgeBasesTab assistantId={assistantId} />
-            </TabPanel>
-            <TabPanel>
-              <TestingTab assistantId={assistantId} />
-            </TabPanel>
-            <TabPanel>
-              <WebhooksTab assistantId={assistantId} />
-            </TabPanel>
-          </TabPanels>
-        </TabGroup>
-      </Card>
+      {assistant && (
+        <Card>
+          <TabGroup defaultIndex={selectedTab} onIndexChange={setSelectedTab}>
+            <TabList>
+              <Tab>Vue d&apos;ensemble</Tab>
+              <Tab>Configuration</Tab>
+              <Tab>Historique d&apos;appels</Tab>
+              <Tab>Bases de connaissances</Tab>
+              <Tab>Tests</Tab>
+              <Tab>Webhooks</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <OverviewTab 
+                  assistant={assistant} 
+                  metrics={{
+                    callsToday,
+                    avgDuration,
+                    successRate: 92, // simulation
+                    callsByDay: [
+                      { date: '2024-07-01', calls: 8 },
+                      { date: '2024-07-02', calls: 12 },
+                      { date: '2024-07-03', calls: 9 },
+                      { date: '2024-07-04', calls: 15 },
+                      { date: '2024-07-05', calls: 14 },
+                      { date: '2024-07-06', calls: 7 },
+                      { date: '2024-07-07', calls: callsToday },
+                    ],
+                    topRequestTopics: [
+                      { name: 'Questions sur les prix', value: 34 },
+                      { name: 'Information produit', value: 28 },
+                      { name: 'Support technique', value: 16 },
+                      { name: 'Horaires d\'ouverture', value: 12 },
+                      { name: 'Réclamations', value: 10 },
+                    ]
+                  }}
+                />
+              </TabPanel>
+              <TabPanel>
+                <ConfigurationTab assistant={assistant} />
+              </TabPanel>
+              <TabPanel>
+                <CallHistoryTab assistantId={assistantId} />
+              </TabPanel>
+              <TabPanel>
+                <KnowledgeBasesTab assistant={assistant} />
+              </TabPanel>
+              <TabPanel>
+                <TestingTab assistantId={assistantId} />
+              </TabPanel>
+              <TabPanel>
+                <WebhooksTab assistantId={assistantId} />
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>
+        </Card>
+      )}
     </div>
   );
 } 

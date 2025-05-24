@@ -85,11 +85,9 @@
 ## ✅ **TERMINÉ - SDK et API Documentation** (100%)
 
 ### 📋 Spécification OpenAPI complète
-- [x] **`specs/allokoli-api.yaml`** - OpenAPI 3.1.0 complet
-  - 13 endpoints documentés (assistants, knowledge-bases)
-  - Schémas TypeScript détaillés
-  - Authentification JWT et gestion d'erreurs
-  - Pagination et validation
+- [x] **`specs/allokoli-api-complete-final.yaml`** - OpenAPI 3.1.0 complet (v2.0.0)
+  - **60+ endpoints documentés** (couverture complète des 12 Edge Functions)
+  - Schémas détaillés, Authentification JWT, gestion d'erreurs, Pagination, validation
 
 ### 🔗 Intégration MCP OpenAPI 
 - [x] **`specs/_catalog/catalog.json`** - Catalogue MCP

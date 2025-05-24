@@ -1,38 +1,35 @@
 # Configuration Supabase pour AlloKoli
 
-Ce dossier contient les utilitaires pour se connecter à Supabase, qui fonctionne en local via Docker.
+Ce dossier contient les utilitaires pour se connecter à Supabase Cloud.
 
 ## Configuration
 
-Pour que l'application fonctionne correctement avec l'instance Supabase locale, vous devez créer un fichier `.env.local` à la racine du projet frontend avec les variables suivantes :
+Pour que l'application fonctionne correctement avec Supabase Cloud, vous devez créer un fichier `.env.local` à la racine du projet frontend avec les variables suivantes :
 
 ```
-# Variables d'environnement pour Supabase local (Docker)
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+# Variables d'environnement pour Supabase Cloud
+NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=votre-clé-anon-publique
 ```
 
-Ces valeurs correspondent aux paramètres par défaut d'une instance Supabase en local.
+Ces valeurs se trouvent dans le dashboard de votre projet Supabase Cloud.
 
-## Clés API Supabase locales
+## Clés API Supabase Cloud
 
-Si vous avez besoin de trouver les clés API spécifiques à votre instance locale :
+Pour trouver les clés API de votre projet Supabase Cloud :
 
-1. Accédez au Supabase Studio : http://localhost:54323
-2. Connectez-vous (email et mot de passe par défaut : `admin@admin.com` / `admin`)
+1. Accédez au dashboard Supabase : https://app.supabase.com
+2. Sélectionnez votre projet
 3. Allez dans "Project Settings" > "API"
-4. Vous y trouverez votre "anon public key" et "service_role key"
+4. Vous y trouverez votre "anon public key" et autres clés d'API
 
-## Ports Supabase Docker
+## Accès au projet Supabase
 
-- **54321** : API REST et authentification
-- **54323** : Interface Supabase Studio (dashboard d'administration)
-
-Pour accéder au Studio Supabase, ouvrez `http://localhost:54323` dans votre navigateur.
+Pour accéder à votre projet Supabase Cloud, connectez-vous sur https://app.supabase.com et sélectionnez votre projet.
 
 ## Utilisation
 
-Le client Supabase est initialisé dans le fichier `client.ts` et exporté pour être utilisé dans toute l'application. Il est configuré pour se connecter à l'instance Docker locale par défaut, mais utilisera les variables d'environnement si elles sont définies.
+Le client Supabase est initialisé dans le fichier `client.ts` et exporté pour être utilisé dans toute l'application. Il est configuré pour se connecter exclusivement à Supabase Cloud via les variables d'environnement.
 
 ```typescript
 import { supabase } from '../lib/supabase/client';

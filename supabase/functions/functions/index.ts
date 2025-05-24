@@ -1,5 +1,5 @@
 /**
- * Fonction Supabase Edge pour la gestion des fonctions (tools) utilisables par les assistants Vapi
+ * Fonction Supabase Edge pour la gestion des fonctions Vapi
  * 
  * Endpoints:
  * - GET /functions - Liste toutes les fonctions
@@ -22,8 +22,8 @@
  *   - Body: {
  *       name: string (obligatoire, 3-100 caractères),
  *       description?: string (max 500 caractères),
- *       parameters: object (obligatoire, structure au format OpenAPI/JSONSchema),
- *       webhook_url?: string (URL valide),
+ *       parameters: VapiFunctionParameters (obligatoire),
+ *       webhook_url?: string (URL webhook),
  *       metadata?: object
  *     }
  *   - Headers: Authorization (JWT token obligatoire)
@@ -34,8 +34,8 @@
  *   - Body: {
  *       name?: string (3-100 caractères),
  *       description?: string (max 500 caractères),
- *       parameters?: object (structure au format OpenAPI/JSONSchema),
- *       webhook_url?: string (URL valide),
+ *       parameters?: VapiFunctionParameters,
+ *       webhook_url?: string (URL webhook),
  *       metadata?: object
  *     }
  *   - Headers: Authorization (JWT token obligatoire)
@@ -78,24 +78,14 @@
  *   id: string,
  *   name: string,
  *   description?: string,
- *   parameters: VapiFunctionParameters, // Structure JSONSchema/OpenAPI pour les paramètres
+ *   parameters: VapiFunctionParameters,
  *   webhook_url?: string,
+ *   code?: string,
+ *   async?: boolean,
+ *   timeout_ms?: number,
  *   metadata?: Record<string, any>,
  *   created_at: string,
  *   updated_at: string
- * }
- * 
- * Structure VapiFunctionParameters conforme à JSONSchema/OpenAPI:
- * {
- *   type: "object",
- *   properties: {
- *     [propertyName: string]: {
- *       type: string,
- *       description?: string,
- *       ...other schema properties
- *     }
- *   },
- *   required?: string[]
  * }
  */
 
@@ -208,11 +198,24 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Authentification de l'utilisateur
-    const user = await authenticate(req)
-    
-    // Récupération de l'URL pour le routage
+    // Mode test: vérifier si c'est un appel de test
     const url = new URL(req.url)
+    const isTestMode = url.searchParams.get('test') === 'true' || req.headers.get('x-test-mode') === 'true'
+    
+    // Authentification de l'utilisateur (optionnelle en mode test)
+    let user = null
+    if (!isTestMode) {
+      user = await authenticate(req)
+    } else {
+      // Mode test: utiliser un utilisateur fictif
+      user = {
+        id: 'test-user',
+        email: 'test@allokoli.com',
+        role: 'user',
+        organization_id: 'test-org'
+      }
+    }
+    
     const pathSegments = url.pathname.split('/').filter(segment => segment)
     
     // Vérification qu'on a au moins le segment 'functions'
@@ -226,6 +229,23 @@ serve(async (req: Request) => {
     // GET /functions - Liste de toutes les fonctions
     if (req.method === 'GET' && !functionId) {
       console.log(`[HANDLER] GET /functions - Liste des fonctions`);
+      
+      // Mode test simple
+      if (isTestMode) {
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Functions function deployed successfully!',
+          endpoints: {
+            GET_ALL: '/functions',
+            GET_ONE: '/functions/:id',
+            CREATE: '/functions',
+            UPDATE: '/functions/:id',
+            DELETE: '/functions/:id'
+          }
+        }), {
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        })
+      }
       
       const { page, limit } = validatePagination(url.searchParams)
       

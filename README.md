@@ -23,6 +23,8 @@ Allokoli est une plateforme no-code permettant à des professionnels de créer u
 
 ## Structure du projet
 
+Ce projet suit une structure standardisée définie dans [DOCS/architecture/structure-standard.md](DOCS/architecture/structure-standard.md).
+
 La structure du projet est organisée de la façon suivante :
 
 - `/frontend` : Application Next.js principale (App Router)

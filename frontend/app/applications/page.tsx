@@ -28,7 +28,7 @@ export default function ApplicationsPage() {
   ];
 
   // Fonction pour obtenir la couleur de fond selon le statut
-  const getStatusBgColor = (status) => {
+  const getStatusBgColor = (status: string) => {
     switch (status) {
       case 'active':
         return 'bg-green-100 text-green-800';

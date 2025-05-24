@@ -127,20 +127,7 @@ supabase functions list --project-ref aiurboizarbbcpynmmgv
 supabase functions logs assistants --project-ref aiurboizarbbcpynmmgv
 ```
 
-### Bonnes pratiques découvertes (Phase 10.1)
-
-#### ✅ Préparation des Edge Functions pour le déploiement
-1. **Inclusion des dépendances partagées** : Tous les fichiers `shared/` doivent être inclus
-2. **Pas de dépendances externes non compatibles** : Éviter les SDKs non compatibles Deno
-3. **Structure d'URL correcte** : Supprimer les préfixes `/v1/` non conformes à Vapi
-4. **Format de réponse standardisé** : Utiliser le format Vapi natif
-
-#### ✅ Processus de déploiement validé
-1. **Test local** : Validation avec `supabase functions serve`
-2. **Compilation** : Vérification des erreurs TypeScript
-3. **Déploiement** : `supabase functions deploy [nom]`
-4. **Tests post-déploiement** : Validation avec curl ou Postman
-5. **Monitoring** : Surveillance des logs en temps réel
+### Bonnes pratiques découvertes (Phase 10.1)#### ✅ Préparation des Edge Functions pour le déploiement1. **Inclusion des dépendances partagées** : Tous les fichiers `shared/` doivent être inclus2. **Pas de dépendances externes non compatibles** : Éviter les SDKs non compatibles Deno3. **Structure d'URL correcte** : Supprimer les préfixes `/v1/` non conformes à Vapi4. **Format de réponse standardisé** : Utiliser le format Vapi natif5. **Mode test intégré** : Header `x-test-mode: true` pour validation#### ✅ Processus de déploiement validé1. **Test local** : Validation avec `supabase functions serve`2. **Compilation** : Vérification des erreurs TypeScript3. **Déploiement CLI** : `supabase functions deploy [nom]` (nécessite Docker)4. **Déploiement MCP** : Alternative sans Docker via MCP Supabase ✅ **RECOMMANDÉ**5. **Tests post-déploiement** : Validation avec curl ou Postman6. **Monitoring** : Surveillance des logs en temps réel### 🚀 Méthode MCP Supabase (RECOMMANDÉE)#### ✅ Avantages du déploiement MCP- **Sans Docker** : Pas besoin de Docker Desktop- **Plus rapide** : Déploiement direct via API Supabase- **Plus simple** : Gestion automatique des dépendances- **Plus fiable** : Moins de points de défaillance- **Validation automatique** : Tests intégrés#### ✅ Processus MCP validé```typescript// Exemple déploiement via MCPmcp_supabase_deploy_edge_function({  project_id: "aiurboizarbbcpynmmgv",  name: "workflows",  files: [    { name: "index.ts", content: "..." },    { name: "shared/cors.ts", content: "..." }  ]})```#### ✅ Résultats déploiement MCP**12/12 Edge Functions déployées avec succès** :- workflows (Version 7) ✅- squads (Version 7) ✅- functions (Version 7) ✅- test-suites (Version 7) ✅- assistants (Version 28) ✅- knowledge-bases, files, calls, etc. (Version 7) ✅
 
 #### ✅ Corrections critiques implémentées
 - **URLs API** : `https://api.vapi.ai/assistants` (suppression `/v1/`)

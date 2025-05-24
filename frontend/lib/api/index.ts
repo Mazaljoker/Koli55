@@ -1,17 +1,31 @@
 /**
- * Services API pour frontend
+ * API AlloKoli - SDK unifié
  * 
  * Exemple d'utilisation:
- * import { assistantsService } from '@api';
+ * import { AlloKoliSDK } from './api';
+ * import { useAlloKoliSDKWithAuth } from './hooks/useAlloKoliSDK';
  */
 
-export { default as assistantsService } from './assistantsService';
+// Export du SDK principal
+export { AlloKoliSDK, AlloKoliAPIError } from './allokoli-sdk';
 
-// Exporter les types
+// Export des hooks React
+export { useAlloKoliSDK, useAlloKoliSDKWithAuth } from '../hooks/useAlloKoliSDK';
+
+// Export des types principaux
 export type {
-  ApiResponse,
-  PaginationData,
-  AssistantData,
-  CreateAssistantPayload,
-  UpdateAssistantPayload
-} from './assistantsService'; 
+  Assistant,
+  AssistantCreate,
+  AssistantUpdate,
+  KnowledgeBase,
+  KnowledgeBaseCreate,
+  KnowledgeBaseUpdate,
+  PaginatedResponse,
+  SingleResponse,
+  PaginationParams,
+  VapiModel,
+  VapiVoice,
+  RecordingSettings,
+  Call,
+  PhoneNumber
+} from './allokoli-sdk'; 

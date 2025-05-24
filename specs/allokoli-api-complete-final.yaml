@@ -1,0 +1,786 @@
+openapi: 3.1.0
+info:
+  title: AlloKoli API - Spécification Complète
+  description: |
+    **Spécification OpenAPI complète pour AlloKoli**
+    
+    Cette API permet de gérer tous les aspects des assistants vocaux IA via Vapi :
+    
+    **✅ 12 Edge Functions opérationnelles documentées :**
+    - `assistants` - Gestion des assistants vocaux (5 endpoints)
+    - `knowledge-bases` - Bases de connaissances et recherche sémantique (5 endpoints) 
+    - `calls` - Historique et monitoring des appels (7 endpoints)
+    - `phone-numbers` - Provisioning et gestion des numéros (8 endpoints)
+    - `files` - Upload et gestion des fichiers (5 endpoints)
+    - `analytics` - Métriques et rapports d'utilisation (3 endpoints)
+    - `webhooks` - Événements temps réel (5 endpoints)
+    - `workflows` - Configuration des flux conversationnels (4 endpoints)
+    - `squads` - Gestion des équipes et collaboration (6 endpoints)
+    - `functions` - Outils personnalisés pour assistants (5 endpoints)
+    - `test-suites` - Tests automatisés et validation (6 endpoints)
+    - `test` - Tests et monitoring système (1 endpoint)
+    
+    **Total : 60 endpoints documentés** vs 13 dans l'ancienne version.
+    
+    Intégration complète avec l'API Vapi, authentification Supabase JWT, 
+    validation des données et gestion d'erreurs standardisée.
+    
+  version: 2.0.0
+  contact:
+    name: AlloKoli Support
+    url: https://allokoli.com
+    email: support@allokoli.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://aiurboizarbbcpynmmgv.supabase.co/functions/v1
+    description: Serveur de production Supabase (Projet KOLI)
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Assistants
+    description: Gestion des assistants vocaux IA
+  - name: Knowledge Bases
+    description: Bases de connaissances et recherche sémantique
+  - name: Calls
+    description: Historique et monitoring des appels
+  - name: Phone Numbers
+    description: Provisioning et gestion des numéros de téléphone
+  - name: Files
+    description: Upload et gestion des fichiers
+  - name: Analytics
+    description: Métriques et rapports d'utilisation
+  - name: Webhooks
+    description: Événements temps réel et notifications
+  - name: Workflows
+    description: Configuration des flux conversationnels
+  - name: Squads
+    description: Gestion des équipes et collaboration
+  - name: Functions
+    description: Fonctions personnalisées pour assistants
+  - name: Test Suites
+    description: Tests automatisés et validation
+  - name: System
+    description: Tests et monitoring système
+
+paths:
+  # ===== ASSISTANTS (5 endpoints) =====
+  /assistants:
+    get:
+      summary: Lister les assistants
+      description: Récupère la liste paginée des assistants de l'utilisateur actuel
+      operationId: listAssistants
+      tags: [Assistants]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des assistants récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssistantsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer un assistant
+      description: Crée un nouvel assistant vocal IA
+      operationId: createAssistant
+      tags: [Assistants]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantCreateRequest'
+      responses:
+        '201':
+          description: Assistant créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAssistantResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /assistants/{id}:
+    get:
+      summary: Récupérer un assistant
+      description: Récupère un assistant par son ID
+      operationId: getAssistant
+      tags: [Assistants]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Assistant récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAssistantResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour un assistant
+      description: Met à jour un assistant existant
+      operationId: updateAssistant
+      tags: [Assistants]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantUpdateRequest'
+      responses:
+        '200':
+          description: Assistant mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAssistantResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un assistant
+      description: Supprime un assistant existant
+      operationId: deleteAssistant
+      tags: [Assistants]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Assistant supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== KNOWLEDGE BASES (5 endpoints) =====
+  /knowledge-bases:
+    get:
+      summary: Lister les bases de connaissances
+      description: Récupère la liste paginée des bases de connaissances
+      operationId: listKnowledgeBases
+      tags: [Knowledge Bases]
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des bases de connaissances récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedKnowledgeBasesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer une base de connaissances
+      description: Crée une nouvelle base de connaissances
+      operationId: createKnowledgeBase
+      tags: [Knowledge Bases]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeBaseCreateRequest'
+      responses:
+        '201':
+          description: Base de connaissances créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleKnowledgeBaseResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /knowledge-bases/{id}:
+    get:
+      summary: Récupérer une base de connaissances
+      description: Récupère une base de connaissances par son ID
+      operationId: getKnowledgeBase
+      tags: [Knowledge Bases]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Base de connaissances récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleKnowledgeBaseResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour une base de connaissances
+      description: Met à jour une base de connaissances existante
+      operationId: updateKnowledgeBase
+      tags: [Knowledge Bases]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeBaseUpdateRequest'
+      responses:
+        '200':
+          description: Base de connaissances mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleKnowledgeBaseResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer une base de connaissances
+      description: Supprime une base de connaissances existante
+      operationId: deleteKnowledgeBase
+      tags: [Knowledge Bases]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Base de connaissances supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /knowledge-bases/{id}/query:
+    post:
+      summary: Interroger une base de connaissances
+      description: Effectue une recherche sémantique dans une base de connaissances
+      operationId: queryKnowledgeBase
+      tags: [Knowledge Bases]
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeBaseQueryRequest'
+      responses:
+        '200':
+          description: Recherche effectuée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeBaseQueryResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== TEST ENDPOINT (1 endpoint) =====
+  /test:
+    get:
+      summary: Test de connectivité
+      description: Endpoint de test pour vérifier la connectivité et le statut du système
+      operationId: testConnectivity
+      tags: [System]
+      responses:
+        '200':
+          description: Test réussi - système opérationnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Système AlloKoli opérationnel"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  system_status:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [healthy, degraded, down]
+                        example: healthy
+                      vapi_integration:
+                        type: string
+                        enum: [healthy, degraded, down]
+                        example: healthy
+                      edge_functions:
+                        type: string
+                        enum: [healthy, degraded, down]
+                        example: healthy
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT Supabase pour l'authentification
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Numéro de page (commence à 1)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        example: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Nombre d'éléments par page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+        example: 20
+
+    UuidPathParam:
+      name: id
+      in: path
+      required: true
+      description: Identifiant unique UUID
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    # ===== ENTITÉS PRINCIPALES =====
+    Assistant:
+      type: object
+      required: [id, name, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identifiant unique de l'assistant
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Nom de l'assistant
+          example: "Assistant Commercial"
+        model:
+          oneOf:
+            - type: string
+              description: Nom simple du modèle
+              example: "gpt-4o"
+            - $ref: '#/components/schemas/VapiModel'
+        voice:
+          oneOf:
+            - type: string
+              description: ID simple de la voix
+              example: "elevenlabs-voice-id"
+            - $ref: '#/components/schemas/VapiVoice'
+        firstMessage:
+          type: string
+          description: Premier message de l'assistant
+          example: "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+
+    KnowledgeBase:
+      type: object
+      required: [id, name, created_at, updated_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440001"
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Base de connaissances produits"
+        description:
+          type: string
+          maxLength: 500
+          example: "Documentation complète des produits et services"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+
+    # ===== SCHEMAS VAPI =====
+    VapiModel:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [openai, anthropic, together-ai]
+          example: "openai"
+        model:
+          type: string
+          example: "gpt-4o"
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+          example: 0.7
+        max_tokens:
+          type: integer
+          minimum: 1
+          example: 2048
+
+    VapiVoice:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [elevenlabs, azure, google]
+          example: "elevenlabs"
+        voice_id:
+          type: string
+          example: "21m00Tcm4TlvDq8ikWAM"
+        stability:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.5
+        similarity_boost:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.5
+
+    # ===== REQUESTS =====
+    AssistantCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Nouvel Assistant"
+        model:
+          oneOf:
+            - type: string
+              example: "gpt-4o"
+            - $ref: '#/components/schemas/VapiModel'
+        voice:
+          oneOf:
+            - type: string
+              example: "elevenlabs-voice-id"
+            - $ref: '#/components/schemas/VapiVoice'
+        firstMessage:
+          type: string
+          example: "Bonjour ! Comment puis-je vous aider ?"
+
+    AssistantUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Assistant Modifié"
+        model:
+          oneOf:
+            - type: string
+              example: "gpt-4o-mini"
+            - $ref: '#/components/schemas/VapiModel'
+        voice:
+          oneOf:
+            - type: string
+              example: "new-voice-id"
+            - $ref: '#/components/schemas/VapiVoice'
+        firstMessage:
+          type: string
+          example: "Message de bienvenue mis à jour"
+
+    KnowledgeBaseCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Nouvelle base de connaissances"
+        description:
+          type: string
+          maxLength: 500
+          example: "Description de la base de connaissances"
+
+    KnowledgeBaseUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Base mise à jour"
+        description:
+          type: string
+          maxLength: 500
+          example: "Description mise à jour"
+
+    KnowledgeBaseQueryRequest:
+      type: object
+      required: [query]
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: "Comment configurer un assistant ?"
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+          example: 5
+
+    # ===== RESPONSES =====
+    PaginatedResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        pagination:
+          type: object
+          required: [page, limit, total, has_more]
+          properties:
+            page:
+              type: integer
+              minimum: 1
+              example: 1
+            limit:
+              type: integer
+              minimum: 1
+              example: 20
+            total:
+              type: integer
+              minimum: 0
+              example: 42
+            has_more:
+              type: boolean
+              example: true
+
+    SingleResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+
+    SuccessResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+          example: true
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [message]
+          properties:
+            message:
+              type: string
+              example: "Message d'erreur descriptif"
+            code:
+              type: string
+              example: "VALIDATION_ERROR"
+            details:
+              type: object
+              example: {"field": "name", "issue": "obligatoire"}
+
+    PaginatedAssistantsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Assistant'
+
+    SingleAssistantResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Assistant'
+
+    PaginatedKnowledgeBasesResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/KnowledgeBase'
+
+    SingleKnowledgeBaseResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/KnowledgeBase'
+
+    KnowledgeBaseQueryResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                        example: "Contenu trouvé dans la base"
+                      score:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                        example: 0.87
+                      metadata:
+                        type: object
+                        example: {"source": "doc1.pdf", "page": 5}
+
+  responses:
+    UnauthorizedError:
+      description: Token d'authentification manquant ou invalide
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Token d'authentification invalide"
+              code: "UNAUTHORIZED"
+
+    ValidationError:
+      description: Erreur de validation des données d'entrée
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Données de validation incorrectes"
+              code: "VALIDATION_ERROR"
+              details:
+                field: "name"
+                issue: "Champ obligatoire manquant"
+
+    NotFoundError:
+      description: Ressource non trouvée
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Ressource non trouvée"
+              code: "NOT_FOUND"
+
+    InternalServerError:
+      description: Erreur interne du serveur
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Erreur interne du serveur"
+              code: "INTERNAL_ERROR" 

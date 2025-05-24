@@ -1,16 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Button, Table, Tag, Typography, Row, Col, Card, Space, Checkbox, ConfigProvider } from 'antd';
-import { 
-  PlusCircle, 
-  Phone, 
-  MessageSquare, 
-  Database, 
-  ChevronRight,
-  Sparkles,
-  Play
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button, Table, Tag, Typography, Row, Col, Card, Space, ConfigProvider, message } from 'antd';
+import {   PlusCircle,   Phone,   Database,   ChevronRight,  Sparkles,  Play} from 'lucide-react';
+
+// Migration vers le SDK AlloKoli
+import { useAlloKoliSDKWithAuth } from '../../lib/hooks/useAlloKoliSDK';
+import { Assistant } from '../../lib/api/allokoli-sdk';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -30,28 +27,90 @@ const theme = {
 };
 
 export default function DashboardPage() {
-  // Données fictives pour les assistants
-  const assistants = [
-    { id: '1', name: 'Assistant Service Client', model: 'gpt-4o', status: 'active', lastActive: '1h' },
-    { id: '2', name: 'Support Technique', model: 'claude-3-opus', status: 'inactive', lastActive: '1j' },
-    { id: '3', name: 'Agent Commercial', model: 'gpt-4o', status: 'draft', lastActive: '3j' },
-  ];
+  const sdk = useAlloKoliSDKWithAuth();
+  const [assistants, setAssistants] = useState<Assistant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  type Assistant = {
-    id: string;
-    name: string;
-    model: string;
-    status: string;
-    lastActive: string;
+  // Charger les assistants via le SDK
+  useEffect(() => {
+    fetchAssistants();
+  }, []);
+
+  const fetchAssistants = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Utiliser le SDK pour récupérer les assistants
+      const response = await sdk.listAssistants({ limit: 10 });
+      setAssistants(response.data);
+      
+    } catch (err: unknown) {
+      console.error('Erreur lors du chargement des assistants:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      
+      // Fallback avec des données mock en développement
+      if (process.env.NODE_ENV === 'development') {
+        setAssistants([
+          {
+            id: 'demo-1',
+            name: 'Assistant Service Client',
+            model: { provider: 'openai', model: 'gpt-4o' },
+                         voice: { provider: 'eleven-labs', voiceId: 'jennifer' },
+            language: 'fr-FR',
+            created_at: '2023-10-15T10:00:00Z',
+            updated_at: '2023-10-15T10:00:00Z',
+            firstMessage: 'Bonjour, comment puis-je vous aider ?',
+            instructions: 'Vous êtes un assistant service client.',
+          },
+          {
+            id: 'demo-2',
+            name: 'Support Technique',
+            model: { provider: 'anthropic', model: 'claude-3-opus' },
+                         voice: { provider: 'eleven-labs', voiceId: 'chris' },
+            language: 'fr-FR',
+            created_at: '2023-11-20T10:00:00Z',
+            updated_at: '2023-11-20T10:00:00Z',
+            firstMessage: 'Bonjour, je suis votre assistant technique.',
+            instructions: 'Vous êtes un assistant de support technique.',
+          },
+        ]);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
+    // Ces fonctions sont conservées pour utilisation future  // const handleDeleteAssistant = async (assistantId: string, assistantName: string) => {  //   try {  //     await sdk.deleteAssistant(assistantId);  //     message.success(`Assistant "${assistantName}" supprimé avec succès`);  //       //     // Actualiser la liste  //     setAssistants(prev => prev.filter(a => a.id !== assistantId));  //       //   } catch (err) {  //     console.error('Erreur lors de la suppression:', err);  //     message.error('Erreur lors de la suppression de l\'assistant');  //   }  // };  // const formatDate = (dateString: string) => {  //   return new Date(dateString).toLocaleDateString('fr-FR');  // };
+
+  // Déterminer le statut d'un assistant
+  const getAssistantStatus = (assistant: Assistant): { status: string; color: string } => {
+    if (!assistant.model || !assistant.language) {
+      return { status: 'draft', color: '#3ABFF8' };
+    }
+    
+    if (assistant.metadata && 'error' in assistant.metadata) {
+      return { status: 'error', color: '#FF6B6B' };
+    }
+    
+    return { status: 'active', color: '#4F3FF0' };
+  };
+
+  // Obtenir le modèle sous forme de string
+  const getModelString = (model: Assistant['model']): string => {
+    if (typeof model === 'string') return model;
+    return model?.model || 'Non défini';
+  };
+
+  // Colonnes du tableau des assistants
   const columns = [
     {
       title: 'Nom',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: Assistant) => (
-        <Link href={`/dashboard/assistants/${record.id}`} style={{ color: '#22223B' }}>
+        <Link href={`/assistants/${record.id}`} style={{ color: '#22223B' }}>
           {text}
         </Link>
       ),
@@ -60,43 +119,49 @@ export default function DashboardPage() {
       title: 'Modèle',
       dataIndex: 'model',
       key: 'model',
+      render: (model: Assistant['model']) => getModelString(model),
     },
     {
       title: 'Statut',
-      dataIndex: 'status',
       key: 'status',
-      render: (status: string) => {
-        let color = '#4F3FF0';
-        
-        if (status === 'inactive') {
-          color = '#FF6B6B';
-        } else if (status === 'draft') {
-          color = '#3ABFF8';
-        }
-        
+      render: (_: unknown, record: Assistant) => {
+        const { status, color } = getAssistantStatus(record);
         return <Tag color={color}>{status.toUpperCase()}</Tag>;
       },
     },
     {
       title: 'Dernière activité',
-      dataIndex: 'lastActive',
-      key: 'lastActive',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
+      render: (date: string) => {
+        const now = new Date();
+        const updatedAt = new Date(date);
+        const diffInHours = Math.floor((now.getTime() - updatedAt.getTime()) / (1000 * 60 * 60));
+        
+        if (diffInHours < 1) return 'Maintenant';
+        if (diffInHours < 24) return `${diffInHours}h`;
+        return `${Math.floor(diffInHours / 24)}j`;
+      },
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: function ActionsCell() {
-        return (
-          <Space>
+      render: (_: unknown, record: Assistant) => (
+        <Space>
+          <Link href={`/assistants/${record.id}`}>
             <Button type="text" style={{ color: '#4F3FF0' }}>
               Gérer
             </Button>
-            <Button type="text" style={{ color: '#4F3FF0' }}>
-              Simuler
-            </Button>
-          </Space>
-        );
-      },
+          </Link>
+          <Button 
+            type="text" 
+            style={{ color: '#4F3FF0' }}
+            onClick={() => message.info('Simulation à venir')}
+          >
+            Simuler
+          </Button>
+        </Space>
+      ),
     },
   ];
 
@@ -209,292 +274,144 @@ export default function DashboardPage() {
                             background: '#F7F8FF',
                           }}
                         >
-                          Assistant Personnel
+                          Sur mesure
                         </Button>
                       </Col>
                     </Row>
                   </Card>
                   
-                  <Card
-                    style={{
-                      background: '#ffffff',
-                      border: '1px solid #F0EDFF',
-                    }}
-                  >
-                    <Title level={5} style={{ marginBottom: 8 }}>2. Personnalisez vos capacités</Title>
-                    <Space direction="vertical" size={16} style={{ width: '100%', marginTop: 12 }}>
-                      <Card size="small" bordered style={{ border: '1px solid #F0EDFF', borderRadius: 8 }}>
-                        <Space>
-                          <div style={{
-                            height: 40,
-                            width: 40,
-                            borderRadius: '50%',
-                            background: '#F0EDFF',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}>
-                            <MessageSquare size={16} style={{ color: '#8F6FFF' }} />
-                          </div>
-                          <div>
-                            <Text strong style={{ display: 'block' }}>Réponses personnalisées</Text>
-                            <Text type="secondary" style={{ fontSize: 12 }}>Adaptez le ton et le style</Text>
-                          </div>
-                          <Checkbox defaultChecked style={{ marginLeft: 'auto' }} />
-                        </Space>
-                      </Card>
-                      
-                      <Card size="small" bordered style={{ border: '1px solid #F0EDFF', borderRadius: 8 }}>
-                        <Space>
-                          <div style={{
-                            height: 40,
-                            width: 40,
-                            borderRadius: '50%',
-                            background: '#F0EDFF',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}>
-                            <Database size={16} style={{ color: '#8F6FFF' }} />
-                          </div>
-                          <div>
-                            <Text strong style={{ display: 'block' }}>Base de connaissances</Text>
-                            <Text type="secondary" style={{ fontSize: 12 }}>Connectez vos données</Text>
-                          </div>
-                          <Checkbox style={{ marginLeft: 'auto' }} />
-                        </Space>
-                      </Card>
-                      
-                      <Card size="small" bordered style={{ border: '1px solid #F0EDFF', borderRadius: 8 }}>
-                        <Space>
-                          <div style={{
-                            height: 40,
-                            width: 40,
-                            borderRadius: '50%',
-                            background: '#F0EDFF',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}>
-                            <Phone size={16} style={{ color: '#8F6FFF' }} />
-                          </div>
-                          <div>
-                            <Text strong style={{ display: 'block' }}>Intégration téléphonique</Text>
-                            <Text type="secondary" style={{ fontSize: 12 }}>Gérez les appels entrants</Text>
-                          </div>
-                          <Checkbox style={{ marginLeft: 'auto' }} />
-                        </Space>
-                      </Card>
-                    </Space>
-                  </Card>
-                  
-                  <Button
-                    type="primary"
-                    style={{
-                      marginTop: 24,
-                      height: 40,
-                      background: 'linear-gradient(to right, #8F6FFF, #4F3FF0)',
-                      border: 'none',
-                      boxShadow: '0 2px 8px rgba(79, 63, 240, 0.2)',
-                    }}
-                  >
-                    Créer mon assistant
-                  </Button>
+                  <Space>
+                    <Link href="/assistants/new">
+                      <Button 
+                        type="primary"
+                        icon={<Play size={16} />}
+                        style={{
+                          background: 'linear-gradient(135deg, #8F6FFF 0%, #4F3FF0 100%)',
+                          border: 'none',
+                          borderRadius: 8,
+                          height: 40,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Commencer le wizard
+                      </Button>
+                    </Link>
+                    <Text style={{ color: '#8586A5' }}>ou</Text>
+                    <Link href="/dashboard/assistants">
+                      <Button style={{ color: '#4F3FF0' }}>
+                        Voir tous les assistants
+                      </Button>
+                    </Link>
+                  </Space>
                 </div>
               </Card>
-              
-              {/* Section des assistants existants */}
-              <Card
-                title="Mes assistants"
-                extra={<Button type="primary" icon={<PlusCircle size={14} />}>Nouvel assistant</Button>}
-                style={{
-                  borderRadius: 16,
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <Table 
-                  dataSource={assistants} 
-                  columns={columns} 
-                  rowKey="id"
-                  pagination={false}
-                />
+
+              {/* Section Assistants récents */}
+              <Card title="Assistants récents" style={{ borderRadius: 12 }}>
+                {error && !assistants.length ? (
+                  <Text type="secondary">Erreur lors du chargement : {error}</Text>
+                ) : (
+                  <Table
+                    dataSource={assistants.slice(0, 5)}
+                    columns={columns}
+                    pagination={false}
+                    loading={loading}
+                    rowKey="id"
+                    size="middle"
+                  />
+                )}
+                {assistants.length > 5 && (
+                  <div style={{ textAlign: 'center', marginTop: 16 }}>
+                    <Link href="/dashboard/assistants">
+                      <Button type="link">
+                        Voir tous les assistants <ChevronRight size={14} />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </Card>
             </Space>
           </Col>
-          
+
           {/* Partie droite (1/3 sur desktop) */}
           <Col xs={24} lg={8}>
             <Space direction="vertical" size={24} style={{ width: '100%' }}>
-              {/* Assistant Summary Card */}
-              <Card
-                style={{
-                  borderRadius: 16,
-                  border: '1px solid #B6A3FF',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <Title level={4} style={{ marginBottom: 12 }}>Vue d&apos;ensemble</Title>
-                
-                <Row gutter={16} style={{ marginBottom: 16 }}>
-                  <Col span={12}>
-                    <Card
-                      style={{
-                        background: '#F7F8FF',
-                        textAlign: 'center',
-                        borderRadius: 8,
-                      }}
-                    >
-                      <Text type="secondary" style={{ fontSize: 12 }}>Assistants</Text>
-                      <Title level={2} style={{ color: '#4F3FF0', margin: '4px 0' }}>3</Title>
-                    </Card>
-                  </Col>
-                  <Col span={12}>
-                    <Card
-                      style={{
-                        background: '#F7F8FF',
-                        textAlign: 'center',
-                        borderRadius: 8,
-                      }}
-                    >
-                      <Text type="secondary" style={{ fontSize: 12 }}>Appels ce mois</Text>
-                      <Title level={2} style={{ color: '#4F3FF0', margin: '4px 0' }}>147</Title>
-                    </Card>
-                  </Col>
-                </Row>
-                
-                <div style={{ marginBottom: 16 }}>
-                  <Row justify="space-between" align="middle">
-                    <Col>
-                      <Text type="secondary">Utilisation</Text>
-                    </Col>
-                    <Col>
-                      <Text>32% <Text type="success">↑4%</Text></Text>
-                    </Col>
-                  </Row>
-                  <div
-                    style={{
-                      height: 8,
-                      background: '#F0EDFF',
-                      borderRadius: 8,
-                      marginTop: 8,
-                      marginBottom: 16,
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: '100%',
-                        width: '32%',
-                        background: 'linear-gradient(to right, #8F6FFF, #4F3FF0)',
-                        borderRadius: 8,
-                      }}
-                    ></div>
+              {/* Statistiques rapides */}
+              <Card title="Vue d'ensemble" style={{ borderRadius: 12 }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Assistants actifs</span>
+                    <Text strong>{assistants.filter(a => getAssistantStatus(a).status === 'active').length}</Text>
                   </div>
-                </div>
-                
-                <Link href="/dashboard/usage-billing" style={{ color: '#4F3FF0', display: 'flex', alignItems: 'center' }}>
-                  Voir les statistiques <ChevronRight size={16} style={{ marginLeft: 4 }} />
-                </Link>
-              </Card>
-              
-              {/* AI Suggestion Bubble */}
-              <Card
-                style={{
-                  background: 'linear-gradient(to right, #8F6FFF, #4F3FF0)',
-                  borderRadius: 16,
-                  color: 'white',
-                  border: 'none',
-                }}
-                bodyStyle={{ padding: 20 }}
-              >
-                <Space style={{ marginBottom: 12 }}>
-                  <div style={{
-                    height: 32,
-                    width: 32,
-                    borderRadius: '50%',
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <Sparkles size={16} style={{ color: 'white' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Total assistants</span>
+                    <Text strong>{assistants.length}</Text>
                   </div>
-                  <Text strong style={{ color: 'white' }}>Suggestion IA</Text>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Brouillons</span>
+                    <Text strong>{assistants.filter(a => getAssistantStatus(a).status === 'draft').length}</Text>
+                  </div>
                 </Space>
-                <Paragraph style={{ color: 'rgba(255, 255, 255, 0.9)', marginBottom: 16 }}>
-                  Améliorez votre taux de réponse en ajoutant une base de connaissances à vos assistants.
-                </Paragraph>
-                <Button
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                    border: 'none',
-                  }}
-                >
-                  Essayer maintenant
-                </Button>
               </Card>
-              
-              {/* Recent activities */}
-              <Card
-                title="Activités récentes"
-                style={{
-                  borderRadius: 16,
-                  border: '1px solid #B6A3FF',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <Space direction="vertical" size={16} style={{ width: '100%' }}>
-                  <Card 
-                    size="small"
-                    style={{ 
-                      borderRadius: 8, 
-                      border: '1px solid #F0EDFF',
-                    }}
-                  >
-                    <Space>
-                      <div style={{
-                        height: 40,
-                        width: 40,
-                        borderRadius: '50%',
-                        background: '#F0EDFF',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                        <Phone size={16} style={{ color: '#8F6FFF' }} />
-                      </div>
-                      <div>
-                        <Text strong style={{ display: 'block' }}>Appel entrant</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>Il y a 23 minutes</Text>
-                      </div>
-                    </Space>
-                  </Card>
-                  
-                  <Card 
-                    size="small"
-                    style={{ 
-                      borderRadius: 8, 
-                      border: '1px solid #F0EDFF',
-                    }}
-                  >
-                    <Space>
-                      <div style={{
-                        height: 40,
-                        width: 40,
-                        borderRadius: '50%',
-                        background: '#F0EDFF',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                        <Play size={16} style={{ color: '#8F6FFF' }} />
-                      </div>
-                      <div>
-                        <Text strong style={{ display: 'block' }}>Assistant créé</Text>
-                        <Text type="secondary" style={{ fontSize: 12 }}>Hier, 14:30</Text>
-                      </div>
-                    </Space>
-                  </Card>
+
+              {/* Actions rapides */}
+              <Card title="Actions rapides" style={{ borderRadius: 12 }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <Link href="/assistants/new">
+                    <Button 
+                      type="primary" 
+                      icon={<PlusCircle size={16} />} 
+                      block
+                      style={{ borderRadius: 8 }}
+                    >
+                      Nouvel assistant
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/knowledge-bases">
+                    <Button 
+                      icon={<Database size={16} />} 
+                      block
+                      style={{ borderRadius: 8 }}
+                    >
+                      Bases de connaissances
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/phone-numbers">
+                    <Button 
+                      icon={<Phone size={16} />} 
+                      block
+                      style={{ borderRadius: 8 }}
+                    >
+                      Numéros de téléphone
+                    </Button>
+                  </Link>
+                </Space>
+              </Card>
+
+              {/* Guide de démarrage */}
+              <Card title="Démarrage rapide" style={{ borderRadius: 12 }}>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <div>
+                    <Text strong>1. Créez votre premier assistant</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      Utilisez le wizard pour configurer rapidement
+                    </Text>
+                  </div>
+                  <div>
+                    <Text strong>2. Ajoutez une base de connaissances</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      Enrichissez votre assistant avec vos données
+                    </Text>
+                  </div>
+                  <div>
+                    <Text strong>3. Configurez un numéro</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      Rendez votre assistant accessible par téléphone
+                    </Text>
+                  </div>
                 </Space>
               </Card>
             </Space>

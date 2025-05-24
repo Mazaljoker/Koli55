@@ -1,0 +1,2727 @@
+openapi: 3.1.0
+info:
+  title: AlloKoli API
+  description: |
+    API complète pour la gestion des assistants vocaux IA via Vapi.
+    Cette API permet de gérer les assistants, les bases de connaissances, les appels, 
+    les numéros de téléphone, les fichiers, les analytics, les webhooks, les workflows,
+    les équipes et les fonctions personnalisées.
+    
+    **12 Edge Functions opérationnelles :**
+    - assistants - Gestion des assistants vocaux
+    - knowledge-bases - Bases de connaissances et documents
+    - calls - Historique et monitoring des appels
+    - phone-numbers - Provisioning et gestion des numéros
+    - files - Upload et gestion des fichiers
+    - analytics - Métriques et rapports d'utilisation
+    - webhooks - Événements temps réel
+    - workflows - Configuration des flux conversationnels
+    - squads - Gestion des équipes et collaboration
+    - functions - Outils personnalisés pour assistants
+    - test-suites - Tests automatisés et validation
+    - test - Tests et monitoring système
+  version: 2.0.0
+  contact:
+    name: AlloKoli Support
+    url: https://allokoli.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://{project-id}.supabase.co/functions/v1
+    description: Serveur de production Supabase
+    variables:
+      project-id:
+        default: aiurboizarbbcpynmmgv
+        description: ID de votre projet Supabase
+
+security:
+  - BearerAuth: []
+
+paths:
+  # ===== ASSISTANTS =====
+  /assistants:
+    get:
+      summary: Lister les assistants
+      description: Récupère la liste paginée des assistants de l'utilisateur actuel
+      operationId: listAssistants
+      tags:
+        - Assistants
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des assistants récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssistantsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer un assistant
+      description: Crée un nouvel assistant vocal IA
+      operationId: createAssistant
+      tags:
+        - Assistants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantCreateRequest'
+      responses:
+        '201':
+          description: Assistant créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAssistantResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /assistants/{id}:
+    get:
+      summary: Récupérer un assistant
+      description: Récupère un assistant par son ID
+      operationId: getAssistant
+      tags:
+        - Assistants
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Assistant récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAssistantResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour un assistant
+      description: Met à jour un assistant existant
+      operationId: updateAssistant
+      tags:
+        - Assistants
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantUpdateRequest'
+      responses:
+        '200':
+          description: Assistant mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAssistantResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un assistant
+      description: Supprime un assistant existant
+      operationId: deleteAssistant
+      tags:
+        - Assistants
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Assistant supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== KNOWLEDGE BASES =====
+  /knowledge-bases:
+    get:
+      summary: Lister les bases de connaissances
+      description: Récupère la liste paginée des bases de connaissances
+      operationId: listKnowledgeBases
+      tags:
+        - Knowledge Bases
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des bases de connaissances récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedKnowledgeBasesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer une base de connaissances
+      description: Crée une nouvelle base de connaissances
+      operationId: createKnowledgeBase
+      tags:
+        - Knowledge Bases
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeBaseCreateRequest'
+      responses:
+        '201':
+          description: Base de connaissances créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleKnowledgeBaseResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /knowledge-bases/{id}:
+    get:
+      summary: Récupérer une base de connaissances
+      description: Récupère une base de connaissances par son ID
+      operationId: getKnowledgeBase
+      tags:
+        - Knowledge Bases
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Base de connaissances récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleKnowledgeBaseResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour une base de connaissances
+      description: Met à jour une base de connaissances existante
+      operationId: updateKnowledgeBase
+      tags:
+        - Knowledge Bases
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeBaseUpdateRequest'
+      responses:
+        '200':
+          description: Base de connaissances mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleKnowledgeBaseResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer une base de connaissances
+      description: Supprime une base de connaissances existante
+      operationId: deleteKnowledgeBase
+      tags:
+        - Knowledge Bases
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Base de connaissances supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /knowledge-bases/{id}/query:
+    post:
+      summary: Interroger une base de connaissances
+      description: Effectue une recherche sémantique dans une base de connaissances
+      operationId: queryKnowledgeBase
+      tags:
+        - Knowledge Bases
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeBaseQueryRequest'
+      responses:
+        '200':
+          description: Recherche effectuée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeBaseQueryResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== CALLS =====
+  /calls:
+    get:
+      summary: Lister les appels
+      description: Récupère la liste paginée des appels de l'utilisateur
+      operationId: listCalls
+      tags:
+        - Calls
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des appels récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCallsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer un appel
+      description: Crée un nouvel appel téléphonique
+      operationId: createCall
+      tags:
+        - Calls
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallCreateRequest'
+      responses:
+        '201':
+          description: Appel créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCallResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /calls/{id}:
+    get:
+      summary: Récupérer un appel
+      description: Récupère un appel par son ID
+      operationId: getCall
+      tags:
+        - Calls
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Appel récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCallResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour un appel
+      description: Met à jour les métadonnées d'un appel
+      operationId: updateCall
+      tags:
+        - Calls
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallUpdateRequest'
+      responses:
+        '200':
+          description: Appel mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCallResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un appel
+      description: Supprime un appel de l'historique
+      operationId: deleteCall
+      tags:
+        - Calls
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Appel supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /calls/{id}/end:
+    post:
+      summary: Terminer un appel
+      description: Termine un appel en cours
+      operationId: endCall
+      tags:
+        - Calls
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Appel terminé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleCallResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /calls/{id}/listen:
+    get:
+      summary: Obtenir un lien d'écoute
+      description: Génère un lien pour écouter l'enregistrement d'un appel
+      operationId: getCallListenLink
+      tags:
+        - Calls
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Lien d'écoute généré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        format: uri
+                        description: URL d'écoute de l'appel
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== PHONE NUMBERS =====
+  /phone-numbers:
+    get:
+      summary: Lister les numéros de téléphone
+      description: Récupère la liste paginée des numéros de téléphone
+      operationId: listPhoneNumbers
+      tags:
+        - Phone Numbers
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des numéros récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPhoneNumbersResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer un numéro de téléphone
+      description: Provisionne un nouveau numéro de téléphone
+      operationId: createPhoneNumber
+      tags:
+        - Phone Numbers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberCreateRequest'
+      responses:
+        '201':
+          description: Numéro créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePhoneNumberResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /phone-numbers/{id}:
+    get:
+      summary: Récupérer un numéro de téléphone
+      description: Récupère un numéro par son ID
+      operationId: getPhoneNumber
+      tags:
+        - Phone Numbers
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Numéro récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePhoneNumberResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour un numéro de téléphone
+      description: Met à jour un numéro existant
+      operationId: updatePhoneNumber
+      tags:
+        - Phone Numbers
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberUpdateRequest'
+      responses:
+        '200':
+          description: Numéro mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePhoneNumberResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un numéro de téléphone
+      description: Libère un numéro de téléphone
+      operationId: deletePhoneNumber
+      tags:
+        - Phone Numbers
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Numéro supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /phone-numbers/search:
+    post:
+      summary: Rechercher des numéros disponibles
+      description: Recherche des numéros de téléphone disponibles
+      operationId: searchPhoneNumbers
+      tags:
+        - Phone Numbers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneNumberSearchRequest'
+      responses:
+        '200':
+          description: Recherche effectuée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneNumberSearchResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== FILES =====
+  /files:
+    get:
+      summary: Lister les fichiers
+      description: Récupère la liste paginée des fichiers
+      operationId: listFiles
+      tags:
+        - Files
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+        - name: purpose
+          in: query
+          description: Filtre par type de fichier
+          schema:
+            type: string
+            enum: [assistants, knowledge-bases]
+      responses:
+        '200':
+          description: Liste des fichiers récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFilesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Télécharger un fichier
+      description: Télécharge un nouveau fichier
+      operationId: uploadFile
+      tags:
+        - Files
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/FileUploadRequest'
+      responses:
+        '201':
+          description: Fichier téléchargé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleFileResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /files/{id}:
+    get:
+      summary: Récupérer un fichier
+      description: Récupère les métadonnées d'un fichier
+      operationId: getFile
+      tags:
+        - Files
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Fichier récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleFileResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un fichier
+      description: Supprime un fichier
+      operationId: deleteFile
+      tags:
+        - Files
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Fichier supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /files/{id}/content:
+    get:
+      summary: Récupérer le contenu d'un fichier
+      description: Récupère le contenu texte d'un fichier
+      operationId: getFileContent
+      tags:
+        - Files
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Contenu du fichier récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileContentResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== ANALYTICS =====
+  /analytics/calls:
+    get:
+      summary: Métriques des appels
+      description: Obtient les métriques et statistiques des appels
+      operationId: getCallMetrics
+      tags:
+        - Analytics
+      parameters:
+        - name: start_date
+          in: query
+          description: Date de début (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Date de fin (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: assistant_id
+          in: query
+          description: Filtre par assistant
+          schema:
+            type: string
+            format: uuid
+        - name: phone_number_id
+          in: query
+          description: Filtre par numéro de téléphone
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Métriques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallMetricsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /analytics/usage:
+    get:
+      summary: Statistiques d'utilisation
+      description: Récupère les statistiques d'utilisation globales
+      operationId: getUsageStats
+      tags:
+        - Analytics
+      parameters:
+        - name: start_date
+          in: query
+          description: Date de début (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Date de fin (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Statistiques récupérées avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsageStatsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /analytics/calls/{id}/timeline:
+    get:
+      summary: Chronologie d'un appel
+      description: Obtient la chronologie détaillée d'un appel
+      operationId: getCallTimeline
+      tags:
+        - Analytics
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Chronologie récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallTimelineResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== WEBHOOKS =====
+  /webhooks:
+    get:
+      summary: Lister les webhooks
+      description: Récupère la liste paginée des webhooks
+      operationId: listWebhooks
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des webhooks récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWebhooksResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer un webhook
+      description: Configure un nouveau webhook pour recevoir les événements
+      operationId: createWebhook
+      tags:
+        - Webhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreateRequest'
+      responses:
+        '201':
+          description: Webhook créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleWebhookResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /webhooks/{id}:
+    get:
+      summary: Récupérer un webhook
+      description: Récupère un webhook par son ID
+      operationId: getWebhook
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Webhook récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleWebhookResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour un webhook
+      description: Met à jour la configuration d'un webhook
+      operationId: updateWebhook
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookUpdateRequest'
+      responses:
+        '200':
+          description: Webhook mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleWebhookResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un webhook
+      description: Supprime un webhook existant
+      operationId: deleteWebhook
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Webhook supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /webhooks/{id}/test:
+    post:
+      summary: Tester un webhook
+      description: Envoie un événement de test à un webhook
+      operationId: testWebhook
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookTestRequest'
+      responses:
+        '200':
+          description: Test du webhook effectué avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookTestResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== WORKFLOWS =====
+  /workflows:
+    get:
+      summary: Lister les workflows
+      description: Récupère la liste paginée des workflows conversationnels
+      operationId: listWorkflows
+      tags:
+        - Workflows
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des workflows récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWorkflowsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer un workflow
+      description: Crée un nouveau workflow conversationnel
+      operationId: createWorkflow
+      tags:
+        - Workflows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowCreateRequest'
+      responses:
+        '201':
+          description: Workflow créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleWorkflowResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /workflows/{id}:
+    get:
+      summary: Récupérer un workflow
+      description: Récupère un workflow par son ID
+      operationId: getWorkflow
+      tags:
+        - Workflows
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Workflow récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleWorkflowResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour un workflow
+      description: Met à jour un workflow existant
+      operationId: updateWorkflow
+      tags:
+        - Workflows
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkflowUpdateRequest'
+      responses:
+        '200':
+          description: Workflow mis à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleWorkflowResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer un workflow
+      description: Supprime un workflow existant
+      operationId: deleteWorkflow
+      tags:
+        - Workflows
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Workflow supprimé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== SQUADS =====
+  /squads:
+    get:
+      summary: Lister les équipes
+      description: Récupère la liste paginée des équipes
+      operationId: listSquads
+      tags:
+        - Squads
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des équipes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSquadsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer une équipe
+      description: Crée une nouvelle équipe de collaboration
+      operationId: createSquad
+      tags:
+        - Squads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SquadCreateRequest'
+      responses:
+        '201':
+          description: Équipe créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleSquadResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /squads/{id}:
+    get:
+      summary: Récupérer une équipe
+      description: Récupère une équipe par son ID
+      operationId: getSquad
+      tags:
+        - Squads
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Équipe récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleSquadResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour une équipe
+      description: Met à jour une équipe existante
+      operationId: updateSquad
+      tags:
+        - Squads
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SquadUpdateRequest'
+      responses:
+        '200':
+          description: Équipe mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleSquadResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer une équipe
+      description: Supprime une équipe existante
+      operationId: deleteSquad
+      tags:
+        - Squads
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Équipe supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /squads/{id}/members:
+    get:
+      summary: Lister les membres d'une équipe
+      description: Récupère la liste des membres d'une équipe
+      operationId: listSquadMembers
+      tags:
+        - Squads
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Liste des membres récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SquadMembersResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Ajouter un membre à une équipe
+      description: Ajoute un nouveau membre à une équipe
+      operationId: addSquadMember
+      tags:
+        - Squads
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SquadMemberRequest'
+      responses:
+        '201':
+          description: Membre ajouté avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /squads/{id}/members/{memberId}:
+    delete:
+      summary: Retirer un membre d'une équipe
+      description: Retire un membre d'une équipe
+      operationId: removeSquadMember
+      tags:
+        - Squads
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de l'équipe
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: path
+          required: true
+          description: ID du membre à retirer
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Membre retiré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== FUNCTIONS =====
+  /functions:
+    get:
+      summary: Lister les fonctions personnalisées
+      description: Récupère la liste paginée des fonctions personnalisées
+      operationId: listCustomFunctions
+      tags:
+        - Functions
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des fonctions récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedFunctionsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer une fonction personnalisée
+      description: Crée une nouvelle fonction personnalisée pour les assistants
+      operationId: createCustomFunction
+      tags:
+        - Functions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionCreateRequest'
+      responses:
+        '201':
+          description: Fonction créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleFunctionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /functions/{id}:
+    get:
+      summary: Récupérer une fonction personnalisée
+      description: Récupère une fonction par son ID
+      operationId: getCustomFunction
+      tags:
+        - Functions
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Fonction récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleFunctionResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour une fonction personnalisée
+      description: Met à jour une fonction existante
+      operationId: updateCustomFunction
+      tags:
+        - Functions
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionUpdateRequest'
+      responses:
+        '200':
+          description: Fonction mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleFunctionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer une fonction personnalisée
+      description: Supprime une fonction existante
+      operationId: deleteCustomFunction
+      tags:
+        - Functions
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Fonction supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /functions/{id}/execute:
+    post:
+      summary: Exécuter une fonction personnalisée
+      description: Exécute une fonction personnalisée avec des paramètres
+      operationId: executeCustomFunction
+      tags:
+        - Functions
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionExecuteRequest'
+      responses:
+        '200':
+          description: Fonction exécutée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FunctionExecuteResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== TEST SUITES =====
+  /test-suites:
+    get:
+      summary: Lister les suites de tests
+      description: Récupère la liste paginée des suites de tests
+      operationId: listTestSuites
+      tags:
+        - Test Suites
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Liste des suites de tests récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTestSuitesResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Créer une suite de tests
+      description: Crée une nouvelle suite de tests automatisés
+      operationId: createTestSuite
+      tags:
+        - Test Suites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestSuiteCreateRequest'
+      responses:
+        '201':
+          description: Suite de tests créée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTestSuiteResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /test-suites/{id}:
+    get:
+      summary: Récupérer une suite de tests
+      description: Récupère une suite de tests par son ID
+      operationId: getTestSuite
+      tags:
+        - Test Suites
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Suite de tests récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTestSuiteResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Mettre à jour une suite de tests
+      description: Met à jour une suite de tests existante
+      operationId: updateTestSuite
+      tags:
+        - Test Suites
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestSuiteUpdateRequest'
+      responses:
+        '200':
+          description: Suite de tests mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTestSuiteResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Supprimer une suite de tests
+      description: Supprime une suite de tests existante
+      operationId: deleteTestSuite
+      tags:
+        - Test Suites
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      responses:
+        '200':
+          description: Suite de tests supprimée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /test-suites/{id}/run:
+    post:
+      summary: Exécuter une suite de tests
+      description: Lance l'exécution d'une suite de tests
+      operationId: runTestSuite
+      tags:
+        - Test Suites
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestSuiteRunRequest'
+      responses:
+        '200':
+          description: Suite de tests lancée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestSuiteRunResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /test-suites/{id}/results:
+    get:
+      summary: Résultats d'une suite de tests
+      description: Récupère les résultats des dernières exécutions d'une suite
+      operationId: getTestSuiteResults
+      tags:
+        - Test Suites
+      parameters:
+        - $ref: '#/components/parameters/UuidPathParam'
+        - name: limit
+          in: query
+          description: Nombre de résultats à retourner
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: Résultats récupérés avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestSuiteResultsResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # ===== TEST ENDPOINT =====
+  /test:
+    get:
+      summary: Test de connectivité
+      description: Endpoint de test pour vérifier la connectivité et le statut du système
+      operationId: testConnectivity
+      tags:
+        - System
+      responses:
+        '200':
+          description: Test réussi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  system_status:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        enum: [healthy, degraded, down]
+                      vapi_integration:
+                        type: string
+                        enum: [healthy, degraded, down]
+                      edge_functions:
+                        type: string
+                        enum: [healthy, degraded, down]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT Supabase pour l'authentification
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Numéro de page (commence à 1)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: Nombre d'éléments par page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    UuidPathParam:
+      name: id
+      in: path
+      required: true
+      description: Identifiant unique
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    # ===== SCHEMAS DE BASE =====
+    Assistant:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identifiant unique de l'assistant
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Nom de l'assistant
+        model:
+          oneOf:
+            - type: string
+              description: Nom simple du modèle (ex. "gpt-4o")
+            - $ref: '#/components/schemas/VapiModel'
+        voice:
+          oneOf:
+            - type: string
+              description: ID simple de la voix
+            - $ref: '#/components/schemas/VapiVoice'
+        firstMessage:
+          type: string
+          description: Premier message de l'assistant
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    KnowledgeBase:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Call:
+      type: object
+      required:
+        - id
+        - assistant_id
+        - phone_number_id
+        - to
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        assistant_id:
+          type: string
+          format: uuid
+        phone_number_id:
+          type: string
+          format: uuid
+        to:
+          type: string
+          pattern: '^\+[1-9]\d{1,14}$'
+          description: Numéro de téléphone au format E.164
+        status:
+          type: string
+          enum: [queued, ringing, in-progress, completed, busy, failed, no-answer, canceled]
+        duration_ms:
+          type: integer
+          minimum: 0
+        cost:
+          type: number
+          minimum: 0
+        metadata:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PhoneNumber:
+      type: object
+      required:
+        - id
+        - phone_number
+        - provider
+        - country
+        - active
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone_number:
+          type: string
+          pattern: '^\+[1-9]\d{1,14}$'
+          description: Numéro de téléphone au format E.164
+        friendly_name:
+          type: string
+          maxLength: 100
+        provider:
+          type: string
+          enum: [twilio, telnyx, bandwidth]
+        country:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: Code pays ISO-2
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [voice, sms, mms, fax]
+        active:
+          type: boolean
+        assistant_id:
+          type: string
+          format: uuid
+        workflow_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    File:      type: object      required:        - id        - filename        - purpose        - size        - created_at      properties:        id:          type: string          format: uuid        filename:          type: string          maxLength: 255        purpose:          type: string          enum: [assistants, knowledge-bases]        size:          type: integer          minimum: 0          description: Taille du fichier en octets        mime_type:          type: string          description: Type MIME du fichier        metadata:          type: object          additionalProperties: true        created_at:          type: string          format: date-time    Webhook:      type: object      required:        - id        - url        - events        - active        - created_at      properties:        id:          type: string          format: uuid        url:          type: string          format: uri          description: URL du webhook        events:          type: array          items:            type: string            enum: [call.created, call.ended, call.listened, phone-number.created, phone-number.updated, phone-number.deleted, knowledge-base.created, knowledge-base.updated, knowledge-base.deleted, assistant.created, assistant.updated, assistant.deleted]        active:          type: boolean          description: Statut actif du webhook        secret:          type: string          description: Secret pour la vérification des signatures        retry_config:          type: object          properties:            max_retries:              type: integer              minimum: 0              maximum: 10              default: 3            retry_delay_seconds:              type: integer              minimum: 1              maximum: 3600              default: 60        created_at:          type: string          format: date-time        updated_at:          type: string          format: date-time    Workflow:      type: object      required:        - id        - name        - steps        - created_at      properties:        id:          type: string          format: uuid        name:          type: string          minLength: 1          maxLength: 100        description:          type: string          maxLength: 500        steps:          type: array          items:            type: object            properties:              id:                type: string              type:                type: string                enum: [message, condition, action, wait]              config:                type: object                additionalProperties: true        active:          type: boolean          default: true        created_at:          type: string          format: date-time        updated_at:          type: string          format: date-time    Squad:      type: object      required:        - id        - name        - created_at      properties:        id:          type: string          format: uuid        name:          type: string          minLength: 1          maxLength: 100        description:          type: string          maxLength: 500        members:          type: array          items:            type: object            properties:              user_id:                type: string                format: uuid              role:                type: string                enum: [owner, admin, member]              joined_at:                type: string                format: date-time        settings:          type: object          properties:            visibility:              type: string              enum: [public, private]              default: private        created_at:          type: string          format: date-time        updated_at:          type: string          format: date-time    Function:      type: object      required:        - id        - name        - code        - created_at      properties:        id:          type: string          format: uuid        name:          type: string          minLength: 1          maxLength: 100        description:          type: string          maxLength: 500        code:          type: string          description: Code de la fonction        parameters:          type: object          description: Schema des paramètres de la fonction          additionalProperties: true        return_type:          type: string          description: Type de retour de la fonction        active:          type: boolean          default: true        version:          type: string          description: Version de la fonction        created_at:          type: string          format: date-time        updated_at:          type: string          format: date-time    TestSuite:      type: object      required:        - id        - name        - tests        - created_at      properties:        id:          type: string          format: uuid        name:          type: string          minLength: 1          maxLength: 100        description:          type: string          maxLength: 500        tests:          type: array          items:            type: object            properties:              id:                type: string              name:                type: string              type:                type: string                enum: [unit, integration, e2e]              config:                type: object                additionalProperties: true        active:          type: boolean          default: true        schedule:          type: object          properties:            enabled:              type: boolean              default: false            cron:              type: string              description: Expression cron pour l'exécution automatique        created_at:          type: string          format: date-time        updated_at:          type: string          format: date-time
+
+    # ===== SCHEMAS VAPI =====
+    VapiModel:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [openai, anthropic, together-ai]
+        model:
+          type: string
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        max_tokens:
+          type: integer
+          minimum: 1
+
+    VapiVoice:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [elevenlabs, azure, google]
+        voice_id:
+          type: string
+        stability:
+          type: number
+          minimum: 0
+          maximum: 1
+        similarity_boost:
+          type: number
+          minimum: 0
+          maximum: 1
+
+    # ===== REQUESTS =====
+    AssistantCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        model:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/VapiModel'
+        voice:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/VapiVoice'
+        firstMessage:
+          type: string
+
+    AssistantUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        model:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/VapiModel'
+        voice:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/VapiVoice'
+        firstMessage:
+          type: string
+
+    KnowledgeBaseCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+
+    KnowledgeBaseUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+
+    KnowledgeBaseQueryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 1000
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+
+    CallCreateRequest:
+      type: object
+      required:
+        - assistant_id
+        - phone_number_id
+        - to
+      properties:
+        assistant_id:
+          type: string
+          format: uuid
+        phone_number_id:
+          type: string
+          format: uuid
+        to:
+          type: string
+          pattern: '^\+[1-9]\d{1,14}$'
+        metadata:
+          type: object
+          additionalProperties: true
+
+    CallUpdateRequest:
+      type: object
+      properties:
+        metadata:
+          type: object
+          additionalProperties: true
+
+    PhoneNumberCreateRequest:
+      type: object
+      required:
+        - phone_number
+      properties:
+        phone_number:
+          type: string
+          pattern: '^\+[1-9]\d{1,14}$'
+        provider:
+          type: string
+          enum: [twilio, telnyx, bandwidth]
+          default: twilio
+        friendly_name:
+          type: string
+          maxLength: 100
+
+    PhoneNumberUpdateRequest:
+      type: object
+      properties:
+        friendly_name:
+          type: string
+          maxLength: 100
+        assistant_id:
+          type: string
+          format: uuid
+        workflow_id:
+          type: string
+          format: uuid
+
+    PhoneNumberSearchRequest:
+      type: object
+      required:
+        - country
+      properties:
+        country:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          description: Code pays ISO-2
+        area_code:
+          type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+            enum: [voice, sms, mms, fax]
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 25
+          default: 10
+
+    FileUploadRequest:
+      type: object
+      required:
+        - file
+        - purpose
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Fichier à télécharger
+        purpose:
+          type: string
+          enum: [assistants, knowledge-bases]
+        metadata:
+          type: string
+          description: Métadonnées JSON sérialisées
+
+    # ===== RESPONSES =====
+    PaginatedResponse:
+      type: object
+      required:
+        - data
+        - pagination
+      properties:
+        pagination:
+          type: object
+          required:
+            - page
+            - limit
+            - total
+            - has_more
+          properties:
+            page:
+              type: integer
+              minimum: 1
+            limit:
+              type: integer
+              minimum: 1
+            total:
+              type: integer
+              minimum: 0
+            has_more:
+              type: boolean
+
+    SingleResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+
+    SuccessResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+            details:
+              type: object
+
+    PaginatedAssistantsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Assistant'
+
+    SingleAssistantResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Assistant'
+
+    PaginatedKnowledgeBasesResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/KnowledgeBase'
+
+    SingleKnowledgeBaseResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/KnowledgeBase'
+
+    KnowledgeBaseQueryResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                results:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      content:
+                        type: string
+                      score:
+                        type: number
+                      metadata:
+                        type: object
+
+    PaginatedCallsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Call'
+
+    SingleCallResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Call'
+
+    PaginatedPhoneNumbersResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/PhoneNumber'
+
+    SinglePhoneNumberResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PhoneNumber'
+
+    PhoneNumberSearchResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                phone_numbers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      phone_number:
+                        type: string
+                      provider:
+                        type: string
+                      country:
+                        type: string
+                      capabilities:
+                        type: array
+                        items:
+                          type: string
+
+    PaginatedFilesResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/File'
+
+    SingleFileResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/File'
+
+    FileContentResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Contenu texte du fichier
+                encoding:
+                  type: string
+                  description: Encodage du contenu
+
+    CallMetricsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                total_calls:
+                  type: integer
+                  minimum: 0
+                total_duration_ms:
+                  type: integer
+                  minimum: 0
+                average_duration_ms:
+                  type: number
+                  minimum: 0
+                successful_calls:
+                  type: integer
+                  minimum: 0
+                failed_calls:
+                  type: integer
+                  minimum: 0
+                total_cost:
+                  type: number
+                  minimum: 0
+
+    UsageStatsResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                total_requests:
+                  type: integer
+                  minimum: 0
+                total_tokens_processed:
+                  type: integer
+                  minimum: 0
+                unique_users:
+                  type: integer
+                  minimum: 0
+
+    CallTimelineResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                call_id:
+                  type: string
+                  format: uuid
+                events:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+                      data:
+                        type: object
+
+    PaginatedWebhooksResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Webhook'
+
+    SingleWebhookResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Webhook'
+
+    WebhookCreateRequest:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL du webhook
+        events:
+          type: array
+          items:
+            type: string
+            enum: [call.created, call.ended, call.listened, phone-number.created, phone-number.updated, phone-number.deleted, knowledge-base.created, knowledge-base.updated, knowledge-base.deleted, assistant.created, assistant.updated, assistant.deleted]
+
+    WebhookUpdateRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL du webhook
+        events:
+          type: array
+          items:
+            type: string
+            enum: [call.created, call.ended, call.listened, phone-number.created, phone-number.updated, phone-number.deleted, knowledge-base.created, knowledge-base.updated, knowledge-base.deleted, assistant.created, assistant.updated, assistant.deleted]
+
+    WebhookTestRequest:
+      type: object
+      required:
+        - event
+      properties:
+        event:
+          type: string
+          enum: [call.created, call.ended, call.listened, phone-number.created, phone-number.updated, phone-number.deleted, knowledge-base.created, knowledge-base.updated, knowledge-base.deleted, assistant.created, assistant.updated, assistant.deleted]
+
+    WebhookTestResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+
+    PaginatedWorkflowsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Workflow'
+
+    SingleWorkflowResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Workflow'
+
+    WorkflowCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    WorkflowUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    PaginatedSquadsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Squad'
+
+    SingleSquadResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Squad'
+
+    SquadCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    SquadUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    SquadMembersResponse:
+      type: object
+      required:
+        - members
+      properties:
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+                minLength: 1
+                maxLength: 100
+
+    SquadMemberRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    PaginatedFunctionsResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Function'
+
+    SingleFunctionResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Function'
+
+    FunctionCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    FunctionUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    FunctionExecuteRequest:
+      type: object
+      required:
+        - params
+      properties:
+        params:
+          type: object
+
+    FunctionExecuteResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: string
+
+    PaginatedTestSuitesResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/TestSuite'
+
+    SingleTestSuiteResponse:
+      allOf:
+        - $ref: '#/components/schemas/SingleResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/TestSuite'
+
+    TestSuiteCreateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    TestSuiteUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    TestSuiteRunRequest:
+      type: object
+      properties:
+        params:
+          type: object
+
+    TestSuiteRunResponse:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          type: string
+
+    TestSuiteResultsResponse:
+      type: object
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              call_id:
+                type: string
+                format: uuid
+              result:
+                type: string
+
+  responses:
+    UnauthorizedError:
+      description: Token d'authentification manquant ou invalide
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ValidationError:
+      description: Erreur de validation des données
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFoundError:
+      description: Ressource non trouvée
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Erreur interne du serveur
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse' 

@@ -8,7 +8,9 @@
     "build": "cd frontend && next build",
     "start": "cd frontend && next start",
     "lint": "cd frontend && next lint",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-sdk": "node generate-sdk.js",
+    "update-api": "npm run generate-sdk"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,7 @@
     "@vapi-ai/server-sdk": "^0.7.0",
     "@vapi-ai/web": "^2.3.0",
     "autoprefixer": "^10.4.21",
+    "framer-motion": "^12.12.1",
     "next": "^15.3.2",
     "postcss": "^8.5.3",
     "react": "^19.1.0",

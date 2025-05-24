@@ -3,14 +3,133 @@
 ## Vue d'ensemble
 Les assistants sont au cœur de la plateforme Koli55. Un assistant est un agent IA vocal capable de mener des conversations téléphoniques automatisées avec les utilisateurs. Cette documentation détaille les fonctionnalités, l'intégration et l'utilisation des assistants.
 
-## 🎉 État actuel (Phase 10.1 - COMPLÉTÉ)
+## 🎉 État actuel (Phase 10.1 - COMPLÉTÉ + AGENT CONFIGURATEUR)
 
-**✅ FONCTIONNALITÉ COMPLÈTEMENT OPÉRATIONNELLE**
+**✅ FONCTIONNALITÉ COMPLÈTEMENT OPÉRATIONNELLE + CONFIGURATEUR SPÉCIALISÉ**
 
-- **Backend** : Edge Function `assistants` déployée (Version 28) et **100% compatible Vapi.ai**
+- **Backend** : Edge Function `assistants` déployée (Version 29) et **100% compatible Vapi.ai**
+- **Agent Configurateur** : ✅ **NOUVEAU** Template restaurant créé et opérationnel
 - **Frontend** : Service `assistantsService` complètement testé et fonctionnel
 - **Interface utilisateur** : Wizard de création d'assistant complet et opérationnel
 - **Intégration** : Connexion frontend-backend validée et robuste
+
+## 🚀 Agent Configurateur AlloKoli
+
+### Vue d'ensemble
+L'agent configurateur AlloKoli est un assistant spécialisé qui guide les professionnels dans la création d'assistants vocaux personnalisés pour leur secteur d'activité.
+
+**✅ AGENT CONFIGURATEUR RESTAURANT OPÉRATIONNEL**
+
+- **Nom** : "AlloKoliConfig Restaurant"
+- **ID Vapi** : `46b73124-6624-45ab-89c7-d27ecedcb251`
+- **Statut** : ✅ Créé et configuré avec succès
+- **Secteur** : Restaurant (template spécialisé)
+
+### Fonctionnalités du Configurateur
+
+#### 1. Collecte d'Informations Structurée
+Le configurateur guide l'utilisateur à travers un processus de collecte d'informations :
+
+1. **Accueil et explication** du processus de création
+2. **Nom du restaurant** - Identification de l'établissement
+3. **Type de cuisine** - Spécialisation culinaire (italienne, japonaise, etc.)
+4. **Services offerts** - Livraison, plats à emporter, réservations
+5. **Horaires d'ouverture** - Planning de fonctionnement
+6. **Spécialités de la maison** - Plats signature et recommandations
+
+#### 2. Génération JSON Automatique
+À la fin du processus, le configurateur génère automatiquement une configuration JSON complète basée sur les informations collectées :
+
+```json
+{
+  "restaurant": {
+    "name": "Restaurant Example",
+    "cuisine_type": "italienne",
+    "services": ["livraison", "plats_a_emporter"],
+    "hours": {
+      "monday": "11:00-22:00",
+      "tuesday": "11:00-22:00"
+    },
+    "specialties": ["pizza margherita", "risotto aux champignons"]
+  },
+  "assistant_config": {
+    "greeting": "Bonjour et bienvenue chez [Restaurant Name]",
+    "capabilities": ["reservations", "menu_info", "hours_info"],
+    "voice_settings": {
+      "tone": "friendly",
+      "language": "fr-FR"
+    }
+  }
+}
+```
+
+#### 3. Prompt Système Optimisé
+
+```
+[Identity]  
+Vous êtes AlloKoliConfig, un assistant expert en configuration d'agents vocaux pour restaurants. Guidez les restaurateurs, spécialisé dans la création de profils personnalisés pour chaque établissement.
+
+[Style]  
+Utilisez un ton informatif et amical. Assurez-vous d'être clair et engageant dans vos instructions.
+
+[Response Guidelines]  
+- Posez une question à la fois pour faciliter la collecte d'informations.
+- Évitez les jargons techniques. Expliquez les étapes de manière simple et directe.  
+
+[Task & Goals]  
+1. Accueillez le restaurateur et expliquez brièvement le processus de création de l'assistant vocal.  
+2. Demandez le nom du restaurant.  
+3. Demandez le type de cuisine que l'établissement propose (par exemple, italienne, japonaise).  
+4. Recueillez des informations sur les services offerts (comme la livraison, les plats à emporter, etc.).  
+5. Demandez les horaires d'ouverture et de fermeture.  
+6. Demandez les spécialités de la maison.
+7. À la fin du processus, générez une configuration JSON complète basée sur les informations collectées.
+
+[Error Handling / Fallback]  
+- Si une réponse est incomplète ou peu claire, demandez des éclaircissements poliment.  
+- En cas de problème technique lors de la génération du JSON, informez le restaurateur et proposez de réessayer.
+```
+
+### Tests et Validation
+
+#### Scripts de Test Disponibles
+1. **`test-configurateur-simple.ps1`** - Test de création de l'assistant configurateur
+2. **`update-configurateur-prompt.ps1`** - Mise à jour du prompt système
+3. **`test-edge-function-simple.ps1`** - Validation de l'Edge Function
+
+#### Résultats de Tests
+- **✅ Création réussie** : Assistant créé avec ID `46b73124-6624-45ab-89c7-d27ecedcb251`
+- **✅ Prompt mis à jour** : Template restaurant validé et opérationnel
+- **✅ API Vapi** : Connexion et synchronisation validées
+- **✅ Edge Function** : Version 29 déployée et fonctionnelle
+
+### Utilisation du Configurateur
+
+#### Via API
+```typescript
+// Appel de l'assistant configurateur
+const configResponse = await assistantsService.call({
+  assistantId: "46b73124-6624-45ab-89c7-d27ecedcb251",
+  phoneNumber: "+33123456789"
+});
+```
+
+#### Via Interface Web
+Le configurateur peut être intégré dans l'interface utilisateur pour guider les nouveaux utilisateurs dans la création de leur premier assistant.
+
+### Prochaines Évolutions
+
+#### Templates Additionnels
+- **Hôtels** - Configuration pour établissements hôteliers
+- **Services** - Assistants pour entreprises de services
+- **Commerce** - Configuration pour boutiques et magasins
+- **Santé** - Templates pour cabinets médicaux
+
+#### Améliorations Prévues
+- **Interface graphique** - Wizard visuel pour le configurateur
+- **Templates personnalisables** - Modification des prompts par secteur
+- **Export/Import** - Sauvegarde et partage de configurations
+- **Analytics** - Métriques d'utilisation du configurateur
 
 ## Structure d'un assistant
 Un assistant Vapi intégré dans Koli55 possède les caractéristiques suivantes :

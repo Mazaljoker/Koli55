@@ -177,4 +177,136 @@ export function extractId(url: URL, position = -1): string {
   }
   
   return id;
+}
+
+/**
+ * Sanitise une chaîne de caractères
+ * @param input Chaîne à sanitiser
+ * @returns Chaîne sanitisée
+ */
+export function sanitizeString(input: string): string {
+  if (typeof input !== 'string') return '';
+  return input.trim().replace(/[<>]/g, '');
+}
+
+/**
+ * Sanitise un objet en nettoyant toutes ses propriétés string
+ * @param obj Objet à sanitiser
+ * @returns Objet sanitisé
+ */
+export function sanitizeObject(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+  
+  if (typeof obj === 'string') {
+    return sanitizeString(obj);
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizeObject(item));
+  }
+  
+  if (typeof obj === 'object') {
+    const sanitized: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      sanitized[key] = sanitizeObject(value);
+    }
+    return sanitized;
+  }
+  
+  return obj;
+}
+
+/**
+ * Vérifie si une chaîne est un UUID valide
+ * @param id Chaîne à vérifier
+ * @returns true si c'est un UUID valide
+ */
+export function isValidUUID(id: string): boolean {
+  if (typeof id !== 'string') return false;
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+}
+
+/**
+ * Valide les données d'un assistant
+ * @param data Données de l'assistant à valider
+ * @returns Résultat de validation
+ */
+export function validateAssistantData(data: any): { isValid: boolean; errors?: string[] } {
+  const errors: string[] = [];
+  
+  if (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {
+    errors.push('Le nom de l\'assistant est requis');
+  }
+  
+  if (data.name && data.name.length > 100) {
+    errors.push('Le nom de l\'assistant ne peut pas dépasser 100 caractères');
+  }
+  
+  // Validation optionnelle du modèle
+  if (data.model && typeof data.model === 'object') {
+    if (!data.model.provider || !data.model.model) {
+      errors.push('Le modèle doit contenir un provider et un model');
+    }
+  }
+  
+  // Validation optionnelle de la voix
+  if (data.voice && typeof data.voice === 'object') {
+    if (!data.voice.provider || !data.voice.voiceId) {
+      errors.push('La voix doit contenir un provider et un voiceId');
+    }
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined
+  };
+}
+
+/**
+ * Valide les permissions d'accès à une ressource
+ * @param userRole Rôle de l'utilisateur
+ * @param userId ID de l'utilisateur
+ * @param resourceUserId ID du propriétaire de la ressource
+ * @param metadata Métadonnées de la ressource
+ * @returns Résultat de validation des permissions
+ */
+export function validatePermissions(
+  userRole: string,
+  userId: string,
+  resourceUserId: string | null,
+  metadata?: any
+): { isValid: boolean; errors?: string[] } {
+  const errors: string[] = [];
+  
+  // Les administrateurs ont accès à tout
+  if (userRole === 'admin') {
+    return { isValid: true };
+  }
+  
+  // Les utilisateurs peuvent accéder à leurs propres ressources
+  if (userId === resourceUserId) {
+    return { isValid: true };
+  }
+  
+  // Les utilisateurs de test ne peuvent accéder qu'aux ressources de test
+  if (userRole === 'test') {
+    if (!metadata || metadata.is_test !== 'true') {
+      errors.push('Accès refusé aux ressources non-test');
+    }
+  }
+  
+  // Si resourceUserId est null et qu'on est en mode développement, autoriser
+  if (!resourceUserId && userRole === 'authenticated') {
+    return { isValid: true };
+  }
+  
+  if (errors.length === 0 && userId !== resourceUserId) {
+    errors.push('Accès refusé à cette ressource');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined
+  };
 } 

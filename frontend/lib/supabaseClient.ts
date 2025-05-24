@@ -1,36 +1,75 @@
 import { createClient } from '@supabase/supabase-js';
+import { appConfig, devConfig, isDevelopment } from './config/env';
 
-// Utiliser des variables d'environnement pour les informations d'authentification
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Les variables d\'environnement NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY doivent être définies');
-}
-
-// Déterminer si les données de démo doivent être utilisées
-const useDemoData = typeof window !== 'undefined' && 
-  (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost');
-
-// Création du client Supabase avec des options supplémentaires pour le debug
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Création du client Supabase avec la configuration validée
+const supabase = createClient(appConfig.supabase.url, appConfig.supabase.anonKey, {
   auth: {
     persistSession: true,
     detectSessionInUrl: true,
     autoRefreshToken: true,
+    flowType: 'pkce', // Plus sécurisé pour les applications web
   },
   global: {
     fetch: (...args) => {
-      // Ajouter un timeout aux requêtes fetch
       const [url, options] = args;
-      // @ts-expect-error - Ajout manuel du timeout qui n'est pas dans le type standard
-      options.timeout = 8000; // 8 secondes de timeout
+      
+      // Ajouter un timeout aux requêtes fetch
+      if (options && typeof options === 'object') {
+        (options as RequestInit & { timeout?: number }).timeout = 8000; // 8 secondes de timeout
+      }
+      
+      // Log des requêtes en mode debug
+      if (devConfig.enableDebug) {
+        console.log('[SUPABASE] Request:', url);
+      }
+      
       return fetch(url, options);
     }
-  }
+  },
+  // Configuration pour le mode développement
+  ...(isDevelopment && {
+    db: {
+      schema: 'public'
+    }
+  })
 });
 
-// Exporter une constante indiquant si on doit utiliser les données de démo
-export const USE_DEMO_DATA = useDemoData;
+// Exporter les constantes utiles
+export const USE_DEMO_DATA = devConfig.useDemoData;
+
+// Fonction utilitaire pour vérifier la connexion Supabase
+export async function checkSupabaseConnection(): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    
+    if (devConfig.enableDebug) {
+      console.log('[SUPABASE] Connection check:', { hasSession: !!data.session, error });
+    }
+    
+    return !error;
+  } catch (error) {
+    console.error('[SUPABASE] Connection failed:', error);
+    return false;
+  }
+}
+
+// Helper pour obtenir l'utilisateur actuel de manière sécurisée
+export async function getCurrentUser() {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) {
+      if (devConfig.enableDebug) {
+        console.warn('[SUPABASE] User fetch error:', error);
+      }
+      return null;
+    }
+    
+    return user;
+  } catch (error) {
+    console.error('[SUPABASE] Unexpected error getting user:', error);
+    return null;
+  }
+}
 
 export default supabase; 

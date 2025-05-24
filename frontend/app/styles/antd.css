@@ -1,0 +1,104 @@
+/* Styles globaux pour Ant Design */
+
+/* Variables CSS personnalisées pour les couleurs AlloKoli */
+:root {
+  --color-primary: #7745FF;
+  --color-secondary: #5769FF;
+  --color-accent: #9CB8FF;
+  --color-light-bg: #F7F7FC;
+  --color-lighter-bg: #F2F5FF;
+  --color-dark: #1B1D2A;
+}
+
+/* Styles généraux d'accessibilité et d'apparence */
+.ant-btn:focus-visible,
+.ant-input:focus-visible,
+.ant-select-selector:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Styles spécifiques aux composants */
+.ant-btn-primary {
+  background: var(--color-primary);
+  box-shadow: 0 2px 0 rgba(119, 69, 255, 0.1);
+}
+
+.ant-btn-primary:hover {
+  background: #6a3bd8 !important;
+}
+
+/* Glassmorphism pour certains composants */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glassmorphism-dark {
+  background: rgba(27, 29, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+/* Améliorations pour les typographies */
+.ant-typography {
+  font-family: 'Exo 2', 'Sora', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ant-typography-title {
+  font-family: 'Sora', 'Exo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+}
+
+/* Styles pour les formulaires */
+.ant-form-item-label > label {
+  font-weight: 500;
+}
+
+/* Animations pour les transitions */
+.ant-btn,
+.ant-input,
+.ant-select-selector,
+.ant-card {
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* Styles pour les boutons ronds */
+.ant-btn-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Style pour les cartes */
+.ant-card {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Améliorations pour le responsive */
+@media (max-width: 768px) {
+  .ant-typography-h1 {
+    font-size: 24px !important;
+  }
+  
+  .ant-typography-h2 {
+    font-size: 20px !important;
+  }
+  
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+} 

@@ -41,13 +41,13 @@ const customTheme = {
   },
   components: {
     Layout: {
-      colorBgHeader: 'rgba(255, 255, 255, 0.7)',
+      headerBg: 'rgba(255, 255, 255, 0.7)',
       bodyBg: 'transparent',
     },
     Menu: {
       colorItemBg: 'transparent',
-      colorItemText: 'rgba(255, 255, 255, 0.85)',
-      colorItemTextHover: '#ffffff',
+      itemColor: 'rgba(255, 255, 255, 0.85)',
+      itemHoverColor: '#ffffff',
       colorItemBgHover: 'rgba(255, 255, 255, 0.1)',
     },
   },

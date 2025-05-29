@@ -140,7 +140,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </Link>
         </div>
         <Menu
-          theme="dark"
           mode="inline"
           selectedKeys={[pathname]}
           className="!bg-transparent !border-none mt-4"

@@ -73,18 +73,6 @@ export const colors = {
     900: "#111827",
   },
 
-  // Couleurs spécifiques au thème sombre
-  dark: {
-    background: "#1E1B2E", // allokoli-background
-    surface: "#2D2A40", // allokoli-surface
-    surfaceHover: "#3D3A50",
-    textPrimary: "#F3F4F6", // allokoli-text-primary
-    textSecondary: "#D1D5DB", // allokoli-text-secondary
-    textTertiary: "#9CA3AF",
-    border: "#475569",
-    borderSecondary: "#334155",
-  },
-
   // Couleurs spécifiques au thème clair
   light: {
     background: "#FFFFFF",

@@ -1,6 +1,6 @@
 import type { ThemeConfig } from "antd";
 
-// Correspondance avec les couleurs de tailwind.config.ts
+// Correspondance avec les couleurs de tailwind.config.ts (Mode Clair)
 const ALLOKOLI_COLORS = {
   primary: "#7C3AED", // allokoli-primary
   secondary: "#A78BFA", // allokoli-secondary (utilisé pour hover/variations)
@@ -8,11 +8,11 @@ const ALLOKOLI_COLORS = {
   success: "#10B981", // allokoli-success
   warning: "#F59E0B", // allokoli-accent (AntD warning est souvent jaune/orange)
   error: "#EF4444", // allokoli-error
-  background: "#1E1B2E", // allokoli-background
-  surface: "#2D2A40", // allokoli-surface (pour les fonds de cartes/inputs légèrement plus clairs)
-  textPrimary: "#F3F4F6",
-  textSecondary: "#D1D5DB",
-  focusVioletRing: "rgba(167, 139, 250, 0.6)", // allokoli-focus-violet (pour controlOutline)
+  background: "#FFFFFF", // Fond blanc pour mode clair
+  surface: "#F8FAFC", // Surface claire (pour les fonds de cartes/inputs)
+  textPrimary: "#1E293B", // Texte sombre pour mode clair
+  textSecondary: "#64748B", // Texte secondaire
+  focusVioletRing: "rgba(124, 58, 237, 0.6)", // Focus violet adapté au mode clair
 };
 
 export const allokoliTheme: ThemeConfig = {
@@ -24,21 +24,21 @@ export const allokoliTheme: ThemeConfig = {
     colorError: ALLOKOLI_COLORS.error,
     colorInfo: ALLOKOLI_COLORS.secondary, // Souvent un bleu/violet clair
 
-    // Texte
+    // Texte (adapté au mode clair)
     colorTextBase: ALLOKOLI_COLORS.textPrimary,
     colorTextSecondary: ALLOKOLI_COLORS.textSecondary,
     colorTextPlaceholder: ALLOKOLI_COLORS.textSecondary,
 
-    // Fond
-    colorBgBase: ALLOKOLI_COLORS.background, // Fond général de la page si AntD la contrôle
-    colorBgContainer: ALLOKOLI_COLORS.surface, // Fond des composants comme Card, Modal, Input
-    colorBgLayout: ALLOKOLI_COLORS.background, // Fond pour les composants de layout
-    colorBgElevated: ALLOKOLI_COLORS.surface, // Fond pour les éléments flottants (Dropdown, Modal, Popover)
+    // Fond (mode clair)
+    colorBgBase: ALLOKOLI_COLORS.background, // Fond blanc
+    colorBgContainer: ALLOKOLI_COLORS.background, // Fond des composants blanc
+    colorBgLayout: ALLOKOLI_COLORS.surface, // Fond gris très clair pour les layouts
+    colorBgElevated: ALLOKOLI_COLORS.background, // Fond blanc pour les éléments flottants
     colorFillAlter: ALLOKOLI_COLORS.surface, // Utilisé pour les headers de Table, etc.
 
-    // Bordures
-    colorBorder: "rgba(255, 255, 255, 0.2)", // Bordure subtile pour inputs, etc.
-    colorBorderSecondary: "rgba(255, 255, 255, 0.1)", // Bordure encore plus subtile
+    // Bordures (mode clair)
+    colorBorder: "#E2E8F0", // Bordure claire
+    colorBorderSecondary: "#F1F5F9", // Bordure encore plus claire
 
     // Police
     fontFamily:
@@ -55,12 +55,12 @@ export const allokoliTheme: ThemeConfig = {
     controlItemBgActive: ALLOKOLI_COLORS.primary, // Pour les éléments actifs dans Select/Dropdown
 
     // Autres tokens pour la cohérence
-    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)", // Ombre subtile pour les éléments surélevés
-    boxShadowSecondary: "0 8px 32px rgba(0, 0, 0, 0.35)", // Ombre pour cartes glassmorphism (plus prononcée)
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", // Ombre subtile pour les éléments surélevés
+    boxShadowSecondary: "0 4px 6px rgba(0, 0, 0, 0.1)", // Ombre pour cartes
 
     // Lien
-    colorLink: ALLOKOLI_COLORS.secondary,
-    colorLinkHover: ALLOKOLI_COLORS.primary,
+    colorLink: ALLOKOLI_COLORS.primary,
+    colorLinkHover: ALLOKOLI_COLORS.secondary,
     colorLinkActive: ALLOKOLI_COLORS.primary,
 
     // Motion
@@ -74,80 +74,45 @@ export const allokoliTheme: ThemeConfig = {
       controlHeight: 44,
       controlHeightLG: 52,
       controlHeightSM: 36,
-      // Le gradient pour primary se fera via CSS car AntD ne le supporte pas nativement dans les tokens.
-      // On définit une couleur de secours solide.
       colorPrimary: ALLOKOLI_COLORS.primary,
       colorPrimaryHover: ALLOKOLI_COLORS.secondary, // Hover plus clair
-      colorPrimaryActive: ALLOKOLI_COLORS.primary, // Ou plus foncé si souhaité
-      colorTextLightSolid: ALLOKOLI_COLORS.textPrimary, // Assure que le texte des boutons primaires est lisible
+      colorPrimaryActive: ALLOKOLI_COLORS.primary,
+      colorTextLightSolid: "#FFFFFF", // Texte blanc sur boutons primaires
 
-      // Pour les boutons "default" et "dashed" (souvent utilisés comme secondaires ou outline)
-      colorBgContainerDisabled: "rgba(255,255,255,0.05)",
-      borderColorDisabled: "rgba(255,255,255,0.1)",
-      colorTextDisabled: "rgba(255,255,255,0.3)",
+      // Pour les boutons "default" et "dashed" (mode clair)
+      colorBgContainerDisabled: "#F1F5F9",
+      borderColorDisabled: "#E2E8F0",
+      colorTextDisabled: "#94A3B8",
     },
     Input: {
-      // Glassmorphism style
-      colorBgContainer: "rgba(45, 42, 64, 0.7)", // ALLOKOLI_COLORS.surface avec plus de transparence pour l'input
-      colorBorder: "rgba(255, 255, 255, 0.2)",
+      colorBgContainer: ALLOKOLI_COLORS.background, // Fond blanc
+      colorBorder: "#E2E8F0",
       borderRadius: 8,
       controlHeight: 44,
-      // Focus violet
       colorPrimaryHover: ALLOKOLI_COLORS.primary, // Utilisé pour la couleur de la bordure au focus
-      // controlOutline est déjà défini globalement.
-      // Pour l'effet de glow plus prononcé au focus, du CSS personnalisé peut être nécessaire en plus.
     },
     Card: {
-      // Pour le glassmorphism, la couleur de fond est importante.
-      // Le blur et la transparence plus poussée via `backdrop-filter` nécessiteront du CSS.
-      colorBgContainer: "rgba(45, 42, 64, 0.6)", // surface avec opacité pour effet semi-transparent
-      borderRadiusLG: 12, // Utiliser le borderRadiusLG global
-      paddingLG: 24, // Padding standard pour les cartes
-      boxShadow: "none", // On gèrera les ombres via Tailwind ou CSS personnalisé pour glassmorphism
-      boxShadowSecondary: "none",
+      colorBgContainer: ALLOKOLI_COLORS.background, // Fond blanc
+      borderRadiusLG: 12,
+      paddingLG: 24,
+      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", // Ombre claire
     },
     Modal: {
-      // Design cohérent avec glassmorphism
-      colorBgElevated: "rgba(30, 27, 46, 0.85)", // background un peu plus opaque pour la lisibilité du contenu modal
-      // Le backdrop-filter devra être appliqué via CSS sur la classe .ant-modal-content
-      borderRadiusLG: 12, // Utiliser le borderRadiusLG global
-      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35)", // Ombre de base pour les modales
+      colorBgElevated: ALLOKOLI_COLORS.background, // Fond blanc
+      borderRadiusLG: 12,
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Ombre claire pour les modales
     },
     Table: {
-      // Headers avec fond glassmorphism
-      colorFillAlter: "rgba(45, 42, 64, 0.7)", // Couleur de fond pour les rangées alternées (si utilisé)
-      headerBg: "rgba(45, 42, 64, 0.8)", // Fond des en-têtes
+      colorFillAlter: ALLOKOLI_COLORS.surface, // Fond gris très clair pour les rangées alternées
+      headerBg: ALLOKOLI_COLORS.surface, // Fond des en-têtes
       headerColor: ALLOKOLI_COLORS.textPrimary,
-      borderColor: "rgba(255, 255, 255, 0.1)", // Bordures de cellules
-      borderRadiusLG: 0, // Souvent les tables n'ont pas de radius sur les coins externes, mais sur les cellules
-      padding: 12, // Padding des cellules
+      borderColor: "#E2E8F0", // Bordures de cellules
+      borderRadiusLG: 0,
+      padding: 12,
       paddingLG: 16,
       paddingSM: 8,
     },
-    // ... autres composants à surcharger si nécessaire
   },
-  // Algorithm pour le mode sombre (AntD v5 le gère bien si les tokens sont corrects)
-  // Si on veut forcer un thème sombre spécifique qui diffère légèrement de allokoliTheme.
-  // algorithm: theme.darkAlgorithm, // Exemple si on avait un `theme` importé d'antd
+  // Mode clair par défaut (pas d'algorithme sombre)
+  algorithm: [],
 };
-
-// allokoliDarkTheme sera identique à allokoliTheme car notre thème principal est déjà sombre.
-// Si des variations spécifiques étaient nécessaires pour un "mode encore plus sombre" ou
-// si allokoliTheme était clair, on définirait allokoliDarkTheme différemment ici.
-export const allokoliDarkTheme: ThemeConfig = {
-  ...allokoliTheme,
-  // On peut surcharger des tokens spécifiques pour le mode sombre ici si nécessaire,
-  // mais comme allokoliTheme est déjà sombre, c'est souvent redondant.
-  // Par exemple, si on voulait un fond encore plus sombre pour le dark theme :
-  // token: {
-  //   ...allokoliTheme.token,
-  //   colorBgBase: '#100E1C',
-  // },
-};
-
-// Note importante pour le Glassmorphism avec Ant Design :
-// Les effets de blur (`backdrop-filter`) ne peuvent pas être appliqués directement via les tokens.
-// Il faudra cibler les classes CSS des composants AntD (ex: `.ant-card`, `.ant-modal-content`)
-// et leur appliquer `backdrop-filter: blur(10px);` et un `background-color` avec transparence
-// (comme `rgba(R,G,B, A)`) dans un fichier CSS global.
-// Les tokens `colorBgContainer` dans `allokoliTheme` aident à définir cette couleur de fond transparente.

@@ -132,7 +132,7 @@ export default function MyAssistantsPage() {
                 }
                 className="mb-4"
               />
-              <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="mt-auto pt-4 border-t border-gray-200">
                 <div className="flex justify-between items-center mb-1">
                   <Text strong className="text-xs text-allokoli-text-tertiary">
                     Version:

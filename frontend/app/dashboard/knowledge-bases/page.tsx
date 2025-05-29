@@ -1,16 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Typography,
-  Empty,
-  Card,
-  Row,
-  Col,
-  Tag,
-  Input,
-  Space,
-} from "antd";
+import { Typography, Empty, Card, Row, Col, Tag, Input, Space } from "antd";
 import {
   PlusOutlined,
   BookOutlined,
@@ -157,7 +148,7 @@ export default function KnowledgeBasesPage() {
                     {new Date(kb.lastUpdated).toLocaleDateString("fr-FR")}
                   </div>
                 </div>
-                <Space className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 w-full justify-end">
+                <Space className="mt-4 pt-4 border-t border-gray-200 w-full justify-end">
                   <Button variant="ghost" size="small">
                     Gérer
                   </Button>

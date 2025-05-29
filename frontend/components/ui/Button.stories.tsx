@@ -184,53 +184,49 @@ export const AllVariants: Story = {
     <div className="p-4 space-y-4">
       <h3 className="text-lg font-semibold">Toutes les variantes</h3>
       <div className="flex flex-wrap gap-4">
-        <Button variant="primary" onClick={fn("primary")}>
+        <Button variant="primary" onClick={fn()}>
           Primary
         </Button>
-        <Button variant="secondary" onClick={fn("secondary")}>
+        <Button variant="secondary" onClick={fn()}>
           Secondary
         </Button>
-        <Button variant="outline" onClick={fn("outline")}>
+        <Button variant="outline" onClick={fn()}>
           Outline
         </Button>
-        <Button variant="ghost" onClick={fn("ghost")}>
+        <Button variant="ghost" onClick={fn()}>
           Ghost
         </Button>
       </div>
 
       <h3 className="text-lg font-semibold">Toutes les tailles</h3>
       <div className="flex flex-wrap items-center gap-4">
-        <Button variant="primary" size="sm" onClick={fn("small")}>
+        <Button variant="primary" size="sm" onClick={fn()}>
           Small
         </Button>
-        <Button variant="primary" size="md" onClick={fn("medium")}>
+        <Button variant="primary" size="md" onClick={fn()}>
           Medium
         </Button>
-        <Button variant="primary" size="lg" onClick={fn("large")}>
+        <Button variant="primary" size="lg" onClick={fn()}>
           Large
         </Button>
       </div>
 
       <h3 className="text-lg font-semibold">États spéciaux</h3>
       <div className="flex flex-wrap gap-4">
-        <Button variant="primary" isLoading onClick={fn("loading")}>
+        <Button variant="primary" isLoading onClick={fn()}>
           Loading
         </Button>
-        <Button variant="primary" disabled onClick={fn("disabled")}>
+        <Button variant="primary" disabled onClick={fn()}>
           Disabled
         </Button>
-        <Button
-          variant="primary"
-          icon={<PlusOutlined />}
-          onClick={fn("with-icon")}
-        >
+        <Button variant="primary" icon={<PlusOutlined />} onClick={fn()}>
           With Icon
         </Button>
         <Button
           variant="outline"
           icon={<DeleteOutlined />}
           aria-label="Supprimer"
-          onClick={fn("icon-only")}
+          onClick={fn()}
         />
       </div>
     </div>

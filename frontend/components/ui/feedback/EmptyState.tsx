@@ -26,7 +26,7 @@ export const EmptyState = ({
 }: EmptyStateProps) => {
   return (
     <div
-      className="flex flex-col items-center justify-center p-8 border border-gray-300 border-dashed rounded-lg bg-allokoli-body-background dark:border-gray-700"
+      className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-gray-300 rounded-lg bg-allokoli-body-background"
       style={{ minHeight: height }}
     >
       <AntEmpty

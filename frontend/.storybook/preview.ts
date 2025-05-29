@@ -17,12 +17,8 @@ const preview: Preview = {
           value: "#ffffff",
         },
         {
-          name: "dark",
-          value: "#1a1a1a",
-        },
-        {
           name: "allokoli-bg",
-          value: "var(--allokoli-dark-background)",
+          value: "#f8fafc",
         },
       ],
     },
@@ -34,7 +30,7 @@ const preview: Preview = {
       toolbar: {
         title: "Theme",
         icon: "circlehollow",
-        items: ["light", "dark"],
+        items: ["light"],
         dynamicTitle: true,
       },
     },

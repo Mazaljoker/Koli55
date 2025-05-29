@@ -717,10 +717,10 @@ export default function LandingPage() {
                             padding: "12px",
                             borderRadius: "9999px",
                             background: `rgba(${
-                              feature.iconColor === "#7745FF"
-                                ? "119, 69, 255"
-                                : "87, 105, 255"
-                            }, 0.1)`,
+                                                          feature.iconColor === "var(--allokoli-primary-hover)"
+                                                            ? "119, 69, 255"
+                                                            : "87, 105, 255"
+                                                        }, 0.1)`,
                             width: "56px",
                             height: "56px",
                             display: "flex",

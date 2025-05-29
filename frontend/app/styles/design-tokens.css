@@ -1,0 +1,252 @@
+/* Design Tokens CSS Variables - AlloKoli */
+/* Généré automatiquement depuis les tokens TypeScript */
+
+:root {
+  /* Couleurs principales */
+  --allokoli-primary-default: #7c3aed;
+  --allokoli-primary-hover: #7745ff;
+  --allokoli-primary-active: #6d28d9;
+  --allokoli-primary-light: #a78bfa;
+  --allokoli-primary-lighter: #9cb8ff;
+
+  --allokoli-secondary-default: #a78bfa;
+  --allokoli-secondary-hover: #8b5cf6;
+  --allokoli-secondary-active: #7c3aed;
+
+  --allokoli-accent-default: #f59e0b;
+  --allokoli-accent-hover: #e59e0b;
+  --allokoli-accent-active: #d59e0b;
+
+  /* Couleurs sémantiques */
+  --allokoli-success-default: #10b981;
+  --allokoli-success-hover: #059669;
+  --allokoli-success-active: #047857;
+  --allokoli-success-light: #a7f3d0;
+  --allokoli-success-bg: #ecfdf5;
+
+  --allokoli-warning-default: #f59e0b;
+  --allokoli-warning-hover: #d97706;
+  --allokoli-warning-active: #b45309;
+  --allokoli-warning-light: #fde68a;
+  --allokoli-warning-bg: #fffbeb;
+
+  --allokoli-error-default: #ef4444;
+  --allokoli-error-hover: #dc2626;
+  --allokoli-error-active: #b91c1c;
+  --allokoli-error-light: #fca5a5;
+  --allokoli-error-bg: #fef2f2;
+
+  --allokoli-info-default: #3b82f6;
+  --allokoli-info-hover: #2563eb;
+  --allokoli-info-active: #1d4ed8;
+  --allokoli-info-light: #93c5fd;
+  --allokoli-info-bg: #eff6ff;
+
+  /* Couleurs neutres */
+  --allokoli-gray-50: #f9fafb;
+  --allokoli-gray-100: #f3f4f6;
+  --allokoli-gray-200: #e5e7eb;
+  --allokoli-gray-300: #d1d5db;
+  --allokoli-gray-400: #9ca3af;
+  --allokoli-gray-500: #6b7280;
+  --allokoli-gray-600: #4b5563;
+  --allokoli-gray-700: #374151;
+  --allokoli-gray-800: #1f2937;
+  --allokoli-gray-900: #111827;
+
+  /* Couleurs spécifiques au thème sombre */
+  --allokoli-dark-background: #1e1b2e;
+  --allokoli-dark-surface: #2d2a40;
+  --allokoli-dark-surfaceHover: #3d3a50;
+  --allokoli-dark-textPrimary: #f3f4f6;
+  --allokoli-dark-textSecondary: #d1d5db;
+  --allokoli-dark-textTertiary: #9ca3af;
+  --allokoli-dark-border: #475569;
+  --allokoli-dark-borderSecondary: #334155;
+
+  /* Couleurs spécifiques au thème clair */
+  --allokoli-light-background: #ffffff;
+  --allokoli-light-surface: #f8fafc;
+  --allokoli-light-surfaceHover: #f1f5f9;
+  --allokoli-light-textPrimary: #1e293b;
+  --allokoli-light-textSecondary: #64748b;
+  --allokoli-light-textTertiary: #94a3b8;
+  --allokoli-light-border: #e2e8f0;
+  --allokoli-light-borderSecondary: #f1f5f9;
+
+  /* Couleurs d'avatar */
+  --allokoli-avatar-orange: #f59e0b;
+  --allokoli-avatar-green: #10b981;
+  --allokoli-avatar-blue: #3b82f6;
+  --allokoli-avatar-gray: #9ca3af;
+  --allokoli-avatar-purple: #8b5cf6;
+
+  /* Couleurs pures */
+  --allokoli-pure-white: #ffffff;
+  --allokoli-pure-black: #000000;
+  --allokoli-pure-transparent: transparent;
+
+  /* Couleurs de status */
+  --allokoli-status-pending: #f59e0b;
+  --allokoli-status-processing: #3b82f6;
+  --allokoli-status-completed: #10b981;
+  --allokoli-status-failed: #ef4444;
+
+  /* Espacement */
+  --allokoli-spacing-0: 0px;
+  --allokoli-spacing-1: 4px;
+  --allokoli-spacing-2: 8px;
+  --allokoli-spacing-3: 12px;
+  --allokoli-spacing-4: 16px;
+  --allokoli-spacing-5: 20px;
+  --allokoli-spacing-6: 24px;
+  --allokoli-spacing-8: 32px;
+  --allokoli-spacing-10: 40px;
+  --allokoli-spacing-12: 48px;
+  --allokoli-spacing-16: 64px;
+  --allokoli-spacing-20: 80px;
+  --allokoli-spacing-24: 96px;
+
+  /* Espacement sémantique */
+  --allokoli-spacing-xs: 4px;
+  --allokoli-spacing-sm: 8px;
+  --allokoli-spacing-md: 16px;
+  --allokoli-spacing-lg: 24px;
+  --allokoli-spacing-xl: 32px;
+  --allokoli-spacing-xxl: 48px;
+
+  /* Rayons de bordure */
+  --allokoli-radius-none: 0px;
+  --allokoli-radius-sm: 2px;
+  --allokoli-radius-default: 4px;
+  --allokoli-radius-md: 6px;
+  --allokoli-radius-lg: 8px;
+  --allokoli-radius-xl: 12px;
+  --allokoli-radius-xxl: 16px;
+  --allokoli-radius-full: 9999px;
+
+  /* Rayons sémantiques */
+  --allokoli-radius-button: 6px;
+  --allokoli-radius-card: 8px;
+  --allokoli-radius-input: 6px;
+  --allokoli-radius-modal: 12px;
+  --allokoli-radius-avatar: 9999px;
+
+  /* Ombres */
+  --allokoli-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --allokoli-shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --allokoli-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --allokoli-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --allokoli-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --allokoli-shadow-primary: 0 4px 14px 0 rgb(124 58 237 / 0.25);
+  --allokoli-shadow-success: 0 4px 14px 0 rgb(16 185 129 / 0.25);
+  --allokoli-shadow-warning: 0 4px 14px 0 rgb(245 158 11 / 0.25);
+  --allokoli-shadow-error: 0 4px 14px 0 rgb(239 68 68 / 0.25);
+
+  /* Transitions */
+  --allokoli-transition-fast: 150ms ease;
+  --allokoli-transition-base: 200ms ease;
+  --allokoli-transition-slow: 300ms ease;
+  --allokoli-transition-fadeIn: 200ms ease-in;
+  --allokoli-transition-fadeOut: 200ms ease-out;
+  --allokoli-transition-slideIn: 300ms ease-out;
+  --allokoli-transition-scaleIn: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Classes utilitaires pour utiliser facilement les tokens */
+.bg-primary {
+  background-color: var(--allokoli-primary-default);
+}
+.bg-secondary {
+  background-color: var(--allokoli-secondary-default);
+}
+.bg-accent {
+  background-color: var(--allokoli-accent-default);
+}
+.bg-success {
+  background-color: var(--allokoli-success-default);
+}
+.bg-warning {
+  background-color: var(--allokoli-warning-default);
+}
+.bg-error {
+  background-color: var(--allokoli-error-default);
+}
+.bg-surface {
+  background-color: var(--allokoli-dark-surface);
+}
+
+.text-primary {
+  color: var(--allokoli-primary-default);
+}
+.text-secondary {
+  color: var(--allokoli-secondary-default);
+}
+.text-accent {
+  color: var(--allokoli-accent-default);
+}
+.text-success {
+  color: var(--allokoli-success-default);
+}
+.text-warning {
+  color: var(--allokoli-warning-default);
+}
+.text-error {
+  color: var(--allokoli-error-default);
+}
+.text-muted {
+  color: var(--allokoli-dark-textSecondary);
+}
+
+.border-primary {
+  border-color: var(--allokoli-primary-default);
+}
+.border-surface {
+  border-color: var(--allokoli-dark-border);
+}
+.border-light {
+  border-color: var(--allokoli-light-border);
+}
+
+.rounded-sm {
+  border-radius: var(--allokoli-radius-sm);
+}
+.rounded-md {
+  border-radius: var(--allokoli-radius-md);
+}
+.rounded-lg {
+  border-radius: var(--allokoli-radius-lg);
+}
+.rounded-xl {
+  border-radius: var(--allokoli-radius-xl);
+}
+.rounded-full {
+  border-radius: var(--allokoli-radius-full);
+}
+
+.shadow-sm {
+  box-shadow: var(--allokoli-shadow-sm);
+}
+.shadow-md {
+  box-shadow: var(--allokoli-shadow-md);
+}
+.shadow-lg {
+  box-shadow: var(--allokoli-shadow-lg);
+}
+.shadow-primary {
+  box-shadow: var(--allokoli-shadow-primary);
+}
+
+.transition-fast {
+  transition: var(--allokoli-transition-fast);
+}
+.transition-base {
+  transition: var(--allokoli-transition-base);
+}
+.transition-slow {
+  transition: var(--allokoli-transition-slow);
+}

@@ -1,294 +1,213 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   HomeOutlined,
   UserOutlined,
   BarChartOutlined,
-  ApiOutlined,
-  FileTextOutlined,
+  BookOutlined,
   SettingOutlined,
-  LogoutOutlined,
-  PlusOutlined,
+  CreditCardOutlined,
+  MessageOutlined,
+  PhoneOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
-} from '@ant-design/icons';
-import { 
-  Avatar, 
-  Button, 
-  Layout, 
-  Tooltip, 
-  Typography, 
-  ConfigProvider,
-  Space,
+  MenuUnfoldOutlined,
+  TeamOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Layout,
+  Tooltip,
+  Typography,
   Menu,
-  theme
-} from 'antd';
+  Dropdown,
+  Space,
+  Breadcrumb,
+} from "antd";
+import { useSupabaseUser } from "@/lib/supabase/hooks/useSupabaseUser";
+import {
+  generateBreadcrumbs,
+  BreadcrumbItem as BreadcrumbItemType,
+} from "@/lib/utils/navigation";
 
 const { Title, Text } = Typography;
 const { Sider, Header, Content } = Layout;
-
-// Définition des tokens de couleur Ant Design
-const customTheme = {
-  token: {
-    colorPrimary: '#7745FF', // Violet
-    colorSecondary: '#5769FF', // Blue
-    colorTertiary: '#9CB8FF', // Light blue
-    colorBgContainer: '#F7F7FC', // Background
-    colorBgElevated: '#F2F5FF', // Accent
-    colorText: '#1B1D2A', // Text
-  },
-  components: {
-    Layout: {
-      headerBg: 'rgba(255, 255, 255, 0.7)',
-      bodyBg: 'transparent',
-    },
-    Menu: {
-      colorItemBg: 'transparent',
-      itemColor: 'rgba(255, 255, 255, 0.85)',
-      itemHoverColor: '#ffffff',
-      colorItemBgHover: 'rgba(255, 255, 255, 0.1)',
-    },
-  },
-};
-
-// Style glassmorphism réutilisable
-const glassmorphismStyle = {
-  background: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(12px)',
-  WebkitBackdropFilter: 'blur(12px)',
-  boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-};
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
 };
 
+const mainNavItems = [
+  { key: "/dashboard", icon: <HomeOutlined />, label: "Dashboard" },
+  {
+    key: "/dashboard/assistants",
+    icon: <UserOutlined />,
+    label: "Mes Assistants",
+  },
+  {
+    key: "/dashboard/knowledge-bases",
+    icon: <BookOutlined />,
+    label: "Knowledge Bases",
+  },
+  {
+    key: "/dashboard/phone-numbers",
+    icon: <PhoneOutlined />,
+    label: "Numéros de téléphone",
+  },
+];
+
+const accountNavItems = [
+  {
+    key: "/dashboard/usage-billing",
+    icon: <CreditCardOutlined />,
+    label: "Usage & Facturation",
+  },
+  {
+    key: "/dashboard/settings",
+    icon: <SettingOutlined />,
+    label: "Paramètres",
+  },
+];
+
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const { token } = theme.useToken();
+  const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
+  const { user, signOut } = useSupabaseUser();
+  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItemType[]>([]);
 
-  // Navigation items pour la sidebar
-  const navItems = [
-    {
-      key: 'home',
-      icon: <HomeOutlined />,
-      label: 'Accueil',
-      href: '/dashboard'
-    },
-    {
-      key: 'assistants',
-      icon: <UserOutlined />,
-      label: 'Assistants',
-      href: '/dashboard/assistants'
-    },
-    {
-      key: 'analytics',
-      icon: <BarChartOutlined />,
-      label: 'Analytique',
-      href: '/dashboard/analytics'
-    },
-    {
-      key: 'logs',
-      icon: <FileTextOutlined />,
-      label: 'Logs',
-      href: '/dashboard/logs'
-    },
-    {
-      key: 'api',
-      icon: <ApiOutlined />,
-      label: 'API',
-      href: '/dashboard/api'
-    },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: 'Paramètres',
-      href: '/dashboard/settings'
-    }
-  ];
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setCollapsed(true);
+      } else {
+        // Optionnel: Dé-colapser sur desktop si ce n'était pas un choix utilisateur
+        // setCollapsed(false);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const handleLogout = () => {
-    // Logique de déconnexion à implémenter
-    console.log('Déconnexion de l\'utilisateur');
-  };
+  useEffect(() => {
+    setBreadcrumbs(generateBreadcrumbs(pathname));
+  }, [pathname]);
+
+  const userMenuItems = (
+    <Menu
+      items={[
+        { key: "profile", label: user?.email || "Profil" },
+        { type: "divider" },
+        {
+          key: "logout",
+          label: "Déconnexion",
+          onClick: signOut,
+          icon: <LogoutOutlined />,
+        },
+      ]}
+    />
+  );
 
   return (
-    <ConfigProvider theme={customTheme}>
-      <Layout style={{ 
-        minHeight: '100vh',
-        background: 'linear-gradient(to bottom right, rgba(237, 233, 254, 0.5), rgba(231, 238, 255, 0.5), rgba(243, 240, 255, 0.5))'
-      }}>
-        {/* Sidebar avec effet glassmorphism */}
-        <Sider
-          width={240}
-          collapsible
-          collapsed={collapsed}
-          onCollapse={setCollapsed}
-          breakpoint="lg"
-          collapsedWidth={80}
-          style={{
-            ...glassmorphismStyle,
-            position: 'fixed',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            zIndex: 10,
-            overflow: 'auto',
-            height: '100vh',
-          }}
-        >
-          {/* Logo de l'entreprise */}
-          <div style={{ 
-            padding: 16, 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            height: 64, 
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <Space>
-              <div style={{ 
-                width: 40, 
-                height: 40, 
-                background: 'linear-gradient(to right, #7745FF, #5769FF)', 
-                borderRadius: 8, 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                color: 'white', 
-                fontWeight: 'bold', 
-                fontSize: 18, 
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
-              }}>
-                AK
-              </div>
-              {!collapsed && (
-                <Text strong style={{ color: 'white', fontSize: 18 }}>AlloKoli</Text>
-              )}
-            </Space>
-          </div>
-
-          {/* Navigation */}
-          <Menu
-            mode="inline"
-            style={{ 
-              background: 'transparent', 
-              borderRight: 'none',
-              padding: '24px 8px',
-            }}
-            items={navItems.map(item => ({
+    <Layout style={{ minHeight: "100vh" }}>
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+        breakpoint="lg"
+        collapsedWidth={isMobile ? 0 : 80}
+        trigger={null}
+        width={260}
+        className="glassmorphism !fixed left-0 top-0 bottom-0 z-50 h-screen overflow-auto shadow-lg"
+      >
+        <div className="flex items-center justify-center p-4 h-16 sticky top-0 z-10 glassmorphism">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-allokoli-primary to-allokoli-secondary rounded-md flex items-center justify-center text-white font-bold text-lg shadow-md">
+              A
+            </div>
+            {!collapsed && (
+              <Title level={4} className="!m-0 !text-allokoli-text-primary">
+                AlloKoli
+              </Title>
+            )}
+          </Link>
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={[pathname]}
+          className="!bg-transparent !border-none mt-4"
+          items={[
+            ...mainNavItems.map((item) => ({
               key: item.key,
               icon: item.icon,
-              label: (
-                <Link href={item.href}>
-                  {item.label}
-                </Link>
-              ),
-            }))}
-          />
-
-          {/* Avatar utilisateur en bas */}
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: 16,
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <Space size={12}>
-              <Avatar 
-                size="large" 
-                icon={<UserOutlined />} 
-                style={{
-                  background: 'linear-gradient(to right, #7745FF, #5769FF)',
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-                }}
+              label: <Link href={item.key}>{item.label}</Link>,
+            })),
+            { type: "divider", className: "!bg-gray-600 mx-4" },
+            ...accountNavItems.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: <Link href={item.key}>{item.label}</Link>,
+            })),
+          ]}
+        />
+      </Sider>
+      <Layout
+        style={{
+          marginLeft: collapsed && !isMobile ? 80 : isMobile ? 0 : 260,
+          transition: "margin-left 0.2s",
+        }}
+        className="bg-allokoli-background"
+      >
+        <Header className="glassmorphism !flex items-center justify-between !px-6 !h-16 sticky top-0 z-40 shadow-sm">
+          <Space>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              className="!text-xl !text-allokoli-text-primary hover:!text-allokoli-primary"
+            />
+            <Breadcrumb className="hidden md:block">
+              {breadcrumbs.map((crumb, index) => (
+                <Breadcrumb.Item key={crumb.path}>
+                  {index === breadcrumbs.length - 1 || !crumb.path ? (
+                    <Text className="!text-allokoli-text-primary font-medium">
+                      {crumb.title}
+                    </Text>
+                  ) : (
+                    <Link
+                      href={crumb.path}
+                      className="hover:!text-allokoli-primary"
+                    >
+                      {crumb.title}
+                    </Link>
+                  )}
+                </Breadcrumb.Item>
+              ))}
+            </Breadcrumb>
+          </Space>
+          <Space align="center">
+            <Dropdown overlay={userMenuItems} placement="bottomRight">
+              <Avatar
+                size="large"
+                icon={user?.user_metadata?.avatar_url ? null : <UserOutlined />}
+                src={user?.user_metadata?.avatar_url}
+                className="cursor-pointer bg-allokoli-primary hover:opacity-80 transition-opacity"
               />
-              {!collapsed && (
-                <Space direction="vertical" size={0}>
-                  <Text style={{ color: 'white', fontWeight: 500 }}>Utilisateur</Text>
-                  <Text style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: 12 }}>utilisateur@allokoli.com</Text>
-                </Space>
-              )}
-            </Space>
-          </div>
-        </Sider>
-
-        {/* Layout principal */}
-        <Layout style={{ 
-          marginLeft: collapsed ? 80 : 240,
-          transition: 'all 0.3s'
-        }}>
-          {/* Navbar avec effet glassmorphism */}
-          <Header style={{
-            ...glassmorphismStyle,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 24px',
-            height: 64,
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-            borderTop: 'none',
-            borderLeft: 'none', 
-            borderRight: 'none',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Button
-                type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
-                style={{ marginRight: 16, color: token.colorPrimary }}
-              />
-              <Title level={4} style={{ margin: 0, color: token.colorPrimary }}>
-                Tableau de bord
-              </Title>
-            </div>
-            
-            <Space size={16}>
-              {/* Bouton "Create Assistant" */}
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                style={{
-                  background: 'linear-gradient(to right, #7745FF, #5769FF)',
-                  border: 'none',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                }}
-              >
-                <Link href="/assistants/new">Créer un Assistant</Link>
-              </Button>
-              
-              <Tooltip title="Déconnexion">
-                <Button 
-                  type="text" 
-                  icon={<LogoutOutlined />} 
-                  onClick={handleLogout}
-                  style={{ color: token.colorPrimary }}
-                />
-              </Tooltip>
-            </Space>
-          </Header>
-
-          {/* Contenu principal */}
-          <Content style={{ margin: 24 }}>
-            <div style={{
-              ...glassmorphismStyle,
-              padding: 24,
-              background: 'rgba(255, 255, 255, 0.7)',
-              borderRadius: 16,
-            }}>
-              {children}
-            </div>
-          </Content>
-        </Layout>
+            </Dropdown>
+          </Space>
+        </Header>
+        <Content className="p-6 overflow-auto" style={{}}>
+          {children}
+        </Content>
       </Layout>
-    </ConfigProvider>
+    </Layout>
   );
-} 
+}

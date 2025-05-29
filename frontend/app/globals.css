@@ -3,61 +3,140 @@
 @tailwind utilities;
 
 :root {
-  --background: #f8f9ff;
-  --foreground: #171717;
-  --primary-purple: #7c3aed;
-  --primary-blue: #2563eb;
-  --primary-ocean: #0ea5e9;
-  --glassmorphism-bg: rgba(255, 255, 255, 0.1);
-  --glassmorphism-border: rgba(255, 255, 255, 0.2);
-  --glassmorphism-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  /* Couleurs du Design System AlloKoli */
+  --allokoli-primary: #7745ff;
+  --allokoli-secondary: #5769ff;
+  --allokoli-success: #10b981;
+  --allokoli-warning: #f59e0b;
+  --allokoli-error: #ef4444;
+  --allokoli-background: #1a1b2e; /* Fond principal de l'application */
+  --allokoli-surface: rgba(255, 255, 255, 0.1); /* Pour effet glassmorphism */
+  --allokoli-foreground: #ffffff; /* Couleur de texte par défaut sur fond sombre */
+
+  /* Variables pour le Glassmorphism amélioré */
+  --glass-bg: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Peut être identique à --allokoli-surface ou spécifique */
+  --glass-blur: 20px;
+  --glass-border-color: rgba(255, 255, 255, 0.2);
+  --glass-border-radius: 16px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* Variables existantes conservées pour compatibilité ou thèmes alternatifs */
+  --background: var(
+    --allokoli-background
+  ); /* Utilise la nouvelle couleur de fond */
+  --foreground: var(--allokoli-foreground);
+  --primary-purple: var(--allokoli-primary); /* Alias pour compatibilité */
+  --primary-blue: var(--allokoli-secondary); /* Alias pour compatibilité */
+  --primary-ocean: #0ea5e9; /* Conservé pour l'instant */
+
+  /* Mise à jour des anciennes variables glassmorphism pour pointer vers les nouvelles si utilisées ailleurs */
+  --glassmorphism-bg: var(--glass-bg);
+  --glassmorphism-border: var(--glass-border-color);
+  --glassmorphism-shadow: var(--glass-shadow);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: "Inter", var(--font-geist-sans); /* Priorise Inter */
   --font-mono: var(--font-geist-mono);
 }
 
+/* Thème sombre - à revoir potentiellement pour s'aligner avec la nouvelle palette */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --glassmorphism-bg: rgba(30, 30, 30, 0.2);
-    --glassmorphism-border: rgba(50, 50, 50, 0.3);
+    /* Ici, nous utilisons déjà le fond sombre par défaut, donc pas besoin de tout redéfinir
+       sauf si des ajustements spécifiques au thème sombre sont nécessaires pour les autres couleurs.
+       Pour l'instant, les couleurs de base --allokoli-* s'appliqueront.
+    */
+    --glassmorphism-bg: rgba(
+      42,
+      43,
+      66,
+      0.3
+    ); /* Ajustement pour thème sombre conservé */
+    --glassmorphism-border: rgba(70, 70, 90, 0.4);
+    /* Les nouvelles variables --glass-* pourraient aussi être ajustées ici si besoin */
+    --glass-bg: rgba(
+      26,
+      27,
+      46,
+      0.15
+    ); /* Exemple d'ajustement pour --glass-bg en thème sombre */
+    --glass-border-color: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Inter", sans-serif;
+  background: var(--allokoli-background);
+  color: var(--allokoli-foreground);
+  font-family: "Inter", system-ui, sans-serif; /* Assure que Inter est bien la police principale */
 }
 
-/* Styles pour les éléments glassmorphism */
+/* Styles pour les éléments glassmorphism (mis à jour) */
 .glassmorphism {
-  background: var(--glassmorphism-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glassmorphism-border);
-  box-shadow: var(--glassmorphism-shadow);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border-color);
+  border-radius: var(--glass-border-radius);
+  box-shadow: var(--glass-shadow);
+  color: var(--allokoli-foreground);
 }
 
-/* Bouton primary personnalisé */
+/* Système de cartes AlloKoli */
+.card-base {
+  @apply p-6 glassmorphism;
+  /* padding peut être ajusté par composant spécifique si besoin */
+}
+
+.card-primary {
+  @apply card-base;
+  /* Accent violet - exemple avec une bordure supérieure plus épaisse */
+  border-top: 4px solid var(--allokoli-primary);
+  /* Ou une ombre interne violette, ou un pseudo-élément */
+}
+
+.card-secondary {
+  @apply card-base;
+  /* Neutre, pas de style additionnel par défaut ici, hérite de card-base */
+}
+
+.card-interactive {
+  /* Peut être combiné avec card-base, card-primary, ou card-secondary */
+  /* Exemple: <div class="card-primary card-interactive"> */
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.card-interactive:hover {
+  @apply transform scale-105;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); /* Ombre légèrement accentuée au survol */
+  /* On pourrait aussi éclaircir légèrement le fond ou la bordure */
+  /* background: color-mix(in srgb, var(--glass-bg) 90%, white); */
+}
+
+/* Bouton primary personnalisé utilisant les nouvelles couleurs et le gradient Tailwind */
 .btn-primary {
-  background: linear-gradient(
-    to right,
-    var(--primary-purple),
-    var(--primary-blue)
-  );
-  color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  @apply px-4 py-2 font-semibold text-white rounded-lg bg-allokoli-button-gradient;
+  @apply shadow-subtle-modern;
   transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  @apply shadow-md-modern brightness-110;
+}
+
+/* Classe utilitaire pour les inputs (exemple de base) */
+.input-styled {
+  @apply block w-full px-3 py-2 border border-gray-600 rounded-md;
+  @apply placeholder-gray-400 bg-allokoli-surface text-allokoli-foreground;
+  @apply focus:outline-none focus:ring-2 focus:ring-allokoli-primary focus:border-allokoli-primary;
 }
 
 /* Animations */
@@ -72,4 +151,101 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Styles des formulaires AlloKoli */
+.form-input,
+.form-select,
+.form-textarea {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px; /* Nouveau border-radius */
+  padding: 12px 16px; /* Nouveau padding */
+  color: var(--allokoli-foreground);
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: theme(
+    "colors.gray.400"
+  ); /* Utilisation de la couleur gray de Tailwind */
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--allokoli-primary);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), theme("boxShadow.allokoli-focus-violet");
+}
+
+/* Styles spécifiques pour Select si nécessaire pour l'icône de flèche */
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25em;
+  padding-right: 3rem; /* Espace pour la flèche */
+}
+
+/* Boutons de formulaire */
+.btn {
+  @apply font-semibold py-3 px-6 rounded-[12px] transition-transform duration-200 ease-in-out min-h-[44px] inline-flex items-center justify-center;
+  /* py-3 px-6 est un exemple, padding peut être ajusté par bouton via les classes Tailwind */
+  /* Ajout de min-h-[44px] et flex pour centrer si le contenu est plus petit */
+}
+
+.btn:hover {
+  transform: scale(1.02);
+}
+
+.btn-primary {
+  @apply text-white btn bg-allokoli-button-gradient shadow-subtle-modern;
+}
+
+.btn-primary:hover {
+  @apply transform shadow-md-modern brightness-110 scale-102; /* Assure le scale au hover */
+}
+
+.btn-secondary {
+  @apply transition-colors duration-200 bg-allokoli-secondary text-allokoli-text-primary hover:bg-opacity-80;
+  /* Styles spécifiques pour le bouton secondaire */
+}
+
+.btn-outline {
+  @apply transition-colors duration-200 bg-transparent border border-allokoli-primary text-allokoli-primary hover:bg-allokoli-primary hover:text-allokoli-text-primary;
+  /* Styles pour les boutons avec seulement un contour */
+}
+
+/* Messages de validation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-message {
+  @apply p-3 mt-2 text-sm rounded-md;
+  animation: slideIn 0.3s ease-out;
+}
+
+.form-message-error {
+  @apply text-red-400 border form-message bg-red-500/20 border-red-500/50;
+  /* --allokoli-error: #ef4444; */
+}
+
+.form-message-success {
+  @apply text-green-400 border form-message bg-green-500/20 border-green-500/50;
+  /* --allokoli-success: #10b981; */
 }

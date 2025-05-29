@@ -1,246 +1,312 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PlusCircle, Edit, Trash2, Phone } from "lucide-react";
-import { Button, message } from "antd";
+import React from "react";
+import {
+  Typography,
+  Button,
+  Empty,
+  Card,
+  Row,
+  Col,
+  Tag,
+  Input,
+  Table,
+  Space,
+  Modal,
+  Form,
+  Select,
+  Tooltip,
+} from "antd";
+import {
+  PlusOutlined,
+  PhoneOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  LinkOutlined,
+  SettingOutlined,
+  ExclamationCircleFilled,
+} from "@ant-design/icons";
+import Link from "next/link";
 
-// Migration vers le SDK AlloKoli (conservé pour utilisation future)// import { useAlloKoliSDKWithAuth } from '../../../lib/hooks/useAlloKoliSDK';import { PhoneNumber } from '../../../lib/api/allokoli-sdk';
+const { Title, Paragraph, Text } = Typography;
+const { confirm } = Modal;
 
-// Interface étendue pour les données mock avec propriétés additionnelles
-interface PhoneNumberExtended extends PhoneNumber {
-  alias?: string;
-  status: string;
-  assignedTo?: string;
-}
+// Sample data - replace with actual data fetching
+const phoneNumbersData = [
+  {
+    id: "pn-1",
+    number: "+33 1 23 45 67 89",
+    region: "France",
+    status: "active",
+    assignedAssistant: "Assistant Commercial Proactif",
+    assistantId: "1",
+    capabilities: ["Voix", "SMS"],
+    lastActivity: "2024-07-28T15:00:00Z",
+  },
+  {
+    id: "pn-2",
+    number: "+33 9 87 65 43 21",
+    region: "France",
+    status: "inactive",
+    assignedAssistant: null,
+    assistantId: null,
+    capabilities: ["Voix"],
+    lastActivity: "2024-07-20T10:00:00Z",
+  },
+  {
+    id: "pn-3",
+    number: "+1 415 555 0100",
+    region: "USA",
+    status: "active",
+    assignedAssistant: "Support Client Nuit",
+    assistantId: "2",
+    capabilities: ["Voix", "SMS", "MMS"],
+    lastActivity: "2024-07-29T08:30:00Z",
+  },
+];
+
+const assistantsSample = [
+  { id: "1", name: "Assistant Commercial Proactif" },
+  { id: "2", name: "Support Client Nuit" },
+  { id: "3", name: "Assistant de Démonstration Produit" },
+];
 
 export default function PhoneNumbersPage() {
-  // SDK conservé pour utilisation future  // const sdk = useAlloKoliSDKWithAuth();
-  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberExtended[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [editingNumber, setEditingNumber] = React.useState<any>(null);
+  const [form] = Form.useForm();
 
-  // Charger les numéros via le SDK
-  useEffect(() => {
-    fetchPhoneNumbers();
-  }, []);
-
-  const fetchPhoneNumbers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Note: La méthode listPhoneNumbers n'existe pas encore dans le SDK
-      // Pour l'instant nous utilisons des données mock
-      setError("API non implémentée - utilisation des données mock");
-
-      // Fallback avec des données mock en développement
-      if (process.env.NODE_ENV === "development") {
-        setPhoneNumbers([
-          {
-            id: "phone-1",
-            number: "+33 1 23 45 67 89",
-            alias: "Support Client",
-            status: "active",
-            assignedTo: "Assistant Support",
-            created_at: "2023-04-01T10:00:00Z",
-            updated_at: "2023-05-12T10:00:00Z",
-          },
-          {
-            id: "phone-2",
-            number: "+33 6 12 34 56 78",
-            alias: "Commercial",
-            status: "active",
-            assignedTo: "Assistant Commercial",
-            created_at: "2023-04-05T10:00:00Z",
-            updated_at: "2023-05-10T10:00:00Z",
-          },
-          {
-            id: "phone-3",
-            number: "+33 9 87 65 43 21",
-            alias: "SAV",
-            status: "inactive",
-            assignedTo: "Non assigné",
-            created_at: "2023-03-20T10:00:00Z",
-            updated_at: "2023-04-15T10:00:00Z",
-          },
-        ]);
-      }
-    } catch (err: unknown) {
-      console.error("Erreur lors du chargement des numéros:", err);
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fonction conservée pour utilisation future
-  // const handleDeletePhoneNumber = async (phoneId: string, phoneAlias: string) => {
-  //   if (!window.confirm(`Êtes-vous sûr de vouloir supprimer le numéro "${phoneAlias}" ? Cette action est irréversible.`)) {
-  //     return;
-  //   }
-  //
-  //   try {
-  //     // Note: La méthode deletePhoneNumber n'existe pas encore dans le SDK
-  //     // await sdk.deletePhoneNumber(phoneId);
-  //     message.success(`Numéro "${phoneAlias}" supprimé avec succès`);
-  //
-  //     // Actualiser la liste
-  //     setPhoneNumbers(prev => prev.filter(phone => phone.id !== phoneId));
-  //
-  //   } catch (err) {
-  //     console.error('Erreur lors de la suppression:', err);
-  //     message.error('Erreur lors de la suppression du numéro');
-  //   }
-  // };
-
-  // Obtenir le statut formaté
-  const getStatusDisplay = (status: string) => {
-    switch (status) {
-      case "active":
-        return { text: "Actif", className: "bg-green-100 text-green-800" };
-      case "inactive":
-        return { text: "Inactif", className: "bg-gray-100 text-gray-800" };
-      case "error":
-        return { text: "Erreur", className: "bg-red-100 text-red-800" };
-      default:
-        return { text: "Inconnu", className: "bg-gray-100 text-gray-800" };
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="w-12 h-12 border-b-2 border-purple-600 rounded-full animate-spin"></div>
-      </div>
+  const showAssignModal = (record?: any) => {
+    setEditingNumber(record);
+    form.setFieldsValue(
+      record ? { assistantId: record.assistantId } : { assistantId: null }
     );
-  }
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        console.log(
+          "Assigning assistant:",
+          values.assistantId,
+          "to number:",
+          editingNumber?.id
+        );
+        // API call to assign assistant
+        setIsModalOpen(false);
+        setEditingNumber(null);
+        // Refresh data or update state
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setEditingNumber(null);
+  };
+
+  const showDeleteConfirm = (record: any) => {
+    confirm({
+      title: `Supprimer le numéro ${record.number}?`,
+      icon: <ExclamationCircleFilled />,
+      content:
+        "Cette action est irréversible. Le numéro sera désactivé et ne pourra plus recevoir d'appels.",
+      okText: "Supprimer",
+      okType: "danger",
+      cancelText: "Annuler",
+      onOk() {
+        console.log("Deleting number", record.id);
+        // API call to delete number
+      },
+    });
+  };
+
+  const columns = [
+    {
+      title: "Numéro",
+      dataIndex: "number",
+      key: "number",
+      render: (text: string) => <Text strong>{text}</Text>,
+    },
+    {
+      title: "Région",
+      dataIndex: "region",
+      key: "region",
+    },
+    {
+      title: "Assistant Assigné",
+      dataIndex: "assignedAssistant",
+      key: "assignedAssistant",
+      render: (text: string, record: any) =>
+        text ? (
+          <Link href={`/assistants/${record.assistantId}`}>{text}</Link>
+        ) : (
+          <Text type="secondary">Non assigné</Text>
+        ),
+    },
+    {
+      title: "Capacités",
+      dataIndex: "capabilities",
+      key: "capabilities",
+      render: (capabilities: string[]) => (
+        <>
+          {capabilities.map((cap) => (
+            <Tag key={cap} color="blue">
+              {cap}
+            </Tag>
+          ))}
+        </>
+      ),
+    },
+    {
+      title: "Statut",
+      dataIndex: "status",
+      key: "status",
+      render: (status: string) => (
+        <Tag color={status === "active" ? "green" : "red"}>
+          {status === "active" ? "Actif" : "Inactif"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: any, record: any) => (
+        <Space size="middle">
+          <Tooltip title="Assigner un Assistant">
+            <Button
+              icon={<LinkOutlined />}
+              onClick={() => showAssignModal(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Paramètres (Bientôt)">
+            <Button icon={<SettingOutlined />} disabled />
+          </Tooltip>
+          <Tooltip title="Supprimer">
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => showDeleteConfirm(record)}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="w-full">
+      <div className="flex flex-col items-start justify-between mb-8 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-purple-800">
-            Numéros de téléphone
-          </h1>
-          <p className="mt-2 text-blue-700">
-            Gérez vos numéros de téléphone pour vos assistants
-          </p>
+          <Title level={2} className="!text-allokoli-text-primary !mb-1">
+            Numéros de Téléphone
+          </Title>
+          <Paragraph className="!text-allokoli-text-secondary">
+            Gérez vos numéros et assignez-les à vos assistants IA.
+          </Paragraph>
         </div>
         <Button
           type="primary"
-          icon={<PlusCircle size={16} />}
-          className="border-none shadow-md bg-gradient-to-r from-purple-600 to-purple-700 hover:shadow-lg"
-          onClick={() => message.info("Ajout de numéro à venir")}
+          icon={<PlusOutlined />}
+          size="large"
+          className="mt-4 sm:mt-0"
+          onClick={() =>
+            Modal.info({
+              title: "Acheter un numéro",
+              content: "Cette fonctionnalité sera bientôt disponible.",
+            })
+          }
         >
-          Ajouter un numéro
+          Acheter un Numéro
         </Button>
       </div>
 
-      {error && phoneNumbers.length === 0 ? (
-        <div className="p-4 rounded-lg bg-red-50">
-          <p className="text-red-600">Erreur lors du chargement : {error}</p>
-          <Button onClick={fetchPhoneNumbers} className="mt-2">
-            Réessayer
-          </Button>
-        </div>
-      ) : (
-        <div className="overflow-hidden bg-white rounded-lg shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Numéro
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Alias
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                    Assigné à
-                  </th>
-                  <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {phoneNumbers.map((phoneNumber) => {
-                  const statusDisplay = getStatusDisplay(phoneNumber.status);
+      <Input
+        placeholder="Rechercher un numéro ou un assistant..."
+        prefix={<SearchOutlined className="text-gray-400" />}
+        className="mb-6"
+        size="large"
+      />
 
-                  return (
-                    <tr key={phoneNumber.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 mr-3 bg-purple-100 rounded-full">
-                            <Phone size={16} className="text-purple-600" />
-                          </div>
-                          <span>{phoneNumber.number}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {phoneNumber.alias}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusDisplay.className}`}
-                        >
-                          {statusDisplay.text}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {phoneNumber.assignedTo}
-                      </td>
-                      <td className="px-6 py-4 text-right whitespace-nowrap">
-                        <div className="flex justify-end space-x-2">
-                          <button
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Modifier"
-                            aria-label="Modifier le numéro"
-                            onClick={() => message.info("Modification à venir")}
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            className="text-red-600 hover:text-red-900"
-                            title="Supprimer"
-                            aria-label="Supprimer le numéro"
-                            onClick={() => message.info("Suppression à venir")}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      <Card className="shadow-lg glassmorphism rounded-xl">
+        {phoneNumbersData.length === 0 ? (
+          <Empty
+            image={<PhoneOutlined className="text-6xl text-gray-400" />}
+            imageStyle={{ height: 80 }}
+            description={
+              <Space direction="vertical" size="small">
+                <Title level={4} className="!text-allokoli-text-secondary">
+                  Aucun numéro de téléphone configuré.
+                </Title>
+                <Paragraph className="!text-allokoli-text-tertiary">
+                  Achetez votre premier numéro pour commencer à recevoir des
+                  appels.
+                </Paragraph>
+              </Space>
+            }
+          >
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() =>
+                Modal.info({
+                  title: "Acheter un numéro",
+                  content: "Cette fonctionnalité sera bientôt disponible.",
+                })
+              }
+            >
+              Acheter un Numéro
+            </Button>
+          </Empty>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={phoneNumbersData}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+          />
+        )}
+      </Card>
 
-      <div className="p-6 mt-6 border rounded-lg bg-allokoli-purple-50 border-allokoli-purple-200">
-        <h3 className="mb-3 text-lg font-semibold text-allokoli-purple-800">
-          Comprendre la gestion des numéros
-        </h3>
-        <p className="mb-4 text-gray-700">
-          Les numéros de téléphone sont utilisés pour connecter vos assistants
-          au réseau téléphonique. Chaque numéro peut être assigné à un assistant
-          différent pour gérer des cas d&apos;usage spécifiques.
-        </p>
-        <div className="flex items-center">
-          <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 mr-3 rounded-full bg-allokoli-purple-100">
-            <Phone size={20} className="text-allokoli-purple-600" />
-          </div>
-          <p className="text-sm text-gray-600">
-            Vous pouvez acquérir de nouveaux numéros directement via notre
-            plateforme ou importer des numéros existants.
-          </p>
-        </div>
-      </div>
+      <Modal
+        title={
+          editingNumber
+            ? `Assigner un assistant à ${editingNumber.number}`
+            : "Assigner un Assistant"
+        }
+        visible={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Assigner"
+        cancelText="Annuler"
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical" name="assignAssistantForm">
+          <Form.Item
+            name="assistantId"
+            label="Sélectionner un Assistant"
+            rules={[
+              {
+                required: true,
+                message: "Veuillez sélectionner un assistant!",
+              },
+            ]}
+          >
+            <Select placeholder="Choisir un assistant">
+              {assistantsSample.map((assistant) => (
+                <Select.Option key={assistant.id} value={assistant.id}>
+                  {assistant.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

@@ -1,120 +1,205 @@
 "use client";
 
+import React from "react";
+import {
+  Typography,
+  Card,
+  Table,
+  Tag,
+  Button,
+  Space,
+  Row,
+  Col,
+  Statistic,
+  Alert,
+} from "antd";
+import {
+  DownloadOutlined,
+  CreditCardOutlined,
+  HistoryOutlined,
+} from "@ant-design/icons";
+
+const { Title, Paragraph, Text } = Typography;
+
+const invoiceColumns = [
+  {
+    title: "ID Facture",
+    dataIndex: "id",
+    key: "id",
+    render: (text: string) => (
+      <Link href={`/dashboard/usage-billing/invoice/${text}`}>{text}</Link>
+    ),
+  },
+  {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+  },
+  {
+    title: "Montant",
+    dataIndex: "amount",
+    key: "amount",
+    render: (amount: number) => `${amount.toFixed(2)} €`,
+  },
+  {
+    title: "Statut",
+    dataIndex: "status",
+    key: "status",
+    render: (status: string) => (
+      <Tag
+        color={
+          status === "Payée"
+            ? "green"
+            : status === "En attente"
+            ? "orange"
+            : "red"
+        }
+      >
+        {status.toUpperCase()}
+      </Tag>
+    ),
+  },
+  {
+    title: "Action",
+    key: "action",
+    render: (_: any, record: any) => (
+      <Button
+        icon={<DownloadOutlined />}
+        onClick={() => console.log("Download invoice", record.id)}
+      >
+        Télécharger
+      </Button>
+    ),
+  },
+];
+
+const invoiceData = [
+  {
+    key: "1",
+    id: "INV-2024-007",
+    date: "2024-07-01",
+    amount: 79.99,
+    status: "Payée",
+  },
+  {
+    key: "2",
+    id: "INV-2024-006",
+    date: "2024-06-01",
+    amount: 79.99,
+    status: "Payée",
+  },
+  {
+    key: "3",
+    id: "INV-2024-005",
+    date: "2024-05-01",
+    amount: 59.99,
+    status: "Payée",
+  },
+];
+
 export default function UsageBillingPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-allokoli-purple-800">
-          Utilisation et Facturation
-        </h1>
-        <p className="text-allokoli-blue-700 mt-2">
-          Suivez votre consommation et gérez vos factures
-        </p>
-      </div>
+    <div className="w-full">
+      <Title level={2} className="!text-allokoli-text-primary !mb-6">
+        Utilisation & Facturation
+      </Title>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold mb-2 text-allokoli-purple-700">
-            Minutes utilisées
-          </h3>
-          <p className="text-3xl font-bold text-allokoli-purple-900">
-            426{" "}
-            <span className="text-base font-normal text-gray-500">/ 1000</span>
-          </p>
-          <div className="h-2 bg-gray-100 rounded-full mt-3 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full"
-              style={{ width: "42.6%" }}
-            ></div>
-          </div>
-        </div>
+      <Row gutter={[24, 24]} className="mb-6">
+        <Col xs={24} md={8}>
+          <Card className="h-full shadow-lg glassmorphism rounded-xl">
+            <Statistic
+              title="Solde Actuel"
+              value={12.5}
+              precision={2}
+              prefix="€"
+              valueStyle={{ color: "#cf1322" }}
+            />
+            <Paragraph className="!text-allokoli-text-secondary !text-xs mt-2">
+              Prochaine facture le 01/08/2024.
+            </Paragraph>
+            <Button
+              type="primary"
+              icon={<CreditCardOutlined />}
+              className="w-full mt-3"
+            >
+              Recharger le Compte
+            </Button>
+          </Card>
+        </Col>
+        <Col xs={24} md={8}>
+          <Card className="h-full shadow-lg glassmorphism rounded-xl">
+            <Statistic
+              title="Utilisation ce mois-ci"
+              value={68.75}
+              precision={2}
+              prefix="€"
+              valueStyle={{ color: "#3f8600" }}
+            />
+            <Paragraph className="!text-allokoli-text-secondary !text-xs mt-2">
+              Basé sur votre plan Pro.
+            </Paragraph>
+            <Button
+              type="default"
+              icon={<HistoryOutlined />}
+              className="w-full mt-3"
+            >
+              Voir l'historique détaillé
+            </Button>
+          </Card>
+        </Col>
+        <Col xs={24} md={8}>
+          <Card className="h-full shadow-lg glassmorphism rounded-xl">
+            <Title level={5}>Votre Plan Actuel</Title>
+            <Paragraph className="!font-semibold text-allokoli-primary text-lg">
+              Plan Pro
+            </Paragraph>
+            <ul className="space-y-1 text-xs list-disc list-inside text-allokoli-text-secondary">
+              <li>10,000 minutes d'appel</li>
+              <li>Assistants illimités</li>
+              <li>Support prioritaire</li>
+            </ul>
+            <Button type="link" className="p-0 mt-3">
+              Gérer l'abonnement
+            </Button>
+          </Card>
+        </Col>
+      </Row>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold mb-2 text-allokoli-blue-700">
-            Appels passés
-          </h3>
-          <p className="text-3xl font-bold text-allokoli-blue-900">124</p>
-          <p className="text-sm text-gray-500 mt-3">
-            Dernier mois: +12% vs période précédente
-          </p>
-        </div>
+      <Card
+        title="Historique des Factures"
+        className="shadow-lg glassmorphism rounded-xl"
+      >
+        <Table
+          columns={invoiceColumns}
+          dataSource={invoiceData}
+          pagination={{ pageSize: 5 }}
+        />
+      </Card>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-semibold mb-2 text-allokoli-ocean-700">
-            Coût actuel
-          </h3>
-          <p className="text-3xl font-bold text-allokoli-ocean-900">87,40 €</p>
-          <p className="text-sm text-gray-500 mt-3">
-            Prochaine facture: 01/06/2023
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-12">
-        <h2 className="text-xl font-semibold text-allokoli-purple-800 mb-4">
-          Historique de facturation
-        </h2>
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Période
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Minutes
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Appels
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Montant
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap">Mai 2023</td>
-                  <td className="px-6 py-4 whitespace-nowrap">426</td>
-                  <td className="px-6 py-4 whitespace-nowrap">124</td>
-                  <td className="px-6 py-4 whitespace-nowrap">87,40 €</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                      En cours
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap">Avril 2023</td>
-                  <td className="px-6 py-4 whitespace-nowrap">752</td>
-                  <td className="px-6 py-4 whitespace-nowrap">198</td>
-                  <td className="px-6 py-4 whitespace-nowrap">132,50 €</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Payé
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap">Mars 2023</td>
-                  <td className="px-6 py-4 whitespace-nowrap">528</td>
-                  <td className="px-6 py-4 whitespace-nowrap">143</td>
-                  <td className="px-6 py-4 whitespace-nowrap">95,20 €</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                      Payé
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <Alert
+        message="Mise à jour des tarifs"
+        description="Nos tarifs seront mis à jour à partir du 1er Septembre 2024. Consultez notre page de tarification pour plus de détails."
+        type="warning"
+        showIcon
+        className="mt-6 glassmorphism"
+      />
     </div>
   );
 }
+
+// Minimal Link component for the table until full routing is set up
+const Link: React.FC<React.PropsWithChildren<{ href: string }>> = ({
+  href,
+  children,
+}) => (
+  <a
+    href={href}
+    onClick={(e) => {
+      e.preventDefault();
+      console.log(`Navigating to ${href}`);
+    }}
+    style={{ color: "var(--allokoli-primary)" }}
+  >
+    {children}
+  </a>
+);

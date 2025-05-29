@@ -2,12 +2,12 @@
 
 /* Variables CSS personnalisées pour les couleurs AlloKoli */
 :root {
-  --color-primary: #7745FF;
-  --color-secondary: #5769FF;
-  --color-accent: #9CB8FF;
-  --color-light-bg: #F7F7FC;
-  --color-lighter-bg: #F2F5FF;
-  --color-dark: #1B1D2A;
+  --color-primary: #7745ff;
+  --color-secondary: #5769ff;
+  --color-accent: #9cb8ff;
+  --color-light-bg: #f7f7fc;
+  --color-lighter-bg: #f2f5ff;
+  --color-dark: #1b1d2a;
 }
 
 /* Styles généraux d'accessibilité et d'apparence */
@@ -50,11 +50,13 @@
 
 /* Améliorations pour les typographies */
 .ant-typography {
-  font-family: 'Exo 2', 'Sora', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Exo 2", "Sora", "Manrope", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
 }
 
 .ant-typography-title {
-  font-family: 'Sora', 'Exo 2', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Sora", "Exo 2", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
   font-weight: 600;
 }
 
@@ -93,12 +95,105 @@
   .ant-typography-h1 {
     font-size: 24px !important;
   }
-  
+
   .ant-typography-h2 {
     font-size: 20px !important;
   }
-  
+
   .ant-form-item {
     margin-bottom: 16px;
   }
-} 
+}
+
+/* Glassmorphism pour les Cartes Ant Design */
+.ant-card {
+  /* Le token colorBgContainer de notre thème définit déjà un fond semi-transparent. */
+  /* Ex: background-color: rgba(45, 42, 64, 0.6); */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Bordure subtile pour le glassmorphism */
+  /* L'ombre est gérée par les tokens ou peut être surchargée ici si box-shadow: none; est dans le token */
+}
+
+/* Glassmorphism pour les Modales Ant Design */
+.ant-modal-content {
+  /* Le token colorBgElevated définit un fond semi-transparent. */
+  /* Ex: background-color: rgba(30, 27, 46, 0.85); */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Glassmorphism pour les en-têtes de Table Ant Design */
+.ant-table-thead > tr > th,
+.ant-table-thead > tr > td {
+  /* Le token headerBg définit un fond semi-transparent. */
+  /* Ex: background-color: rgba(45, 42, 64, 0.8); */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* Assurer une bordure visible */
+}
+
+/* Gradient pour les boutons primaires Ant Design */
+.ant-btn-primary {
+  /* La couleur de secours solide est définie par colorPrimary dans les tokens. */
+  /* Le token colorTextLightSolid assure la lisibilité du texte. */
+  background-image: linear-gradient(
+    to right,
+    #7c3aed,
+    #a78bfa
+  ); /* Gradient AlloKoli */
+  border: none; /* Supprimer la bordure par défaut si le gradient ne la couvre pas bien */
+  color: white !important; /* Forcer la couleur du texte si besoin */
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-image: linear-gradient(
+    to right,
+    #a78bfa,
+    #7c3aed
+  ); /* Inverser ou éclaircir le gradient au survol */
+  opacity: 0.9; /* Ou ajuster la luminosité via filter si le gradient est complexe */
+}
+
+.ant-btn-primary[disabled],
+.ant-btn-primary[disabled]:hover {
+  background-image: none; /* Pas de gradient pour les boutons désactivés */
+  /* Les couleurs de fond et de texte pour l'état désactivé sont gérées par les tokens. */
+  /* colorBgContainerDisabled et colorTextDisabled */
+  opacity: 0.65; /* Opacité standard pour désactivé */
+}
+
+/* Surcharge pour le focus violet des Inputs, si le token controlOutline ne suffit pas */
+/* Normalement, le token controlOutline devrait gérer cela. 
+   Ceci est un exemple si un effet plus prononcé était désiré au-delà des capacités du token. */
+/*
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-number:focus,
+.ant-input-number-focused,
+.ant-select-focused .ant-select-selector,
+.ant-picker-focused {
+  border-color: #A78BFA; 
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.5); 
+}
+*/
+
+/* Styles pour s'assurer que le fond de page est bien celui d'AlloKoli si AntD le surcharge */
+body {
+  background-color: #1e1b2e !important; /* Correspond à ALLOKOLI_COLORS.background */
+}
+
+/* S'assurer que le texte par défaut dans les composants AntD est lisible */
+.ant-typography {
+  color: #f3f4f6; /* Correspond à ALLOKOLI_COLORS.textPrimary */
+}
+
+/* Pour les Tooltips et Popovers, s'assurer qu'ils utilisent le fond surélevé sombre */
+.ant-tooltip-inner,
+.ant-popover-inner {
+  /* colorBgElevated est utilisé par ces composants via les tokens */
+  /* Si besoin de forcer, ex: background-color: #2D2A40; */
+}

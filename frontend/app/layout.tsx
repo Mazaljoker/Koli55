@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ConfigProvider } from "antd";
+import { allokoliTheme } from "@/lib/config/theme";
 import { ThemeProvider } from "./theme-provider";
 import "./globals.css";
 import "./styles/antd.css"; // Pour s'assurer que les styles spécifiques à Ant Design sont inclus
@@ -25,12 +27,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-allokoli-background text-allokoli-text-primary`}
       >
         <ThemeProvider>
-          {children}
+          <ConfigProvider theme={allokoliTheme}>{children}</ConfigProvider>
         </ThemeProvider>
       </body>
     </html>

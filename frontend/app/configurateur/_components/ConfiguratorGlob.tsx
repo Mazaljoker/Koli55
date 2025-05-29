@@ -146,6 +146,7 @@ const ConfiguratorGlob: React.FC = () => {
       <div className="absolute flex gap-4 transform -translate-x-1/2 bottom-6 left-1/2">
         <Button
           onClick={toggleCall}
+          aria-label={isSessionActive ? "Arrêter l'appel" : "Démarrer l'appel"}
           className={`rounded-full w-16 h-16 ${
             isSessionActive
               ? "bg-red-500 hover:bg-red-600"
@@ -157,6 +158,7 @@ const ConfiguratorGlob: React.FC = () => {
 
         <Button
           variant="outline"
+          aria-label="Ouvrir les paramètres"
           className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20"
         >
           <Settings size={24} className="text-white" />

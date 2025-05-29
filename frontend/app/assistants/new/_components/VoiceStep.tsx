@@ -159,6 +159,9 @@ const VoiceStep: React.FC<AssistantStepProps> = ({ form }) => {
             icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
             onClick={handlePlaySample}
             disabled={!canPreview}
+            aria-label={
+              isPlaying ? "Arrêter l'aperçu vocal" : "Lire l'aperçu vocal"
+            }
             className="!w-12 !h-12 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           />
 

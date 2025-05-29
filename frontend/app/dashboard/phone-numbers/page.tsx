@@ -181,15 +181,21 @@ export default function PhoneNumbersPage() {
           <Tooltip title="Assigner un Assistant">
             <Button
               icon={<LinkOutlined />}
+              aria-label={`Assigner un assistant au numéro ${record.number}`}
               onClick={() => showAssignModal(record)}
             />
           </Tooltip>
           <Tooltip title="Paramètres (Bientôt)">
-            <Button icon={<SettingOutlined />} disabled />
+            <Button
+              icon={<SettingOutlined />}
+              aria-label="Paramètres du numéro"
+              disabled
+            />
           </Tooltip>
           <Tooltip title="Supprimer">
             <Button
               icon={<DeleteOutlined />}
+              aria-label={`Supprimer le numéro ${record.number}`}
               danger
               onClick={() => showDeleteConfirm(record)}
             />

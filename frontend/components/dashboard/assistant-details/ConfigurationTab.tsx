@@ -29,7 +29,15 @@ interface ConfigurationTabProps {
 
 const ConfigurationTab: React.FC<ConfigurationTabProps> = ({ assistant }) => {
   // Fonction utilitaire pour afficher "Non spécifié" si la valeur est vide
-  const displayValue = (value: unknown) => value || "Non spécifié";
+  const displayValue = (value: unknown): string => {
+    if (value === null || value === undefined || value === "") {
+      return "Non spécifié";
+    }
+    if (typeof value === "object") {
+      return "Non spécifié";
+    }
+    return String(value);
+  };
 
   // Récupérer les détails du modèle
   const modelName =

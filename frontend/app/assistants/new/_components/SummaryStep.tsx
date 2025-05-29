@@ -131,6 +131,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({
                         size="small"
                         icon={<Edit3 className="h-4 w-4" />}
                         onClick={() => onEdit(card.key)}
+                        aria-label={`Modifier la section ${card.title}`}
                         className="text-gray-500 hover:text-purple-600"
                       >
                         Modifier

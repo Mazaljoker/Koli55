@@ -240,6 +240,7 @@ const KnowledgeBaseStep: React.FC<AssistantStepProps> = ({ form }) => {
                       size="small"
                       icon={<X className="w-4 h-4" />}
                       onClick={() => handleRemoveItem(item.id)}
+                      aria-label={`Supprimer ${item.name}`}
                       className="text-gray-400 hover:text-red-500"
                     />
                   </div>

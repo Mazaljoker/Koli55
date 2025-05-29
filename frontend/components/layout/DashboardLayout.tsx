@@ -172,6 +172,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               variant="ghost"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
+              aria-label={collapsed ? "Déplier le menu" : "Replier le menu"}
               className="!text-xl !text-allokoli-text-primary hover:!text-allokoli-primary"
             />
             <Breadcrumb className="hidden md:block">

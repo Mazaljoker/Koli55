@@ -142,12 +142,18 @@ const ConfiguratorChat: React.FC<ConfiguratorChatProps> = ({
 
             <Button
               onClick={resetConversation}
+              aria-label="Réinitialiser la conversation"
               className="text-white border-white/20 hover:bg-white/10"
               icon={<RotateCcw size={16} />}
             />
 
             <Button
               onClick={() => setShowTextInput(!showTextInput)}
+              aria-label={
+                showTextInput
+                  ? "Désactiver la saisie texte"
+                  : "Activer la saisie texte"
+              }
               className="text-white border-white/20 hover:bg-white/10"
               icon={
                 showTextInput ? <VolumeX size={16} /> : <Volume2 size={16} />
@@ -273,6 +279,7 @@ const ConfiguratorChat: React.FC<ConfiguratorChatProps> = ({
             <Button
               onClick={handleSendMessage}
               disabled={!textMessage.trim()}
+              aria-label="Envoyer le message"
               className="text-white bg-blue-500 border-blue-500 hover:bg-blue-600"
               icon={<Send size={16} />}
             />

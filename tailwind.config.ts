@@ -10,7 +10,8 @@ const config: Config = {
   ],
   theme: {
     fontFamily: {
-      sans: ["Inter", "system-ui", "sans-serif"],
+      sans: ["Manrope", "Inter", "system-ui", "sans-serif"],
+      heading: ["Sora", "Manrope", "system-ui", "sans-serif"],
     },
     extend: {
       colors: {
@@ -48,36 +49,42 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
         "allokoli-primary": "#7C3AED",
-        "allokoli-secondary": "#A78BFA",
+        "allokoli-secondary": "#3B82F6",
         "allokoli-accent": "#F59E0B",
-        "allokoli-background": "#1E1B2E",
-        "allokoli-surface": "#2D2A40",
-        "allokoli-text-primary": "#F3F4F6",
-        "allokoli-text-secondary": "#D1D5DB",
+        "allokoli-background": "#FFFFFF",
+        "allokoli-surface": "#F8FAFC",
+        "allokoli-text-primary": "#1E293B",
+        "allokoli-text-secondary": "#64748B",
         "allokoli-success": "#10B981",
         "allokoli-error": "#EF4444",
+        "allokoli-warning": "#F59E0B",
+        "allokoli-border": "#E2E8F0",
         "avatar-orange": "#f59e0b",
         "avatar-green": "#10b981",
         "avatar-blue": "#3b82f6",
         "avatar-gray": "#9ca3af",
+        "avatar-purple": "#8b5cf6",
       },
       backgroundImage: {
         "gradient-glassmorphism":
-          "linear-gradient(to right bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))",
+          "linear-gradient(to right bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6))",
         "allokoli-button-gradient":
-          "linear-gradient(to right, #7745FF, #5769FF)",
+          "linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)",
+        "allokoli-landing-gradient":
+          "linear-gradient(135deg, #EDE9FE 0%, #DBEAFE 100%)",
       },
       boxShadow: {
         glassmorphism: "0 4px 30px rgba(0, 0, 0, 0.1)",
         "subtle-modern":
           "0 2px 4px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.05)",
         "md-modern": "0 4px 8px rgba(0,0,0,0.07), 0 10px 20px rgba(0,0,0,0.07)",
-        "allokoli-focus-violet": "0 0 0 3px rgba(167, 139, 250, 0.6)",
-        "allokoli-glow": "0 0 20px 5px rgba(124, 58, 237, 0.5)",
+        "allokoli-focus-violet": "0 0 0 3px rgba(124, 58, 237, 0.2)",
+        "allokoli-glow": "0 0 20px 5px rgba(124, 58, 237, 0.3)",
         "allokoli-subtle":
           "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
         "allokoli-card":
           "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        "allokoli-primary": "0 4px 14px 0 rgba(124, 58, 237, 0.25)",
       },
       borderRadius: {
         // ... existing code ...

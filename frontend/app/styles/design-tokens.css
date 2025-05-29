@@ -1,21 +1,25 @@
-/* Design Tokens CSS Variables - AlloKoli */
-/* Généré automatiquement depuis les tokens TypeScript */
+/* Design Tokens CSS Variables - AlloKoli Mode Light Exclusif */
+/* Mode Dark supprimé pour cohérence avec design landing page */
 
 :root {
   /* Couleurs principales */
   --allokoli-primary-default: #7c3aed;
-  --allokoli-primary-hover: #7745ff;
+  --allokoli-primary-hover: #6d28d9;
   --allokoli-primary-active: #6d28d9;
   --allokoli-primary-light: #a78bfa;
-  --allokoli-primary-lighter: #9cb8ff;
+  --allokoli-primary-lighter: #c4b5fd;
+  --allokoli-primary-soft: #ede9fe;
 
-  --allokoli-secondary-default: #a78bfa;
-  --allokoli-secondary-hover: #8b5cf6;
-  --allokoli-secondary-active: #7c3aed;
+  --allokoli-secondary-default: #3b82f6;
+  --allokoli-secondary-hover: #2563eb;
+  --allokoli-secondary-active: #1d4ed8;
+  --allokoli-secondary-light: #dbeafe;
+  --allokoli-secondary-lighter: #93c5fd;
 
   --allokoli-accent-default: #f59e0b;
-  --allokoli-accent-hover: #e59e0b;
-  --allokoli-accent-active: #d59e0b;
+  --allokoli-accent-hover: #d97706;
+  --allokoli-accent-active: #b45309;
+  --allokoli-accent-light: #fde68a;
 
   /* Couleurs sémantiques */
   --allokoli-success-default: #10b981;
@@ -54,24 +58,16 @@
   --allokoli-gray-800: #1f2937;
   --allokoli-gray-900: #111827;
 
-  /* Couleurs spécifiques au thème sombre */
-  --allokoli-dark-background: #1e1b2e;
-  --allokoli-dark-surface: #2d2a40;
-  --allokoli-dark-surfaceHover: #3d3a50;
-  --allokoli-dark-textPrimary: #f3f4f6;
-  --allokoli-dark-textSecondary: #d1d5db;
-  --allokoli-dark-textTertiary: #9ca3af;
-  --allokoli-dark-border: #475569;
-  --allokoli-dark-borderSecondary: #334155;
-
-  /* Couleurs spécifiques au thème clair */
+  /* Couleurs spécifiques au thème clair - Design principal */
   --allokoli-light-background: #ffffff;
   --allokoli-light-surface: #f8fafc;
-  --allokoli-light-surfaceHover: #f1f5f9;
+  --allokoli-light-surface-hover: #f1f5f9;
   --allokoli-light-textPrimary: #1e293b;
   --allokoli-light-textSecondary: #64748b;
   --allokoli-light-textTertiary: #94a3b8;
+  --allokoli-light-textDisabled: #cbd5e1;
   --allokoli-light-border: #e2e8f0;
+  --allokoli-light-border-hover: #cbd5e1;
   --allokoli-light-borderSecondary: #f1f5f9;
 
   /* Couleurs d'avatar */
@@ -133,19 +129,19 @@
   --allokoli-radius-avatar: 9999px;
 
   /* Ombres */
-  --allokoli-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --allokoli-shadow-default: 0 1px 3px 0 rgb(0 0 0 / 0.1),
-    0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --allokoli-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --allokoli-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --allokoli-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --allokoli-shadow-primary: 0 4px 14px 0 rgb(124 58 237 / 0.25);
-  --allokoli-shadow-success: 0 4px 14px 0 rgb(16 185 129 / 0.25);
-  --allokoli-shadow-warning: 0 4px 14px 0 rgb(245 158 11 / 0.25);
-  --allokoli-shadow-error: 0 4px 14px 0 rgb(239 68 68 / 0.25);
+  --allokoli-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --allokoli-shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --allokoli-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --allokoli-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --allokoli-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --allokoli-shadow-primary: 0 4px 14px 0 rgba(124, 58, 237, 0.25);
+  --allokoli-shadow-success: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
+  --allokoli-shadow-warning: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
+  --allokoli-shadow-error: 0 4px 14px 0 rgba(239, 68, 68, 0.25);
 
   /* Transitions */
   --allokoli-transition-fast: 150ms ease;
@@ -156,57 +152,14 @@
   --allokoli-transition-slideIn: 300ms ease-out;
   --allokoli-transition-scaleIn: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Design Tokens AlloKoli - Mode Clair Exclusif */
-  --allokoli-primary-default: #7c3aed;
-  --allokoli-primary-hover: #6d28d9;
-  --allokoli-primary-lighter: #a78bfa;
-  --allokoli-primary-light: #c4b5fd;
-  --allokoli-primary-soft: #ede9fe;
-
-  --allokoli-secondary-default: #3b82f6;
-  --allokoli-secondary-hover: #2563eb;
-  --allokoli-secondary-lighter: #93c5fd;
-  --allokoli-secondary-light: #dbeafe;
-
-  --allokoli-accent-default: #f59e0b;
-  --allokoli-accent-hover: #d97706;
-  --allokoli-accent-light: #fde68a;
-
-  --allokoli-success-default: #10b981;
-  --allokoli-success-hover: #059669;
-  --allokoli-success-light: #a7f3d0;
-
-  --allokoli-warning-default: #f59e0b;
-  --allokoli-warning-hover: #d97706;
-  --allokoli-warning-light: #fde68a;
-
-  --allokoli-error-default: #ef4444;
-  --allokoli-error-hover: #dc2626;
-  --allokoli-error-light: #fecaca;
-
-  --allokoli-light-background: #ffffff;
-  --allokoli-light-surface: #f8fafc;
-  --allokoli-light-surface-hover: #f1f5f9;
-  --allokoli-light-border: #e2e8f0;
-  --allokoli-light-border-hover: #cbd5e1;
-
-  --allokoli-light-textPrimary: #1e293b;
-  --allokoli-light-textSecondary: #64748b;
-  --allokoli-light-textTertiary: #94a3b8;
-  --allokoli-light-textDisabled: #cbd5e1;
-
-  --allokoli-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --allokoli-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --allokoli-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --allokoli-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-
+  /* Variables Glassmorphism pour Landing Page */
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-blur: 20px;
   --glass-border-color: rgba(0, 0, 0, 0.1);
+  --glass-border-radius: var(--allokoli-radius-xl);
+  --glass-shadow: var(--allokoli-shadow-lg);
 
+  /* Variables spécifiques Landing Page */
   --landing-gradient-start: var(--allokoli-primary-default);
   --landing-gradient-end: var(--allokoli-secondary-default);
   --landing-text-primary: var(--allokoli-light-textPrimary);
@@ -214,122 +167,154 @@
   --landing-bg-accent: var(--allokoli-light-surface);
 }
 
-/* Classes utilitaires pour utiliser facilement les tokens */
+/* Classes utilitaires pour les couleurs de fond */
 .bg-primary {
   background-color: var(--allokoli-primary-default);
 }
+
 .bg-secondary {
   background-color: var(--allokoli-secondary-default);
 }
+
 .bg-accent {
   background-color: var(--allokoli-accent-default);
 }
+
 .bg-success {
   background-color: var(--allokoli-success-default);
 }
+
 .bg-warning {
   background-color: var(--allokoli-warning-default);
 }
+
 .bg-error {
   background-color: var(--allokoli-error-default);
 }
+
 .bg-surface {
   background-color: var(--allokoli-light-surface);
 }
 
+/* Classes utilitaires pour les couleurs de texte */
 .text-primary {
   color: var(--allokoli-primary-default);
 }
+
 .text-secondary {
   color: var(--allokoli-secondary-default);
 }
+
 .text-accent {
   color: var(--allokoli-accent-default);
 }
+
 .text-success {
   color: var(--allokoli-success-default);
 }
+
 .text-warning {
   color: var(--allokoli-warning-default);
 }
+
 .text-error {
   color: var(--allokoli-error-default);
 }
+
 .text-muted {
-  color: var(--allokoli-dark-textSecondary);
+  color: var(--allokoli-light-textSecondary);
 }
 
+/* Classes utilitaires pour les bordures */
 .border-primary {
   border-color: var(--allokoli-primary-default);
 }
+
 .border-surface {
-  border-color: var(--allokoli-dark-border);
-}
-.border-light {
   border-color: var(--allokoli-light-border);
 }
 
+.border-light {
+  border-color: var(--allokoli-light-borderSecondary);
+}
+
+/* Classes utilitaires pour les rayons de bordure */
 .rounded-sm {
   border-radius: var(--allokoli-radius-sm);
 }
+
 .rounded-md {
   border-radius: var(--allokoli-radius-md);
 }
+
 .rounded-lg {
   border-radius: var(--allokoli-radius-lg);
 }
+
 .rounded-xl {
   border-radius: var(--allokoli-radius-xl);
 }
+
 .rounded-full {
   border-radius: var(--allokoli-radius-full);
 }
 
+/* Classes utilitaires pour les ombres */
 .shadow-sm {
   box-shadow: var(--allokoli-shadow-sm);
 }
+
 .shadow-md {
   box-shadow: var(--allokoli-shadow-md);
 }
+
 .shadow-lg {
   box-shadow: var(--allokoli-shadow-lg);
 }
+
 .shadow-primary {
   box-shadow: var(--allokoli-shadow-primary);
 }
 
+/* Classes utilitaires pour les transitions */
 .transition-fast {
   transition: var(--allokoli-transition-fast);
 }
+
 .transition-base {
   transition: var(--allokoli-transition-base);
 }
+
 .transition-slow {
   transition: var(--allokoli-transition-slow);
 }
 
-/* Classes pour textes */
-.text-primary {
+/* Classes spécifiques pour la cohérence design */
+.text-primary-content {
   color: var(--allokoli-light-textPrimary);
 }
-.text-secondary {
+
+.text-secondary-content {
   color: var(--allokoli-light-textSecondary);
 }
-.text-tertiary {
+
+.text-tertiary-content {
   color: var(--allokoli-light-textTertiary);
 }
 
-/* Classes pour landing page spécifiques */
+/* Gradient pour la landing page et cohérence app */
 .landing-gradient {
   background: linear-gradient(
     135deg,
-    var(--landing-gradient-start) 0%,
-    var(--landing-gradient-end) 100%
+    var(--allokoli-primary-soft) 0%,
+    var(--allokoli-secondary-light) 100%
   );
 }
+
 .landing-text {
-  color: var(--landing-text-primary);
+  color: var(--allokoli-light-textPrimary);
 }
+
 .landing-text-muted {
-  color: var(--landing-text-secondary);
+  color: var(--allokoli-light-textSecondary);
 }

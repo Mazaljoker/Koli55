@@ -1,14 +1,13 @@
-/* Styles globaux pour Ant Design */
+/* Styles globaux pour Ant Design - Mode Light AlloKoli */
 @import "./design-tokens.css";
 
-/* Variables CSS personnalisées pour les couleurs AlloKoli (legacy - à migrer) */
+/* Variables CSS personnalisées pour les couleurs AlloKoli */
 :root {
-  --color-primary: var(--allokoli-primary-hover);
-  --color-secondary: var(--allokoli-secondary-hover);
+  --color-primary: var(--allokoli-primary-default);
+  --color-secondary: var(--allokoli-secondary-default);
   --color-accent: var(--allokoli-primary-lighter);
-  --color-light-bg: #f7f7fc;
-  --color-lighter-bg: #f2f5ff;
-  --color-dark: var(--allokoli-dark-background);
+  --color-light-bg: var(--allokoli-light-background);
+  --color-lighter-bg: var(--allokoli-light-surface);
 }
 
 /* Styles généraux d'accessibilité et d'apparence */
@@ -22,48 +21,61 @@
 /* Styles spécifiques aux composants */
 .ant-btn-primary {
   background: var(--allokoli-primary-default);
-  box-shadow: 0 2px 0 rgba(119, 69, 255, 0.1);
+  box-shadow: 0 2px 0 rgba(124, 58, 237, 0.1);
+  color: var(--allokoli-pure-white) !important;
 }
 
 .ant-btn-primary:hover {
-  background: var(--allokoli-primary-active) !important;
+  background: var(--allokoli-primary-hover) !important;
 }
 
-/* Glassmorphism pour certains composants */
+/* Glassmorphism pour composants sur fond clair */
 .glassmorphism {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--allokoli-radius-xl);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var(--allokoli-shadow-md);
-}
-
-.glassmorphism-dark {
-  background: rgba(27, 29, 42, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: var(--allokoli-radius-xl);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  color: var(--allokoli-pure-white);
+  color: var(--allokoli-light-textPrimary);
 }
 
 /* Améliorations pour les typographies */
 .ant-typography {
-  font-family: "Exo 2", "Sora", "Manrope", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, sans-serif;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  color: var(--allokoli-light-textPrimary);
 }
 
 .ant-typography-title {
-  font-family: "Sora", "Exo 2", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
+  font-family: "Sora", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
   font-weight: 600;
+  color: var(--allokoli-light-textPrimary);
 }
 
 /* Styles pour les formulaires */
 .ant-form-item-label > label {
   font-weight: 500;
+  color: var(--allokoli-light-textPrimary);
+}
+
+.ant-input,
+.ant-select-selector {
+  background-color: var(--allokoli-light-background);
+  border-color: var(--allokoli-light-border);
+  color: var(--allokoli-light-textPrimary);
+}
+
+.ant-input:hover,
+.ant-select-selector:hover {
+  border-color: var(--allokoli-primary-lighter);
+}
+
+.ant-input:focus,
+.ant-select-selector:focus {
+  border-color: var(--allokoli-primary-default);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
 }
 
 /* Animations pour les transitions */
@@ -85,10 +97,18 @@
 .ant-card {
   border-radius: var(--allokoli-radius-xl);
   overflow: hidden;
+  background: var(--allokoli-light-surface);
+  border: 1px solid var(--allokoli-light-border);
+  color: var(--allokoli-light-textPrimary);
 }
 
 .ant-card-head {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--allokoli-light-border);
+  background: var(--allokoli-light-background);
+}
+
+.ant-card-body {
+  background: var(--allokoli-light-surface);
 }
 
 /* Améliorations pour le responsive */
@@ -106,35 +126,51 @@
   }
 }
 
-/* Glassmorphism pour les Cartes Ant Design */
-.ant-card {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Glassmorphism pour les Modales Ant Design */
+/* Styles pour les Modales */
 .ant-modal-content {
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--allokoli-light-surface);
+  border-radius: var(--allokoli-radius-xl);
+  border: 1px solid var(--allokoli-light-border);
   box-shadow: var(--allokoli-shadow-xl);
 }
 
-/* Glassmorphism pour les en-têtes de Table Ant Design */
-.ant-table-thead > tr > th,
-.ant-table-thead > tr > td {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+.ant-modal-header {
+  background: var(--allokoli-light-background);
+  border-bottom: 1px solid var(--allokoli-light-border);
 }
 
-/* Gradient pour les boutons primaires Ant Design */
+.ant-modal-body {
+  color: var(--allokoli-light-textPrimary);
+}
+
+/* Styles pour les Tables */
+.ant-table {
+  background: var(--allokoli-light-surface);
+  color: var(--allokoli-light-textPrimary);
+}
+
+.ant-table-thead > tr > th {
+  background: var(--allokoli-light-background);
+  border-bottom: 1px solid var(--allokoli-light-border);
+  color: var(--allokoli-light-textPrimary);
+  font-weight: 600;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--allokoli-light-border);
+  color: var(--allokoli-light-textSecondary);
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--allokoli-light-surface-hover);
+}
+
+/* Gradient pour les boutons primaires */
 .ant-btn-primary {
-  background-image: linear-gradient(
-    to right,
-    var(--allokoli-primary-default),
-    var(--allokoli-secondary-default)
+  background: linear-gradient(
+    135deg,
+    var(--allokoli-primary-default) 0%,
+    var(--allokoli-secondary-default) 100%
   );
   border: none;
   color: var(--allokoli-pure-white) !important;
@@ -142,33 +178,80 @@
 
 .ant-btn-primary:hover,
 .ant-btn-primary:focus {
-  background-image: linear-gradient(
-    to right,
-    var(--allokoli-secondary-default),
-    var(--allokoli-primary-default)
+  background: linear-gradient(
+    135deg,
+    var(--allokoli-primary-hover) 0%,
+    var(--allokoli-secondary-hover) 100%
   );
   opacity: 0.9;
 }
 
 .ant-btn-primary[disabled],
 .ant-btn-primary[disabled]:hover {
-  background-image: none;
-  opacity: 0.65;
+  background: var(--allokoli-light-border);
+  opacity: 0.6;
 }
 
-/* Styles pour s'assurer que le fond de page est bien celui d'AlloKoli */
+/* Boutons secondaires */
+.ant-btn-default {
+  background: var(--allokoli-light-background);
+  border-color: var(--allokoli-light-border);
+  color: var(--allokoli-light-textPrimary);
+}
+
+.ant-btn-default:hover {
+  border-color: var(--allokoli-primary-default);
+  color: var(--allokoli-primary-default);
+}
+
+/* Fond global de l'application */
 body {
-  background-color: var(--allokoli-dark-background) !important;
+  background-color: var(--allokoli-light-background) !important;
+  color: var(--allokoli-light-textPrimary) !important;
 }
 
-/* S'assurer que le texte par défaut dans les composants AntD est lisible */
-.ant-typography {
-  color: var(--allokoli-dark-textPrimary);
+/* Menu et Navigation */
+.ant-menu {
+  background: var(--allokoli-light-surface);
+  color: var(--allokoli-light-textPrimary);
 }
 
-/* Pour les Tooltips et Popovers, s'assurer qu'ils utilisent le fond surélevé sombre */
-.ant-tooltip-inner,
+.ant-menu-item {
+  color: var(--allokoli-light-textSecondary);
+}
+
+.ant-menu-item:hover {
+  color: var(--allokoli-primary-default);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+.ant-menu-item-selected {
+  color: var(--allokoli-primary-default);
+  background: rgba(124, 58, 237, 0.1);
+}
+
+/* Tooltips et Popovers */
+.ant-tooltip-inner {
+  background: var(--allokoli-light-surface);
+  color: var(--allokoli-light-textPrimary);
+  border: 1px solid var(--allokoli-light-border);
+}
+
 .ant-popover-inner {
-  /* colorBgElevated est utilisé par ces composants via les tokens */
-  /* Si besoin de forcer, ex: background-color: #2D2A40; */
+  background: var(--allokoli-light-surface);
+  color: var(--allokoli-light-textPrimary);
+}
+
+.ant-popover-inner-content {
+  color: var(--allokoli-light-textPrimary);
+}
+
+/* Drawer */
+.ant-drawer-content {
+  background: var(--allokoli-light-surface);
+}
+
+.ant-drawer-body {
+  background: var(--allokoli-light-surface);
+  color: var(--allokoli-light-textPrimary);
 }

@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Form, Select, Typography, Card } from "antd";
+import { Form, Select, Typography, Card, Button } from "antd";
 import { PlayCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
 import {
   AssistantStepProps,
   VOICE_PROVIDERS,
   VOICES,
 } from "../../../../components/assistants/AssistantFormTypes";
-import { Button } from "@/components/ui/Button";
 
 const { Paragraph } = Typography;
 const { Option } = Select;
@@ -160,11 +159,7 @@ const VoiceStep: React.FC<AssistantStepProps> = ({ form }) => {
             icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
             onClick={handlePlaySample}
             disabled={!canPreview}
-            style={
-              canPreview
-                ? { boxShadow: "0 0 10px rgba(119, 69, 255, 0.5)" }
-                : {}
-            }
+            className="!w-12 !h-12 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           />
 
           <Paragraph

@@ -71,11 +71,11 @@ export default function KnowledgeBasesPage() {
           </Paragraph>
         </div>
         <Space className="mt-4 sm:mt-0">
-          <Button type="default" icon={<UploadOutlined />} size="large">
+          <Button variant="secondary" icon={<UploadOutlined />} size="large">
             Importer des Fichiers
           </Button>
           <Link href="/dashboard/knowledge-bases/new">
-            <Button type="primary" icon={<PlusOutlined />} size="large">
+            <Button variant="primary" icon={<PlusOutlined />} size="large">
               Nouvelle Base
             </Button>
           </Link>
@@ -108,7 +108,7 @@ export default function KnowledgeBasesPage() {
             }
           >
             <Link href="/dashboard/knowledge-bases/new">
-              <Button type="primary" icon={<PlusOutlined />}>
+              <Button variant="primary" icon={<PlusOutlined />}>
                 Créer une Base de Connaissances
               </Button>
             </Link>
@@ -158,10 +158,10 @@ export default function KnowledgeBasesPage() {
                   </div>
                 </div>
                 <Space className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 w-full justify-end">
-                  <Button type="link" size="small">
+                  <Button variant="ghost" size="small">
                     Gérer
                   </Button>
-                  <Button type="link" size="small" danger>
+                  <Button variant="ghost" size="small" danger>
                     Supprimer
                   </Button>
                 </Space>

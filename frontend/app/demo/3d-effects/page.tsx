@@ -66,7 +66,7 @@ export default function EffectsDemo() {
                 glareEffect={true}
               >
                 <Paragraph>{item.description}</Paragraph>
-                <Button type="primary" shape="round">En savoir plus</Button>
+                <Button variant="primary" shape="round">En savoir plus</Button>
               </TiltCard>
             </AppearingElement>
           </Col>
@@ -167,7 +167,7 @@ export default function EffectsDemo() {
             Ce gradient d&apos;arrière-plan change lentement pour créer un effet vivant et dynamique.
           </Paragraph>
           <Space>
-            <Button type="primary" size="large">Action principale</Button>
+            <Button variant="primary" size="large">Action principale</Button>
             <Button size="large">Action secondaire</Button>
           </Space>
         </div>

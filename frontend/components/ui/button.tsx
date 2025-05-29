@@ -7,7 +7,7 @@ import { clsx } from "clsx";
 export interface ButtonProps
   extends Omit<AntButtonProps, "type" | "size" | "loading"> {
   variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "small" | "middle" | "large";
   isLoading?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
@@ -49,13 +49,33 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
     const getAntSize = (): AntButtonProps["size"] => {
       switch (size) {
         case "sm":
+        case "small":
           return "small";
         case "md":
+        case "middle":
           return "middle";
         case "lg":
+        case "large":
           return "large";
         default:
           return "middle";
+      }
+    };
+
+    // Map size for our custom classes
+    const getCustomSize = (): "sm" | "md" | "lg" => {
+      switch (size) {
+        case "sm":
+        case "small":
+          return "sm";
+        case "md":
+        case "middle":
+          return "md";
+        case "lg":
+        case "large":
+          return "lg";
+        default:
+          return "md";
       }
     };
 
@@ -83,11 +103,11 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
           variant === "ghost",
       },
 
-      // Size styles
+      // Size styles - use mapped size
       {
-        "h-8 px-3 text-sm": size === "sm",
-        "h-10 px-4 text-base": size === "md",
-        "h-12 px-6 text-lg": size === "lg",
+        "h-8 px-3 text-sm": getCustomSize() === "sm",
+        "h-10 px-4 text-base": getCustomSize() === "md",
+        "h-12 px-6 text-lg": getCustomSize() === "lg",
       },
 
       // Full width
@@ -107,9 +127,9 @@ const Button = React.forwardRef<HTMLElement, ButtonProps>(
     const LoadingSpinner = () => (
       <svg
         className={clsx("animate-spin", {
-          "h-3 w-3": size === "sm",
-          "h-4 w-4": size === "md",
-          "h-5 w-5": size === "lg",
+          "h-3 w-3": getCustomSize() === "sm",
+          "h-4 w-4": getCustomSize() === "md",
+          "h-5 w-5": getCustomSize() === "lg",
         })}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

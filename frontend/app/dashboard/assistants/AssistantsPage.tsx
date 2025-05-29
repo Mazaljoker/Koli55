@@ -158,7 +158,7 @@ export default function AssistantsPage() {
             <Button 
               icon={<EditOutlined />} 
               size="small" 
-              type="text"
+              variant="ghost"
               className="text-allokoli-blue-600 hover:text-allokoli-blue-800"
             >
               Modifier
@@ -167,7 +167,7 @@ export default function AssistantsPage() {
           <Button 
             icon={<DeleteOutlined />} 
             size="small" 
-            type="text" 
+            variant="ghost" 
             danger
             onClick={() => confirmDelete(record)}
           >
@@ -184,7 +184,7 @@ export default function AssistantsPage() {
         <div className="text-center py-8">
           <h2 className="text-xl font-semibold text-red-600 mb-4">Erreur de chargement</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <Button type="primary" onClick={fetchAssistants}>
+          <Button variant="primary" onClick={fetchAssistants}>
             Réessayer
           </Button>
         </div>
@@ -201,7 +201,7 @@ export default function AssistantsPage() {
         </div>
         <Link href="/assistants/new">
           <Button 
-            type="primary" 
+            variant="primary" 
             icon={<PlusOutlined />}
             className="bg-gradient-to-r from-allokoli-purple-600 to-allokoli-purple-700 border-none shadow-md hover:shadow-lg"
           >

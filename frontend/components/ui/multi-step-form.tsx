@@ -138,16 +138,16 @@ const MultiStepForm: React.FC<MultiStepFormProps> = ({
         
         {isLastStep ? (
           <Button 
-            type="primary" 
+            variant="primary" 
             onClick={handleFinish} 
-            loading={loading}
+            isLoading={loading}
             icon={<CheckOutlined />}
           >
             {finishButtonText}
           </Button>
         ) : (
           <Button 
-            type="primary" 
+            variant="primary" 
             onClick={handleNext}
             icon={<ArrowRightOutlined />}
           >

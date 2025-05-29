@@ -211,7 +211,7 @@ export default function PhoneNumbersPage() {
           </Paragraph>
         </div>
         <Button
-          type="primary"
+          variant="primary"
           icon={<PlusOutlined />}
           size="large"
           className="mt-4 sm:mt-0"
@@ -251,7 +251,7 @@ export default function PhoneNumbersPage() {
             }
           >
             <Button
-              type="primary"
+              variant="primary"
               icon={<PlusOutlined />}
               onClick={() =>
                 Modal.info({

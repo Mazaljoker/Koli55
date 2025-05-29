@@ -209,7 +209,7 @@ const AssistantWizard: React.FC<AssistantWizardProps> = ({
 
               {currentStep < steps.length - 1 ? (
                 <Button
-                  type="primary"
+                  variant="primary"
                   onClick={handleNext}
                   icon={<ArrowRightOutlined />}
                 >
@@ -217,9 +217,9 @@ const AssistantWizard: React.FC<AssistantWizardProps> = ({
                 </Button>
               ) : (
                 <Button
-                  type="primary"
+                  variant="primary"
                   onClick={handleFinish}
-                  loading={loading}
+                  isLoading={loading}
                   icon={<CheckOutlined />}
                 >
                   {finishButtonText}

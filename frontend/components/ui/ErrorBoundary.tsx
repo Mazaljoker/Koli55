@@ -119,7 +119,7 @@ Merci de votre aide !
                 <Space direction="vertical" size="middle" className="w-full">
                   <Space wrap>
                     <Button
-                      type="primary"
+                      variant="primary"
                       icon={<ReloadOutlined />}
                       onClick={this.handleRetry}
                       size="large"

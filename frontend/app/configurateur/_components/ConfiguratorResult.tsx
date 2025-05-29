@@ -308,7 +308,7 @@ INSTRUCTIONS:
 
         <Button
           onClick={handleDeploy}
-          loading={isDeploying}
+          isLoading={isDeploying}
           className="text-white border-0 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
           icon={<Rocket size={16} />}
         >

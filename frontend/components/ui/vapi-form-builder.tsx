@@ -91,7 +91,7 @@ const VapiFormBuilder: React.FC<VapiFormBuilderProps> = ({
               style={{ marginBottom: '16px' }}
               extra={
                 <Button 
-                  type="primary" 
+                  variant="primary" 
                   size="small" 
                   icon={<PlusOutlined />} 
                   onClick={() => add()}
@@ -211,9 +211,9 @@ const VapiFormBuilder: React.FC<VapiFormBuilderProps> = ({
       
       <Form.Item>
         <Button 
-          type="primary" 
+          variant="primary" 
           htmlType="submit" 
-          loading={loading} 
+          isLoading={loading} 
           style={{ marginTop: '16px' }}
         >
           {submitButtonText}

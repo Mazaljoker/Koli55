@@ -129,7 +129,7 @@ const ConfiguratorChat: React.FC<ConfiguratorChatProps> = ({
 
             <Button
               onClick={isCallActive ? stopCall : startCall}
-              loading={isLoading}
+              isLoading={isLoading}
               className={`${
                 isCallActive
                   ? "bg-red-500 hover:bg-red-600 border-red-500"

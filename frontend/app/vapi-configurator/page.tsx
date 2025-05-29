@@ -183,11 +183,11 @@ export default function VapiConfiguratorPage() {
               <Space direction="vertical" size="large" className="w-full">
                 {!isCallActive ? (
                   <Button
-                    type="primary"
+                    variant="primary"
                     size="large"
                     icon={<PlayCircleOutlined />}
                     onClick={startCall}
-                    loading={isLoading}
+                    isLoading={isLoading}
                     disabled={!isConnected}
                     className="w-full"
                   >
@@ -217,7 +217,7 @@ export default function VapiConfiguratorPage() {
 
                 {configuratorData.isComplete && (
                   <Button
-                    type="default"
+                    variant="secondary"
                     size="large"
                     icon={<ExportOutlined />}
                     onClick={handleExport}

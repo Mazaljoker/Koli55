@@ -339,9 +339,9 @@ export default function AssistantEditForm({
         <Form.Item style={{ marginTop: 32 }}>
           <Space>
             <Button
-              type="primary"
+              variant="primary"
               htmlType="submit"
-              loading={loading}
+              isLoading={loading}
               icon={<SaveOutlined />}
               size="large"
             >

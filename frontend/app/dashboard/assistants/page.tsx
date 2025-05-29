@@ -70,7 +70,7 @@ export default function MyAssistantsPage() {
         </div>
         <Link href="/assistants/new">
           <Button
-            type="primary"
+            variant="primary"
             icon={<PlusOutlined />}
             size="large"
             className="mt-4 sm:mt-0"

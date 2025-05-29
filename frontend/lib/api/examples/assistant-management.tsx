@@ -271,7 +271,7 @@ export default function AssistantManagement({ authToken }: AssistantManagementPr
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Gestion des Assistants</h1>
         <Button 
-          type="primary" 
+          variant="primary" 
           icon={<PlusOutlined />}
           onClick={handleCreate}
         >
@@ -313,8 +313,8 @@ export default function AssistantManagement({ authToken }: AssistantManagementPr
           </Button>,
           <Button 
             key="submit" 
-            type="primary" 
-            loading={submitting}
+            variant="primary" 
+            isLoading={submitting}
             onClick={() => form.submit()}
           >
             {modalMode === 'create' ? 'Créer' : 'Mettre à jour'}

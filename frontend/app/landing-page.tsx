@@ -359,7 +359,7 @@ export default function LandingPage() {
                 Tarifs
               </Link>
               <Link href="/dashboard">
-                <Button type="primary" shape="round">
+                <Button variant="primary" shape="round">
                   Connexion
                 </Button>
               </Link>
@@ -577,7 +577,7 @@ export default function LandingPage() {
                   <div>
                     <Link href="/dashboard">
                       <Button
-                        type="primary"
+                        variant="primary"
                         size="large"
                         style={{
                           height: "48px",
@@ -1155,7 +1155,7 @@ export default function LandingPage() {
                   l&apos;équipe.
                 </Paragraph>
                 <Link href="/dashboard">
-                  <Button type="default" size="large">
+                  <Button variant="secondary" size="large">
                     En savoir plus
                   </Button>
                 </Link>
@@ -1751,7 +1751,7 @@ export default function LandingPage() {
                       </div>
 
                       <Link href="/dashboard">
-                        <Button type="default" block style={{ height: "44px" }}>
+                        <Button variant="secondary" block style={{ height: "44px" }}>
                           Commencer
                         </Button>
                       </Link>
@@ -1922,7 +1922,7 @@ export default function LandingPage() {
                       </div>
 
                       <Link href="/dashboard">
-                        <Button type="primary" block style={{ height: "44px" }}>
+                        <Button variant="primary" block style={{ height: "44px" }}>
                           Commencer
                         </Button>
                       </Link>
@@ -2067,7 +2067,7 @@ export default function LandingPage() {
                       </div>
 
                       <Link href="/dashboard">
-                        <Button type="default" block style={{ height: "44px" }}>
+                        <Button variant="secondary" block style={{ height: "44px" }}>
                           Contacter les ventes
                         </Button>
                       </Link>
@@ -2144,7 +2144,7 @@ export default function LandingPage() {
                   </Paragraph>
                   <Link href="/dashboard">
                     <Button
-                      type="primary"
+                      variant="primary"
                       size="large"
                       style={{
                         height: "48px",

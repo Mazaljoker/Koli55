@@ -52,7 +52,10 @@ export const AvatarCustomizer: React.FC = () => {
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSaving, setIsSaving] = useState(false); // État pour le chargement de la sauvegarde
-  const [saveStatus, setSaveStatus] = useState<{ message: string; type: 'success' | 'error' } | null>(null); // Pour les messages de succès/erreur
+  const [saveStatus, setSaveStatus] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null); // Pour les messages de succès/erreur
 
   const handleColorChange = (colorKey: string) => {
     setAvatarConfig((prev) => ({ ...prev, backgroundColorKey: colorKey }));
@@ -75,10 +78,10 @@ export const AvatarCustomizer: React.FC = () => {
     setIsSaving(true);
     setSaveStatus(null);
     try {
-      const response = await fetch('/api/avatar/config', {
-        method: 'POST',
+      const response = await fetch("/api/avatar/config", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(avatarConfig),
       });
@@ -86,19 +89,18 @@ export const AvatarCustomizer: React.FC = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Erreur lors de la sauvegarde.');
+        throw new Error(result.message || "Erreur lors de la sauvegarde.");
       }
 
-      setSaveStatus({ message: result.message, type: 'success' });
-      console.log('Configuration sauvegardée:', result.savedConfig);
-
+      setSaveStatus({ message: result.message, type: "success" });
+      console.log("Configuration sauvegardée:", result.savedConfig);
     } catch (error) {
-      let errorMessage = 'Impossible de sauvegarder la configuration.';
+      let errorMessage = "Impossible de sauvegarder la configuration.";
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-      setSaveStatus({ message: errorMessage, type: 'error' });
-      console.error('Erreur lors de la sauvegarde:', error);
+      setSaveStatus({ message: errorMessage, type: "error" });
+      console.error("Erreur lors de la sauvegarde:", error);
     } finally {
       setIsSaving(false);
     }
@@ -113,8 +115,8 @@ export const AvatarCustomizer: React.FC = () => {
   const avatarBgClass = `bg-${avatarConfig.backgroundColorKey}`;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 p-4 md:p-6 bg-allokoli-background text-allokoli-text-primary rounded-lg shadow-xl">
-      <div className="w-full lg:w-1/3 flex flex-col items-center gap-6 p-6 rounded-xl glassmorphism card-primary">
+    <div className="flex flex-col gap-8 p-4 rounded-lg shadow-xl lg:flex-row md:p-6 bg-allokoli-background text-allokoli-text-primary">
+      <div className="flex flex-col items-center w-full gap-6 p-6 lg:w-1/3 rounded-xl glassmorphism card-primary">
         <h3 className="text-xl font-semibold text-allokoli-primary">
           Prévisualisation de l'Avatar
         </h3>
@@ -129,35 +131,35 @@ export const AvatarCustomizer: React.FC = () => {
           }}
         >
           <div
-            className="bg-allokoli-surface opacity-50 rounded-full flex items-center justify-center"
+            className="flex items-center justify-center rounded-full opacity-50 bg-allokoli-surface"
             style={{ width: "75%", height: "75%" }}
           >
             <span className="text-sm text-allokoli-text-secondary">Avatar</span>
           </div>
           {isSpeaking && (
-            <div className="absolute -top-8 -right-8 bg-white p-3 rounded-lg shadow-md animate-pulse">
-              <FiMessageSquare className="text-allokoli-primary w-6 h-6" />
-              <span className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-white"></span>
+            <div className="absolute p-3 bg-white rounded-lg shadow-md -top-8 -right-8 animate-pulse">
+              <FiMessageSquare className="w-6 h-6 text-allokoli-primary" />
+              <span className="absolute w-0 h-0 transform -translate-x-1/2 border-t-8 border-l-8 border-r-8 -bottom-2 left-1/2 border-l-transparent border-r-transparent border-t-white"></span>
             </div>
           )}
         </div>
         <Button variant="secondary" onClick={toggleSpeaking} className="w-full">
           Tester l'animation (Parler)
         </Button>
-        <p className="text-xs text-center text-allokoli-text-secondary mt-2">
+        <p className="mt-2 text-xs text-center text-allokoli-text-secondary">
           Cliquez sur l'avatar ou le bouton pour simuler une animation.
         </p>
       </div>
 
-      <div className="w-full lg:w-2/3 p-6 rounded-xl glassmorphism card-secondary">
-        <h3 className="text-xl font-semibold text-allokoli-primary mb-6">
+      <div className="w-full p-6 lg:w-2/3 rounded-xl glassmorphism card-secondary">
+        <h3 className="mb-6 text-xl font-semibold text-allokoli-primary">
           Personnaliser votre Avatar
         </h3>
         <div className="mb-6">
-          <label className="block text-sm font-medium text-allokoli-text-secondary mb-2">
+          <label className="block mb-2 text-sm font-medium text-allokoli-text-secondary">
             Couleur de fond
           </label>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex flex-wrap gap-2">
             {AVATAR_COLOR_PALETTE_KEYS.map((colorKey) => (
               <button
                 key={colorKey}
@@ -176,7 +178,7 @@ export const AvatarCustomizer: React.FC = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-allokoli-text-secondary mb-2">
+          <label className="block mb-2 text-sm font-medium text-allokoli-text-secondary">
             Ajustements
           </label>
           <div className="space-y-4">
@@ -195,16 +197,16 @@ export const AvatarCustomizer: React.FC = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-allokoli-text-secondary mb-2">
+          <label className="block mb-2 text-sm font-medium text-allokoli-text-secondary">
             Avatars Prédéfinis
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {PRESET_AVATARS.map((preset) => (
               <Button
                 key={preset.id}
                 variant="outline"
                 onClick={() => applyPreset(preset.config)}
-                className="text-xs justify-start h-auto py-2 leading-tight"
+                className="justify-start h-auto py-2 text-xs leading-tight"
               >
                 <div
                   className={cn(
@@ -219,17 +221,17 @@ export const AvatarCustomizer: React.FC = () => {
         </div>
 
         <div className="mb-8">
-          <label className="block text-sm font-medium text-allokoli-text-secondary mb-2">
+          <label className="block mb-2 text-sm font-medium text-allokoli-text-secondary">
             Échantillons Vocaux
           </label>
           <div className="space-y-2">
             {VOICE_SAMPLES.map((sample) => (
               <div
                 key={sample.id}
-                className="p-3 bg-allokoli-surface rounded-lg flex items-center justify-between hover:bg-opacity-80 cursor-pointer"
+                className="flex items-center justify-between p-3 rounded-lg cursor-pointer bg-allokoli-surface hover:bg-opacity-80"
               >
                 <span className="text-sm">{sample.name}</span>
-                <div className="w-20 h-5 bg-allokoli-primary opacity-50 rounded"></div>
+                <div className="w-20 h-5 rounded opacity-50 bg-allokoli-primary"></div>
               </div>
             ))}
             <p className="text-xs text-allokoli-text-secondary">
@@ -238,8 +240,13 @@ export const AvatarCustomizer: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-allokoli-surface">
-          <Button variant="secondary" onClick={handleReset} icon={<FiRefreshCw />} disabled={isSaving}>
+        <div className="flex flex-col gap-4 pt-6 border-t sm:flex-row border-allokoli-surface">
+          <Button
+            variant="secondary"
+            onClick={handleReset}
+            icon={<FiRefreshCw />}
+            disabled={isSaving}
+          >
             Réinitialiser
           </Button>
           <Button
@@ -250,26 +257,23 @@ export const AvatarCustomizer: React.FC = () => {
             isLoading={isSaving} // Utilisation de la prop isLoading
             disabled={isSaving}
           >
-            {isSaving ? 'Sauvegarde...' : 'Sauvegarder l'Avatar'}
+            {isSaving ? "Sauvegarde..." : "Sauvegarder l&apos;Avatar"}
           </Button>
         </div>
         {/* Affichage des messages de succès ou d'erreur */}
         {saveStatus && (
           <div
-            className={cn(
-              "mt-4 p-3 text-sm rounded-md text-center",
-              {
-                "bg-green-500/20 text-green-400 border border-green-500/50":
-                  saveStatus.type === "success",
-                "bg-red-500/20 text-red-400 border border-red-500/50":
-                  saveStatus.type === "error",
-              }
-            )}
+            className={cn("mt-4 p-3 text-sm rounded-md text-center", {
+              "bg-green-500/20 text-green-400 border border-green-500/50":
+                saveStatus.type === "success",
+              "bg-red-500/20 text-red-400 border border-red-500/50":
+                saveStatus.type === "error",
+            })}
           >
             {saveStatus.message}
           </div>
         )}
-        <p className="text-xs text-allokoli-text-secondary mt-4 text-center">
+        <p className="mt-4 text-xs text-center text-allokoli-text-secondary">
           Drag & drop et aperçu en temps réel plus poussé à venir.
         </p>
       </div>

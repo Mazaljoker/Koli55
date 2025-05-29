@@ -50,7 +50,7 @@ export const EmptyState = ({
         }
       >
         {actionText && onActionClick && (
-          <Button type="primary" onClick={onActionClick} size="large">
+          <Button variant="primary" onClick={onActionClick} size="large">
             {actionText}
           </Button>
         )}

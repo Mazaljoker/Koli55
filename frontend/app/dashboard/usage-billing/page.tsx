@@ -118,7 +118,7 @@ export default function UsageBillingPage() {
               Prochaine facture le 01/08/2024.
             </Paragraph>
             <Button
-              type="primary"
+              variant="primary"
               icon={<CreditCardOutlined />}
               className="w-full mt-3"
             >
@@ -139,7 +139,7 @@ export default function UsageBillingPage() {
               Basé sur votre plan Pro.
             </Paragraph>
             <Button
-              type="default"
+              variant="secondary"
               icon={<HistoryOutlined />}
               className="w-full mt-3"
             >
@@ -158,7 +158,7 @@ export default function UsageBillingPage() {
               <li>Assistants illimités</li>
               <li>Support prioritaire</li>
             </ul>
-            <Button type="link" className="p-0 mt-3">
+            <Button variant="ghost" className="p-0 mt-3">
               Gérer l'abonnement
             </Button>
           </Card>

@@ -96,7 +96,7 @@ export default function SettingsPage() {
                 </Form.Item>
                 <Form.Item>
                   <Button
-                    type="primary"
+                    variant="primary"
                     htmlType="submit"
                     icon={<SaveOutlined />}
                   >
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                   <Switch defaultChecked />
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" icon={<SaveOutlined />}>
+                  <Button variant="primary" icon={<SaveOutlined />}>
                     Enregistrer les Préférences de Notification
                   </Button>
                 </Form.Item>
@@ -161,7 +161,7 @@ export default function SettingsPage() {
                   />
                 </Form.Item>
                 <Form.Item>
-                  <Button type="primary" danger icon={<SaveOutlined />}>
+                  <Button variant="primary" danger icon={<SaveOutlined />}>
                     Changer le mot de passe
                   </Button>
                 </Form.Item>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
                   Protégez votre compte en ajoutant une couche de sécurité
                   supplémentaire.
                 </Paragraph>
-                <Button type="default" disabled>
+                <Button variant="secondary" disabled>
                   Activer la 2FA (Bientôt disponible)
                 </Button>
               </Form>
@@ -195,10 +195,10 @@ export default function SettingsPage() {
               Accès à toutes les fonctionnalités avancées, support prioritaire
               et plus de minutes d'appel.
             </Paragraph>
-            <Button type="primary" block className="mt-4">
+            <Button variant="primary" block className="mt-4">
               Changer de Plan
             </Button>
-            <Button type="link" block className="mt-2">
+            <Button variant="ghost" block className="mt-2">
               Voir les détails de la facturation
             </Button>
           </Card>

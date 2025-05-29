@@ -184,12 +184,12 @@ export default function DashboardPage() {
       render: (_: unknown, record: Assistant) => (
         <Space>
           <Link href={`/assistants/${record.id}`}>
-            <Button type="text" style={{ color: "#4F3FF0" }}>
+            <Button variant="ghost" style={{ color: "#4F3FF0" }}>
               Gérer
             </Button>
           </Link>
           <Button
-            type="text"
+            variant="ghost"
             style={{ color: "#4F3FF0" }}
             onClick={() => message.info("Simulation à venir")}
           >
@@ -329,7 +329,7 @@ export default function DashboardPage() {
                   <Space>
                     <Link href="/assistants/new">
                       <Button
-                        type="primary"
+                        variant="primary"
                         icon={<Play size={16} />}
                         style={{
                           background:
@@ -372,7 +372,7 @@ export default function DashboardPage() {
                 {assistants.length > 5 && (
                   <div style={{ textAlign: "center", marginTop: 16 }}>
                     <Link href="/dashboard/assistants">
-                      <Button type="link">
+                      <Button variant="ghost">
                         Voir tous les assistants <ChevronRight size={14} />
                       </Button>
                     </Link>
@@ -438,7 +438,7 @@ export default function DashboardPage() {
                 <Space direction="vertical" style={{ width: "100%" }}>
                   <Link href="/assistants/new">
                     <Button
-                      type="primary"
+                      variant="primary"
                       icon={<PlusCircle size={16} />}
                       block
                       style={{ borderRadius: 8 }}

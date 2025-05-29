@@ -75,27 +75,49 @@ export default function NewAssistantPage() {
       const formData = form.getFieldsValue();
 
       // Préparer les données pour le SDK AlloKoli
+      const mapModelProvider = (
+        provider: string
+      ): "openai" | "anthropic" | "together-ai" => {
+        switch (provider) {
+          case "groq":
+          case "azure-openai":
+            return "openai"; // Mapping par défaut pour les providers non supportés
+          case "anthropic":
+            return "anthropic";
+          default:
+            return "openai";
+        }
+      };
+
+      const mapVoiceProvider = (
+        provider: string
+      ): "elevenlabs" | "azure" | "google" => {
+        switch (provider) {
+          case "eleven-labs":
+          case "elevenlabs":
+            return "elevenlabs";
+          case "azure":
+            return "azure";
+          case "playht":
+          case "deepgram":
+          case "openai":
+            return "azure"; // Mapping par défaut pour les providers non supportés
+          default:
+            return "elevenlabs";
+        }
+      };
+
       const createRequest: AssistantCreate = {
         name: formData.name,
         model: {
-          provider: formData.modelProvider as
-            | "openai"
-            | "anthropic"
-            | "groq"
-            | "azure-openai",
+          provider: mapModelProvider(formData.modelProvider),
           model: formData.modelName,
-          systemPrompt: formData.systemPrompt,
           temperature: formData.modelTemperature,
-          maxTokens: formData.modelMaxTokens,
+          max_tokens: formData.modelMaxTokens,
         },
         voice: {
-          provider: formData.voiceProvider as
-            | "azure"
-            | "eleven-labs"
-            | "playht"
-            | "deepgram"
-            | "openai",
-          voiceId: formData.voiceId,
+          provider: mapVoiceProvider(formData.voiceProvider),
+          voice_id: formData.voiceId,
         },
         firstMessage: formData.firstMessage,
         instructions: formData.systemPrompt,
@@ -105,6 +127,9 @@ export default function NewAssistantPage() {
             ? formData.endCallPhrases.split(",").map((phrase) => phrase.trim())
             : [],
           forwardingPhoneNumber: formData.forwardingPhoneNumber,
+          // Conserver les providers originaux dans les métadonnées
+          originalModelProvider: formData.modelProvider,
+          originalVoiceProvider: formData.voiceProvider,
         },
       };
 

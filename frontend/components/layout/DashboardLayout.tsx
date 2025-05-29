@@ -169,7 +169,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <Header className="glassmorphism !flex items-center justify-between !px-6 !h-16 sticky top-0 z-40 shadow-sm">
           <Space>
             <Button
-              type="text"
+              variant="ghost"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
               className="!text-xl !text-allokoli-text-primary hover:!text-allokoli-primary"

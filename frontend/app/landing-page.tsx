@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import {
   Typography,
-  Button,
   Row,
   Col,
   Card,
@@ -31,6 +30,7 @@ import "./styles/card-animations.css";
 // Import pour les polices (assurez-vous qu'elles sont disponibles dans votre projet)
 // Vous pouvez ajouter ces polices dans votre _app.tsx ou _document.tsx également
 import Head from "next/head";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Text, Paragraph } = Typography;
 const { Header, Content, Footer } = Layout;

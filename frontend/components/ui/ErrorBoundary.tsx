@@ -1,9 +1,10 @@
 'use client';
 
 import React, { Component, ReactNode } from 'react';
-import { Button, Result, Typography, Space, Card } from 'antd';
+import { Result, Typography, Space, Card } from 'antd';
 import { ReloadOutlined, HomeOutlined, BugOutlined } from '@ant-design/icons';
 import { isDevelopment } from '@/lib/config/env';
+import { Button } from "@/components/ui/Button";
 
 const { Paragraph, Text } = Typography;
 

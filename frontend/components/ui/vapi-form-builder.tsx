@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { Form, Input, Select, Switch, InputNumber, Button, Space, Card } from 'antd';
+import { Form, Input, Select, Switch, InputNumber, Space, Card } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { Button } from "@/components/ui/Button";
 
 const { Option } = Select;
 

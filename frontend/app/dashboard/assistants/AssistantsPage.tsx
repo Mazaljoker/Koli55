@@ -1,6 +1,6 @@
 'use client';
 
-import { Table, Button, Space, Tag, message } from 'antd';
+import { Table, Space, Tag, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import Link from 'next/link';
 // Migration vers le SDK AlloKoli
 import { useAlloKoliSDKWithAuth } from '../../../lib/hooks/useAlloKoliSDK';
 import { Assistant } from '../../../lib/api/allokoli-sdk';
+import { Button } from "@/components/ui/Button";
 
 export default function AssistantsPage() {
   const sdk = useAlloKoliSDKWithAuth();

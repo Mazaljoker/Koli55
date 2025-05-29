@@ -6,7 +6,6 @@ import {
   Card,
   Table,
   Tag,
-  Button,
   Space,
   Row,
   Col,
@@ -18,6 +17,7 @@ import {
   CreditCardOutlined,
   HistoryOutlined,
 } from "@ant-design/icons";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 

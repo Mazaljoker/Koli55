@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Select, Button, Card, Alert, Space, Row, Col, Switch, InputNumber } from 'antd';
+import { Form, Input, Select, Card, Alert, Space, Row, Col, Switch, InputNumber } from 'antd';
 import { SaveOutlined, ReloadOutlined } from '@ant-design/icons';
 import { validateCreateAssistant } from '@/lib/schemas';
+import { Button } from "@/components/ui/Button";
 
 const { TextArea } = Input;
 const { Option } = Select;

@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Card, Typography, Space, notification } from "antd";
+import { Card, Typography, Space, notification } from "antd";
 import {
   Download,
   Copy,
@@ -13,6 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 

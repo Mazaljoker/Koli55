@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Result, Button, Typography } from "antd";
+import { Result, Typography } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
+import { Button } from "@/components/ui/Button";
 
 const { Paragraph, Text } = Typography;
 

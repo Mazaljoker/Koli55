@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   Form,
-  Button,
   Alert,
   Typography,
   Space,
@@ -19,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import { AssistantFormData } from "./AssistantFormTypes";
 import "../../app/styles/wizard.css";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Text } = Typography;
 const { Step } = Steps;

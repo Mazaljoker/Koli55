@@ -19,7 +19,6 @@ import {
 } from "@ant-design/icons";
 import {
   Avatar,
-  Button,
   Layout,
   Tooltip,
   Typography,
@@ -33,6 +32,7 @@ import {
   generateBreadcrumbs,
   BreadcrumbItem as BreadcrumbItemType,
 } from "@/lib/utils/navigation";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Text } = Typography;
 const { Sider, Header, Content } = Layout;

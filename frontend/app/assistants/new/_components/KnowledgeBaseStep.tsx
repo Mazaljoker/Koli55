@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Typography, Space, Card, Button, Upload, List, Tag, message } from 'antd';
+import { Typography, Space, Card, Upload, List, Tag, message } from 'antd';
 import { motion } from 'framer-motion';
 import { 
   Database, 
@@ -13,6 +13,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { AssistantStepProps } from '../../../../components/assistants/AssistantFormTypes';
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 const { Dragger } = Upload;

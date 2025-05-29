@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  Button,
   Card,
   Select,
   Typography,
@@ -23,6 +22,7 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import { useVapiConfigurator } from "@/lib/hooks/useVapiConfigurator";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;

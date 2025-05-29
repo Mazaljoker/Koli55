@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Input, Space, Typography, Card, Avatar, Spin } from "antd";
+import { Input, Space, Typography, Card, Avatar, Spin } from "antd";
 import {
   Mic,
   MicOff,
@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useVapiConfigurator } from "@/lib/hooks/useVapiConfigurator";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/Button";
 
 const { Text, Paragraph } = Typography;
 

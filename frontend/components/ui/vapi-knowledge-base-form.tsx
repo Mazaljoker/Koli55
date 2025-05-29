@@ -2,9 +2,10 @@
 
 import React from 'react';
 import VapiFormBuilder from './vapi-form-builder';
-import { Card, Alert, Typography, Steps, Button, Space } from 'antd';
+import { Card, Alert, Typography, Steps, Space } from 'antd';
 import { useState } from 'react';
 import { CloudUploadOutlined, DatabaseOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button } from "@/components/ui/Button";
 
 const { Title } = Typography;
 const { Step } = Steps;

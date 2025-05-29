@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Form, Button, Steps, Card, Space, Divider, Alert } from 'antd';
+import { Form, Steps, Card, Space, Divider, Alert } from 'antd';
 import { ArrowLeftOutlined, ArrowRightOutlined, CheckOutlined } from '@ant-design/icons';
+import { Button } from "@/components/ui/Button";
 
 const { Step } = Steps;
 

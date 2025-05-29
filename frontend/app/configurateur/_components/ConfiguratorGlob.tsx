@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'antd';
+import { Button } from '@/components/ui/Button';
 import { MicIcon, PhoneOff, Settings } from 'lucide-react';
 
 import AbstractBall from '@/components/examples/abstract-ball';

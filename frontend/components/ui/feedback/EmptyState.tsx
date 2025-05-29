@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Empty as AntEmpty, Button, Typography, Space } from "antd";
+import { Empty as AntEmpty, Typography, Space } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph } = Typography;
 

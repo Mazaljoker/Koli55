@@ -6,7 +6,6 @@ import {
   Card,
   Form,
   Input,
-  Button,
   Select,
   Divider,
   Switch,
@@ -22,6 +21,7 @@ import {
   BellOutlined,
   SecurityScanOutlined,
 } from "@ant-design/icons";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;

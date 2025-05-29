@@ -8,7 +8,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Form, Input, Select, message, Modal, Table, Space } from 'antd';
+import { Card, Form, Input, Select, message, Modal, Table, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { 
   createAlloKoliSDKWithSupabase,
@@ -17,6 +17,7 @@ import {
   type AssistantUpdate,
   AlloKoliAPIError
 } from '../allokoli-sdk';
+import { Button } from "@/components/ui/Button";
 
 const { Option } = Select;
 const { TextArea } = Input;

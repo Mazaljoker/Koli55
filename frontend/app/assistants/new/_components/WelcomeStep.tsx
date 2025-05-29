@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Typography, Space, Button, Card } from 'antd';
+import { Typography, Space, Card } from 'antd';
 import { motion } from 'framer-motion';
 import { Sparkles, Zap, Users, PhoneCall } from 'lucide-react';
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph } = Typography;
 

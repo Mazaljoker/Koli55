@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Typography, Space, Card, Row, Col, Tag, Button, Divider } from 'antd';
+import { Typography, Space, Card, Row, Col, Tag, Divider } from 'antd';
 import { motion } from 'framer-motion';
 import { 
   User, 
@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { AssistantFormData } from '../../../../components/assistants/AssistantFormTypes';
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 

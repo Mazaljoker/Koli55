@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Typography, Row, Col, Card, Avatar, Button, Tooltip, Tag } from "antd";
+import { Typography, Row, Col, Card, Avatar, Tooltip, Tag } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -10,6 +10,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 

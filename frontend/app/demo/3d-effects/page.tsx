@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Typography, Row, Col, Card, Button, Divider, Space, Avatar } from 'antd';
+import { Typography, Row, Col, Card, Divider, Space, Avatar } from 'antd';
 import { RocketOutlined, ThunderboltOutlined, BulbOutlined, StarOutlined } from '@ant-design/icons';
 import { 
   TiltCard, 
@@ -12,6 +12,7 @@ import {
   AppearingElement,
   addMotionStyles
 } from '../../../components/ui/3d-effects';
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 

@@ -3,7 +3,6 @@
 import React from "react";
 import {
   Typography,
-  Button,
   Empty,
   Card,
   Row,
@@ -20,6 +19,7 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Paragraph, Text } = Typography;
 

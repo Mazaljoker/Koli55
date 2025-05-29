@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
-  Button,
   Table,
   Tag,
   Typography,
@@ -34,6 +33,7 @@ import { ChartPlaceholder } from "@/components/dashboard/ChartPlaceholder";
 // Migration vers le SDK AlloKoli
 import { useAlloKoliSDKWithAuth } from "../../lib/hooks/useAlloKoliSDK";
 import { Assistant } from "../../lib/api/allokoli-sdk";
+import { Button } from "@/components/ui/Button";
 
 const { Title, Text, Paragraph } = Typography;
 

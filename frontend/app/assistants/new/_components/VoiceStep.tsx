@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Form, Select, Typography, Button, Card } from "antd";
+import { Form, Select, Typography, Card } from "antd";
 import { PlayCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
 import {
   AssistantStepProps,
   VOICE_PROVIDERS,
   VOICES,
 } from "../../../../components/assistants/AssistantFormTypes";
+import { Button } from "@/components/ui/Button";
 
 const { Paragraph } = Typography;
 const { Option } = Select;

@@ -29,4 +29,4 @@ export { default as VapiFormBuilder } from "./vapi-form-builder";
 export { default as VapiKnowledgeBaseForm } from "./vapi-knowledge-base-form";
 
 // Status components
-export { default as SupabaseStatus } from "./supabase-status";
+export { SupabaseStatus } from "./supabase-status";

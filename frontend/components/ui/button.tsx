@@ -5,7 +5,10 @@ import { Button as AntButton, ButtonProps as AntButtonProps } from "antd";
 import { clsx } from "clsx";
 
 export interface ButtonProps
-  extends Omit<AntButtonProps, "type" | "size" | "loading"> {
+  extends Omit<
+    AntButtonProps,
+    "type" | "size" | "loading" | "variant" | "iconPosition"
+  > {
   variant?: "primary" | "secondary" | "outline" | "ghost";
   size?: "sm" | "md" | "lg" | "small" | "middle" | "large";
   isLoading?: boolean;
@@ -14,7 +17,7 @@ export interface ButtonProps
   fullWidth?: boolean;
 }
 
-const Button = React.forwardRef<HTMLElement, ButtonProps>(
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = "primary",

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { action } from "@storybook/addon-actions";
+import { fn } from "@storybook/test";
 import { Button } from "./Button";
 import {
   PlusOutlined,
@@ -62,7 +62,7 @@ export const Primary: Story = {
   args: {
     variant: "primary",
     children: "Bouton Principal",
-    onClick: action("primary-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -70,7 +70,7 @@ export const Secondary: Story = {
   args: {
     variant: "secondary",
     children: "Bouton Secondaire",
-    onClick: action("secondary-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -78,7 +78,7 @@ export const Outline: Story = {
   args: {
     variant: "outline",
     children: "Bouton Contour",
-    onClick: action("outline-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -86,7 +86,7 @@ export const Ghost: Story = {
   args: {
     variant: "ghost",
     children: "Bouton Fantôme",
-    onClick: action("ghost-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -96,7 +96,7 @@ export const SmallSize: Story = {
     variant: "primary",
     size: "sm",
     children: "Petit",
-    onClick: action("small-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -105,7 +105,7 @@ export const MediumSize: Story = {
     variant: "primary",
     size: "md",
     children: "Moyen",
-    onClick: action("medium-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -114,7 +114,7 @@ export const LargeSize: Story = {
     variant: "primary",
     size: "lg",
     children: "Grand",
-    onClick: action("large-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -124,7 +124,7 @@ export const WithIcon: Story = {
     variant: "primary",
     icon: <PlusOutlined />,
     children: "Ajouter",
-    onClick: action("with-icon-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -134,7 +134,7 @@ export const WithIconRight: Story = {
     icon: <SaveOutlined />,
     iconPosition: "right",
     children: "Enregistrer",
-    onClick: action("with-icon-right-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -143,7 +143,7 @@ export const IconOnly: Story = {
     variant: "outline",
     icon: <EditOutlined />,
     "aria-label": "Modifier",
-    onClick: action("icon-only-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -153,7 +153,7 @@ export const Loading: Story = {
     variant: "primary",
     isLoading: true,
     children: "Chargement...",
-    onClick: action("loading-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -162,7 +162,7 @@ export const Disabled: Story = {
     variant: "primary",
     disabled: true,
     children: "Désactivé",
-    onClick: action("disabled-clicked"),
+    onClick: fn(),
   },
 };
 
@@ -171,7 +171,7 @@ export const FullWidth: Story = {
     variant: "primary",
     fullWidth: true,
     children: "Bouton Pleine Largeur",
-    onClick: action("full-width-clicked"),
+    onClick: fn(),
   },
   parameters: {
     layout: "padded",
@@ -184,45 +184,45 @@ export const AllVariants: Story = {
     <div className="p-4 space-y-4">
       <h3 className="text-lg font-semibold">Toutes les variantes</h3>
       <div className="flex flex-wrap gap-4">
-        <Button variant="primary" onClick={action("primary")}>
+        <Button variant="primary" onClick={fn("primary")}>
           Primary
         </Button>
-        <Button variant="secondary" onClick={action("secondary")}>
+        <Button variant="secondary" onClick={fn("secondary")}>
           Secondary
         </Button>
-        <Button variant="outline" onClick={action("outline")}>
+        <Button variant="outline" onClick={fn("outline")}>
           Outline
         </Button>
-        <Button variant="ghost" onClick={action("ghost")}>
+        <Button variant="ghost" onClick={fn("ghost")}>
           Ghost
         </Button>
       </div>
 
       <h3 className="text-lg font-semibold">Toutes les tailles</h3>
       <div className="flex flex-wrap items-center gap-4">
-        <Button variant="primary" size="sm" onClick={action("small")}>
+        <Button variant="primary" size="sm" onClick={fn("small")}>
           Small
         </Button>
-        <Button variant="primary" size="md" onClick={action("medium")}>
+        <Button variant="primary" size="md" onClick={fn("medium")}>
           Medium
         </Button>
-        <Button variant="primary" size="lg" onClick={action("large")}>
+        <Button variant="primary" size="lg" onClick={fn("large")}>
           Large
         </Button>
       </div>
 
       <h3 className="text-lg font-semibold">États spéciaux</h3>
       <div className="flex flex-wrap gap-4">
-        <Button variant="primary" isLoading onClick={action("loading")}>
+        <Button variant="primary" isLoading onClick={fn("loading")}>
           Loading
         </Button>
-        <Button variant="primary" disabled onClick={action("disabled")}>
+        <Button variant="primary" disabled onClick={fn("disabled")}>
           Disabled
         </Button>
         <Button
           variant="primary"
           icon={<PlusOutlined />}
-          onClick={action("with-icon")}
+          onClick={fn("with-icon")}
         >
           With Icon
         </Button>
@@ -230,7 +230,7 @@ export const AllVariants: Story = {
           variant="outline"
           icon={<DeleteOutlined />}
           aria-label="Supprimer"
-          onClick={action("icon-only")}
+          onClick={fn("icon-only")}
         />
       </div>
     </div>

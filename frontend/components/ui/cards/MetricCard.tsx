@@ -32,8 +32,8 @@ export const MetricCard = ({
 
   return (
     <Card
-      bordered={false}
-      className={`shadow-lg rounded-xl overflow-hidden ${bgColorClass} ${textColorClass} glassmorphism`}
+      className="h-full bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+      variant="borderless"
     >
       <Space direction="vertical" size="middle" className="w-full">
         <Space className="flex items-start justify-between w-full">

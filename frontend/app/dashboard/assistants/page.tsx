@@ -54,11 +54,6 @@ const assistantsData = [
   },
 ];
 
-export const metadata = {
-  title: "Assistants | AlloKoli",
-  description: "Gérez vos assistants vocaux intelligents",
-};
-
 export default function MyAssistantsPage() {
   return (
     <div className="w-full">

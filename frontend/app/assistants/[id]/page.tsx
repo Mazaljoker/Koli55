@@ -90,7 +90,48 @@ export default function AssistantDetailPage() {
     };
   }, [menuOpen]);
 
-      async function fetchAssistantDetails() {    setLoading(true);    setError(null);    try {      // Utiliser le SDK pour récupérer les détails de l'assistant      const { data: { session } } = await supabase.auth.getSession();            if (!session) {        router.push('/auth/login');        return;      }            // Utiliser le SDK AlloKoli      const response = await sdk.getAssistant(assistantId);      setAssistant(response.data);          } catch (err: unknown) {      console.error('Error fetching assistant details with SDK:', err);      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');            // Si en mode développement, utiliser des données de démo      if (process.env.NODE_ENV === 'development') {        setAssistant({          id: assistantId,          name: "Assistant Commercial Demo",          model: "gpt-4o",          voice: "jennifer",          language: "fr-FR",          created_at: new Date().toISOString(),          updated_at: new Date().toISOString(),          firstMessage: "Bonjour, comment puis-je vous aider aujourd'hui?",          instructions: "Vous êtes un assistant commercial qui aide les clients à choisir les meilleurs produits.",          metadata: {            status: "active",            forwardingPhoneNumber: "+33755558899"          }        });      }    } finally {      setLoading(false);    }  }
+  async function fetchAssistantDetails() {
+    setLoading(true);
+    setError(null);
+    try {
+      // Utiliser le SDK pour récupérer les détails de l'assistant
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        router.push('/auth/login');
+        return;
+      }
+      
+      // Utiliser le SDK AlloKoli
+      const response = await sdk.getAssistant(assistantId);
+      setAssistant(response.data);
+      
+    } catch (err: unknown) {
+      console.error('Error fetching assistant details with SDK:', err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+      
+      // Si en mode développement, utiliser des données de démo
+      if (process.env.NODE_ENV === 'development') {
+        setAssistant({
+          id: assistantId,
+          name: "Assistant Commercial Demo",
+          model: "gpt-4o",
+          voice: "jennifer",
+          language: "fr-FR",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          firstMessage: "Bonjour, comment puis-je vous aider aujourd'hui?",
+          instructions: "Vous êtes un assistant commercial qui aide les clients à choisir les meilleurs produits.",
+          metadata: {
+            status: "active",
+            forwardingPhoneNumber: "+33755558899"
+          }
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function fetchAssistantMetrics() {
     // Cette fonction récupérera les métriques comme le nombre d'appels, la durée moyenne, etc.
@@ -99,10 +140,15 @@ export default function AssistantDetailPage() {
     setAvgDuration('2:45');
   }
 
-  function handleDeleteAssistant() {
+  async function handleDeleteAssistant() {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet assistant ? Cette action est irréversible.")) {
-      // Logique de suppression
-      router.push('/dashboard');
+      try {
+        await sdk.deleteAssistant(assistantId);
+        router.push('/dashboard');
+      } catch (err) {
+        console.error('Error deleting assistant:', err);
+        setError('Erreur lors de la suppression de l\'assistant');
+      }
     }
   }
 
@@ -176,7 +222,9 @@ export default function AssistantDetailPage() {
             <h1 className="text-3xl font-bold text-gray-800">{assistant?.name || 'Assistant'}</h1>
             <Badge color={statusColorMap[status]} size="md">{label}</Badge>
           </div>
-                              <Text className="text-gray-600 mt-1">            ID: {assistant?.id}          </Text>
+          <Text className="text-gray-600 mt-1">
+            ID: {assistant?.id}
+          </Text>
         </div>
         <Flex justifyContent="end" className="gap-2 w-full md:w-auto">
           <Link href={`/assistants/${assistantId}/edit`}>
@@ -209,7 +257,7 @@ export default function AssistantDetailPage() {
                         } group flex items-center px-4 py-2 text-sm`}
                         onClick={(e) => {
                           e.preventDefault();
-                          // Logique pour dupliquer l'assistant
+                          // Logique pour dupliquer l'assistant avec le SDK
                         }}
                       >
                         <DocumentDuplicateIcon

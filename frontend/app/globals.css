@@ -32,7 +32,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* Styles pour les éléments glassmorphism */
@@ -46,13 +46,28 @@ body {
 
 /* Bouton primary personnalisé */
 .btn-primary {
-  @apply bg-gradient-to-r from-allokoli-purple-600 to-allokoli-blue-600 text-white shadow-md hover:shadow-lg transition-all;
+  background: linear-gradient(
+    to right,
+    var(--primary-purple),
+    var(--primary-blue)
+  );
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .animate-fadeIn {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import cn from "classnames";
-import { Button } from "@/components/ui/forms/Button";
+import { Button } from "@/components/ui";
 import { Slider } from "@/components/ui/forms/Slider";
 import { FiRefreshCw, FiSave, FiMessageSquare } from "react-icons/fi";
 

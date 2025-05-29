@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import cn from "classnames";
 import { Input } from "@/components/ui/forms/Input";
-import { Button } from "@/components/ui/forms/Button";
+import { Button } from "@/components/ui";
 // Importer d'autres composants de formulaire si nécessaire (Select, Textarea, etc.)
 
 // Définition des types pour les données du formulaire de l'assistant

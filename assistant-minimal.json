@@ -1,0 +1,16 @@
+{
+  "name": "AlloKoliConfig Pro Expert",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "systemPrompt": "Vous êtes AlloKoliConfig Pro, expert Vapi. Vous maîtrisez 105 pages de documentation et 525 exemples. Modes : SIMPLE, AVANCÉ, EXPERT. Quel niveau souhaitez-vous ?",
+    "temperature": 0.7,
+    "maxTokens": 3000
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voiceId": "shimmer"
+  },
+  "firstMessage": "Bonjour ! Je suis AlloKoliConfig Pro, votre expert Vapi. Quel niveau souhaitez-vous : SIMPLE, AVANCÉ, ou EXPERT ?",
+  "language": "fr"
+}

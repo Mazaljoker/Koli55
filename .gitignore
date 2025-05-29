@@ -1,27 +1,124 @@
 # Dependencies
-/node_modules
-**/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.js
 
 # Testing
 /coverage
-**/coverage
 
 # Next.js
-/.next/
-/out/
-**/.next/
-**/out/
+.next/
+out/
 
 # Production
-/build
-**/build
-/dist
-**/dist
+build
+dist
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Supabase
+.branches
+.temp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Selenium
+*.log
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# PNPM
+.pnpm-debug.log*
 
 # Misc
-.DS_Store
 *.pem
 *thumbs.db
 .thumbs.db
@@ -29,79 +126,39 @@ ehthumbs.db
 Desktop.ini
 
 # Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 **/*.log
 
 # Local env files
-.env*.local
-.env
-.env.*
 **/.env*
 !.env.example
 
-# Vercel
-.vercel
-**/.vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-**/*.tsbuildinfo
-
-# Supabase
-.supabase
-**/.supabase
-.supabase/.branches/
-.supabase/.temp/
-**/supabase/.branches/
-**/supabase/.temp/
-
 # Cache and temporary files
-.cache/
-.temp/
 **/.cache
 **/.temp
-**/.cache/
-**/.temp/
 
 # IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
 **/.idea/
 **/.vscode/
 **/*.swp
 **/*.swo
 
 # OS specific
-Thumbs.db
-ehthumbs.db
-Desktop.ini
 **/.directory
 
 # Logs
-logs/
-*.log
 **/logs/
 
 # Caches Bolt et Next
-.next/
-.bolt-cache/
 **/.bolt-cache/
 
 # Artefacts Cursor (logs, .cursor)
-.cursor/
 **/.cursor/
 
 # Sortie Bolt si tu l'utilises
-/out/
 **/out/
 
 # Dossier project (ancien code)
-/project/
+**/project/
 
 # Fichiers de sauvegarde
 *~
@@ -114,7 +171,6 @@ logs/
 # Fichiers temporaires
 *.tmp
 **/*.tmp
-temp/
 **/temp/
 
 # Fichiers de clés et secrets

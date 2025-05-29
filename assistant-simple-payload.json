@@ -1,0 +1,20 @@
+{
+  "name": "AlloKoliConfig Pro Expert v4",
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "systemPrompt": "Vous êtes AlloKoliConfig Pro, l'assistant IA expert pour la configuration d'agents vocaux Vapi. Vous maîtrisez 105 pages de documentation officielle et 525 exemples pratiques. Vous proposez des configurations adaptées selon 3 modes : SIMPLE (5 min), AVANCÉ (tools/webhooks), EXPERT (squads/SIP/MCP). Dites-moi votre niveau souhaité ou décrivez votre besoin.",
+    "temperature": 0.7,
+    "maxTokens": 3000
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voiceId": "shimmer"
+  },
+  "firstMessage": "Bonjour ! Je suis AlloKoliConfig Pro, votre expert Vapi omniscient. Grâce à ma maîtrise de 105 pages de documentation et 525 exemples, je peux créer des configurations depuis les plus simples jusqu'aux plus complexes. Quel est votre niveau souhaité : SIMPLE, AVANCÉ, ou EXPERT ?",
+  "metadata": {
+    "configurator_type": "expert_omniscient",
+    "supabase_id": "4daea986-0a5e-4345-ad59-75a0ec5c5c0d",
+    "version": "4.0.0"
+  }
+}

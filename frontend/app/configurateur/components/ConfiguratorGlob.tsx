@@ -181,3 +181,4 @@ const ConfiguratorGlob: React.FC = () => {
 };
 
 export default ConfiguratorGlob; 
+ 

@@ -1,0 +1,140 @@
+[
+  {
+    "uri": {
+      "specId": "allokoli-api-complete-final.yaml",
+      "type": "specification",
+      "identifier": "allokoli-api-complete-final.yaml"
+    },
+    "description": "**Spécification OpenAPI complète pour AlloKoli**\n\nCette API permet de gérer tous les aspects des assistants vocaux IA via Vapi :\n\n**✅ 12 Edge Functions opérationnelles documentées :**\n- `assistants` - Gestion des assistants vocaux (5 endpoints)\n- `knowledge-bases` - Bases de connaissances et recherche sémantique (5 endpoints) \n- `calls` - Historique et monitoring des appels (7 endpoints)\n- `phone-numbers` - Provisioning et gestion des numéros (8 endpoints)\n- `files` - Upload et gestion des fichiers (5 endpoints)\n- `analytics` - Métriques et rapports d'utilisation (3 endpoints)\n- `webhooks` - Événements temps réel (5 endpoints)\n- `workflows` - Configuration des flux conversationnels (4 endpoints)\n- `squads` - Gestion des équipes et collaboration (6 endpoints)\n- `functions` - Outils personnalisés pour assistants (5 endpoints)\n- `test-suites` - Tests automatisés et validation (6 endpoints)\n- `test` - Tests et monitoring système (1 endpoint)\n\n**Total : 60 endpoints documentés** vs 13 dans l'ancienne version.\n\nIntégration complète avec l'API Vapi, authentification Supabase JWT, \nvalidation des données et gestion d'erreurs standardisée.\n",
+    "operations": [
+      {
+        "path": "/assistants",
+        "method": "get",
+        "description": "Récupère la liste paginée des assistants de l'utilisateur actuel",
+        "operationId": "listAssistants"
+      },
+      {
+        "path": "/assistants",
+        "method": "post",
+        "description": "Crée un nouvel assistant vocal IA",
+        "operationId": "createAssistant"
+      },
+      {
+        "path": "/assistants/{id}",
+        "method": "get",
+        "description": "Récupère un assistant par son ID",
+        "operationId": "getAssistant"
+      },
+      {
+        "path": "/assistants/{id}",
+        "method": "patch",
+        "description": "Met à jour un assistant existant",
+        "operationId": "updateAssistant"
+      },
+      {
+        "path": "/assistants/{id}",
+        "method": "delete",
+        "description": "Supprime un assistant existant",
+        "operationId": "deleteAssistant"
+      },
+      {
+        "path": "/knowledge-bases",
+        "method": "get",
+        "description": "Récupère la liste paginée des bases de connaissances",
+        "operationId": "listKnowledgeBases"
+      },
+      {
+        "path": "/knowledge-bases",
+        "method": "post",
+        "description": "Crée une nouvelle base de connaissances",
+        "operationId": "createKnowledgeBase"
+      },
+      {
+        "path": "/knowledge-bases/{id}",
+        "method": "get",
+        "description": "Récupère une base de connaissances par son ID",
+        "operationId": "getKnowledgeBase"
+      },
+      {
+        "path": "/knowledge-bases/{id}",
+        "method": "patch",
+        "description": "Met à jour une base de connaissances existante",
+        "operationId": "updateKnowledgeBase"
+      },
+      {
+        "path": "/knowledge-bases/{id}",
+        "method": "delete",
+        "description": "Supprime une base de connaissances existante",
+        "operationId": "deleteKnowledgeBase"
+      },
+      {
+        "path": "/knowledge-bases/{id}/query",
+        "method": "post",
+        "description": "Effectue une recherche sémantique dans une base de connaissances",
+        "operationId": "queryKnowledgeBase"
+      },
+      {
+        "path": "/test",
+        "method": "get",
+        "description": "Endpoint de test pour vérifier la connectivité et le statut du système",
+        "operationId": "testConnectivity"
+      }
+    ],
+    "schemas": [
+      {
+        "name": "Assistant"
+      },
+      {
+        "name": "KnowledgeBase"
+      },
+      {
+        "name": "VapiModel"
+      },
+      {
+        "name": "VapiVoice"
+      },
+      {
+        "name": "AssistantCreateRequest"
+      },
+      {
+        "name": "AssistantUpdateRequest"
+      },
+      {
+        "name": "KnowledgeBaseCreateRequest"
+      },
+      {
+        "name": "KnowledgeBaseUpdateRequest"
+      },
+      {
+        "name": "KnowledgeBaseQueryRequest"
+      },
+      {
+        "name": "PaginatedResponse"
+      },
+      {
+        "name": "SingleResponse"
+      },
+      {
+        "name": "SuccessResponse"
+      },
+      {
+        "name": "ErrorResponse"
+      },
+      {
+        "name": "PaginatedAssistantsResponse"
+      },
+      {
+        "name": "SingleAssistantResponse"
+      },
+      {
+        "name": "PaginatedKnowledgeBasesResponse"
+      },
+      {
+        "name": "SingleKnowledgeBaseResponse"
+      },
+      {
+        "name": "KnowledgeBaseQueryResponse"
+      }
+    ]
+  }
+]

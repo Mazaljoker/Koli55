@@ -4,7 +4,7 @@
   "description": "Projet d'intégration Vapi et Supabase",
   "main": "index.js",
   "scripts": {
-    "dev": "cd frontend && next dev",
+    "dev": "cd frontend && next dev --turbopack",
     "build": "cd frontend && next build",
     "start": "cd frontend && next start",
     "lint": "cd frontend && next lint",

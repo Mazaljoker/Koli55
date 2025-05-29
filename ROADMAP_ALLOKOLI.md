@@ -5,9 +5,10 @@
 ### ✅ Ce qui est déjà en place (ACQUIS)
 
 #### Infrastructure Technique (95% complété) ✅
+
 - **Supabase Backend** : Configuration complète avec authentification et base de données
 - **Edge Functions** : 4/12 fonctions déployées (assistants, hello, test-vapi-compatibility, **mcp-server**) ✅
-- **API Vapi** : Intégration SDK serveur et client fonctionnelle  
+- **API Vapi** : Intégration SDK serveur et client fonctionnelle
 - **Frontend Next.js** : Structure de base avec authentification Supabase
 - **Schéma de données** : Tables principales créées (assistants, calls, phone_numbers, etc.)
 - **Documentation** : Architecture et API bien documentées
@@ -24,6 +25,7 @@
   - `updateAssistant` : Mise à jour des propriétés ✅
 
 #### Fonctionnalités Existantes
+
 - ✅ **CRUD Assistants** : Création, lecture, mise à jour, suppression des assistants
 - ✅ **Authentification** : Login/signup utilisateurs via Supabase Auth
 - ✅ **Base de données** : Schéma relationnel avec RLS (Row Level Security)
@@ -34,28 +36,41 @@
 - ✅ **Intégration Vapi** : Création d'assistants via API Vapi ✅
 - ✅ **Intégration Twilio** : Provisionnement de numéros de téléphone ✅
 
-### ❌ Ce qui manque pour le MVP (GAPS CRITIQUES)
+### ❌ Ce qui manque pour le MVP (GAPS CRITIQUES) - MISE À JOUR DÉCEMBRE 2024
 
-#### Fonctionnalités Manquantes Critiques
-- ❌ **F1 : Agent Vapi Configurateur** : Assistant conversationnel d'onboarding (0% fait)
-- ❌ **F2 : Génération AssistantConfig** : Transformation des infos collectées en JSON (0% fait)
+#### Fonctionnalités Manquantes Critiques - SCORE GLOBAL : 42/100
+
+- ❌ **F1 : Agent Vapi Configurateur** : Assistant conversationnel d'onboarding (0% fait) - **BLOQUANT**
+- ❌ **F2 : Génération AssistantConfig** : Transformation des infos collectées en JSON (20% fait) - **CRITIQUE**
 - ✅ **F3 : Serveur MCP** : Outils exposés pour l'agent configurateur (100% fait) ✅
 - ✅ **F4 : Attribution numéros** : Intégration Twilio pour provisionnement (100% fait) ✅
-- ❌ **F5 : Dashboard complet** : Interface de gestion des assistants (30% fait)
+- ⚠️ **F5 : Dashboard complet** : Interface de gestion des assistants (35% fait) - **MAJEUR**
 
-#### Infrastructure Manquante
-- ❌ **Webhooks Twilio** : Configuration du routage vers Vapi
-- ❌ **Tests WebRTC** : Interface de test vocal dans le dashboard
-- ❌ **Monitoring** : Surveillance et alertes système
+#### Infrastructure Manquante - ANALYSE DÉTAILLÉE
+
+- ❌ **Interface WebRTC** : Interaction vocale utilisateur inexistante - **BLOQUANT**
+- ❌ **Agent Vapi** : Aucun assistant configurateur créé - **BLOQUANT**
+- ❌ **Logique de collecte** : Transformation dialogue → AssistantConfig manquante - **CRITIQUE**
+- ❌ **Tests automatisés** : Aucun test unitaire/intégration détecté - **MAJEUR**
+- ❌ **Monitoring production** : Surveillance et alertes système absentes - **MAJEUR**
+- ❌ **Documentation utilisateur** : Guides d'utilisation manquants - **MAJEUR**
 
 ---
 
-## 🎯 Plan de Développement en 5 Sprints (10 semaines)
+## 🎯 Plan de Développement Révisé - DÉCEMBRE 2024
+
+### 🚨 ÉTAT ACTUEL : INFRASTRUCTURE PRÊTE, PRODUIT INEXISTANT
+
+**Score de conformité : 42/100** - Infrastructure technique excellente mais fonctionnalités métier absentes
+
+## 🔥 Plan d'Action Critique - 6 Sprints (12 semaines)
 
 ### 📅 Sprint 1 : Fondations MCP et Intégrations (Semaines 1-2) ✅ TERMINÉ
+
 **Objectif** : Mettre en place l'infrastructure de base pour le serveur MCP et les intégrations externes
 
 #### 🔧 Tâches Techniques
+
 - [x] **Schémas Zod** : Validation des DTO pour AssistantConfig et API OpenAPI ✅
 - [x] **Serveur MCP Base** : Structure des Edge Functions avec routage ✅
 - [x] **Intégration Twilio** : Configuration SDK et premiers tests d'API ✅
@@ -63,6 +78,7 @@
 - [x] **Tests d'intégration** : Validation des appels API Twilio et Vapi ✅
 
 #### 📋 Livrables
+
 - ✅ Schémas Zod conformes à OpenAPI pour validation complète
 - ✅ Serveur MCP fonctionnel avec 5 endpoints complets
 - ✅ Intégration Twilio opérationnelle (recherche et achat de numéros)
@@ -72,6 +88,7 @@
 - ✅ Script de déploiement PowerShell avec vérifications
 
 #### 🎯 Critères de Succès
+
 - ✅ Validation des données avec schémas Zod fonctionnelle
 - ✅ Création d'un assistant via API MCP réussie
 - ✅ Provisionnement d'un numéro Twilio fonctionnel
@@ -82,41 +99,51 @@
 
 ---
 
-### 📅 Sprint 2 : Agent Vapi Configurateur (Semaines 3-4)
-**Objectif** : Développer l'agent conversationnel d'onboarding avec les prompts spécialisés
+### 📅 Sprint 2 : Agent Vapi Configurateur - CRITIQUE (Semaines 3-4) 🔥
 
-#### 🔧 Tâches Techniques
-- [ ] **Configuration Agent Vapi** : Création de l'assistant configurateur sur la plateforme Vapi
-- [x] **Implémentation Prompts** : Intégration des 6 modèles de prompts spécialisés ✅
-  - [x] Prompt général (base) ✅
-  - [x] Template Restaurant ✅
-  - [x] Template Salon de coiffure/beauté ✅
-  - [x] Template Plombier/artisan ✅
-  - [x] Template Profession libérale ✅
-  - [x] Template Boutique/commerce ✅
-  - [x] Template Service client PME ✅
-- [ ] **Function Calls Vapi** : Configuration des appels vers le serveur MCP
-- [ ] **Logique de Routage** : Adaptation du prompt selon le secteur d'activité
-- [ ] **Interface WebRTC** : Intégration Vapi Web SDK pour tests vocaux
+**Objectif** : Créer l'expérience utilisateur principale - Agent conversationnel d'onboarding
+**Priorité** : BLOQUANTE - Sans cette fonctionnalité, le produit n'est pas utilisable
 
-#### 📋 Livrables
-- Agent Vapi configurateur opérationnel
-- Interface web pour interaction avec l'agent (vocal + textuel)
-- Logique de collecte d'informations et génération AssistantConfig
-- Tests de bout en bout du processus d'onboarding
+#### 🔧 Tâches Techniques - RÉVISÉES
 
-#### 🎯 Critères de Succès
-- Onboarding complet en moins de 5 minutes
-- Génération d'AssistantConfig valide dans 95% des cas
-- Interface vocale fonctionnelle via WebRTC
-- Adaptation automatique du prompt selon le secteur
+- [ ] **🚨 URGENT - Configuration Agent Vapi** : Création de l'assistant configurateur sur la plateforme Vapi
+- [ ] **🚨 URGENT - Interface WebRTC** : Intégration Vapi Web SDK pour interaction vocale utilisateur
+- [ ] **🚨 URGENT - Logique de Collecte** : Développement du dialogue structuré pour collecter les informations
+- [ ] **Function Calls Vapi** : Configuration des appels vers le serveur MCP existant
+- [ ] **Prompts Spécialisés** : Création des 6 modèles de prompts par secteur d'activité
+  - [ ] Prompt général (base)
+  - [ ] Template Restaurant
+  - [ ] Template Salon de coiffure/beauté
+  - [ ] Template Plombier/artisan
+  - [ ] Template Profession libérale
+  - [ ] Template Boutique/commerce
+  - [ ] Template Service client PME
+- [ ] **Interface Frontend** : Page d'onboarding conversationnel dans `frontend/app/configurateur/`
+
+#### 📋 Livrables - CRITIQUES
+
+- ✅ Agent Vapi configurateur opérationnel et accessible
+- ✅ Interface web fonctionnelle pour interaction vocale/textuelle
+- ✅ Collecte d'informations structurée par dialogue
+- ✅ Première version de génération AssistantConfig
+- ✅ Tests manuels du processus d'onboarding complet
+
+#### 🎯 Critères de Succès - MESURABLES
+
+- ✅ Utilisateur peut créer un assistant en moins de 5 minutes
+- ✅ Interface vocale WebRTC fonctionnelle
+- ✅ Collecte d'au moins 5 informations essentielles par dialogue
+- ✅ Génération d'un AssistantConfig JSON valide
+- ✅ Test E2E : Onboarding → Création assistant → Attribution numéro
 
 ---
 
 ### 📅 Sprint 3 : Déploiement et Routage des Assistants (Semaines 5-6)
+
 **Objectif** : Permettre le déploiement complet des assistants avec numéros de téléphone
 
 #### 🔧 Tâches Techniques
+
 - [ ] **Déploiement Vapi** : Création automatique d'assistants sur la plateforme Vapi
 - [ ] **Configuration Routage** : Liaison numéros Twilio ↔ assistants Vapi
 - [ ] **Webhooks Twilio** : Gestion des événements d'appel (début, fin, erreur)
@@ -125,12 +152,14 @@
 - [ ] **Gestion d'erreurs** : Robustesse et retry logic pour les API externes
 
 #### 📋 Livrables
+
 - Pipeline complet : Onboarding → Création assistant → Attribution numéro → Déploiement
 - Système de webhooks opérationnel
 - Logs d'appels stockés et accessibles
 - Gestion des erreurs et monitoring de base
 
 #### 🎯 Critères de Succès
+
 - Assistant créé accessible par téléphone en moins de 2 minutes
 - Appels entrants routés correctement vers l'assistant
 - Historique des appels enregistré avec transcriptions
@@ -139,9 +168,11 @@
 ---
 
 ### 📅 Sprint 4 : Dashboard Utilisateur Complet (Semaines 7-8)
+
 **Objectif** : Développer l'interface de gestion complète des assistants
 
 #### 🔧 Tâches Techniques
+
 - [ ] **Interface d'authentification** : Login/signup avec Supabase Auth
 - [ ] **Vue d'ensemble** : Dashboard principal avec liste des assistants
 - [ ] **Détail assistant** : Page de gestion individuelle avec :
@@ -149,18 +180,20 @@
   - [ ] Édition du prompt système
   - [ ] Historique des appels avec transcriptions
   - [ ] Statistiques de base (nombre d'appels, durée moyenne)
-- [ ] **Tests en direct** : 
+- [ ] **Tests en direct** :
   - [ ] Interface WebRTC pour test vocal
   - [ ] Fonction "click-to-call" via Twilio
 - [ ] **Responsive design** : Adaptation mobile et tablette
 
 #### 📋 Livrables
+
 - Dashboard web complet et responsive
 - Fonctionnalités de gestion des assistants
 - Interface de test intégrée
 - Documentation utilisateur
 
 #### 🎯 Critères de Succès
+
 - Interface utilisable sur tous les devices
 - Temps de chargement < 2 secondes
 - Fonctionnalités de test opérationnelles
@@ -168,37 +201,73 @@
 
 ---
 
-### 📅 Sprint 5 : Optimisation et Finalisation MVP (Semaines 9-10)
+### 📅 Sprint 5 : Tests et Qualité - MAJEUR (Semaines 9-10) ⚡
+
+**Objectif** : Assurer la qualité et la fiabilité du produit
+**Priorité** : MAJEURE - Actuellement aucun test automatisé détecté
+
+#### 🔧 Tâches Techniques - QUALITÉ
+
+- [ ] **Tests Unitaires** : Implémentation pour toutes les Edge Functions
+- [ ] **Tests d'Intégration** : Validation des flux E2E complets
+- [ ] **Tests de Charge** : Validation de la scalabilité (100 assistants simultanés)
+- [ ] **Monitoring Production** : Mise en place d'alertes et dashboards opérationnels
+- [ ] **Documentation Technique** : Finalisation de la documentation API
+- [ ] **Configuration Environnements** : Création des fichiers `.env.example`
+- [ ] **Scripts de Déploiement** : Automatisation complète du déploiement
+
+#### 📋 Livrables - QUALITÉ
+
+- Suite de tests automatisés complète
+- Couverture de code > 80%
+- Système de monitoring opérationnel
+- Documentation technique finalisée
+- Procédures de déploiement automatisées
+
+#### 🎯 Critères de Succès - QUALITÉ
+
+- ✅ Couverture de tests > 80%
+- ✅ Temps de réponse API < 500ms
+- ✅ Monitoring en temps réel fonctionnel
+- ✅ Déploiement automatisé sans erreur
+- ✅ Documentation complète et à jour
+
+---
+
+### 📅 Sprint 6 : Optimisation et Finalisation MVP (Semaines 11-12) 🎯
+
 **Objectif** : Peaufiner, optimiser et préparer le lancement
 
-#### 🔧 Tâches Techniques
-- [ ] **Tests de charge** : Validation de la scalabilité (100 assistants simultanés)
-- [ ] **Optimisations performance** : Amélioration des temps de réponse
-- [ ] **Sécurité** : Audit de sécurité et conformité RGPD
-- [ ] **Monitoring avancé** : Mise en place d'alertes et dashboards opérationnels
-- [ ] **Documentation complète** : 
-  - [ ] Guide utilisateur
-  - [ ] Documentation technique
-  - [ ] Procédures de déploiement
-- [ ] **Tests utilisateurs** : Sessions avec des utilisateurs réels des personas cibles
+#### 🔧 Tâches Techniques - FINALISATION
 
-#### 📋 Livrables
+- [ ] **Optimisations Performance** : Amélioration des temps de réponse
+- [ ] **Sécurité** : Audit de sécurité et conformité RGPD
+- [ ] **Tests Utilisateurs** : Sessions avec des utilisateurs réels des personas cibles
+- [ ] **Guide Utilisateur** : Documentation complète pour les utilisateurs finaux
+- [ ] **Interface Mobile** : Optimisation responsive pour mobile/tablette
+- [ ] **Préparation Lancement** : Plan de mise en production
+
+#### 📋 Livrables - FINALISATION
+
 - MVP complet et optimisé
-- Documentation exhaustive
-- Système de monitoring opérationnel
+- Guide utilisateur exhaustif
+- Interface mobile optimisée
 - Plan de lancement et support
 
-#### 🎯 Critères de Succès
-- Système capable de gérer 100+ assistants simultanés
-- Temps de réponse API < 500ms
-- Taux de disponibilité > 99.5%
-- Validation utilisateur positive sur tous les personas
+#### 🎯 Critères de Succès - LANCEMENT
+
+- ✅ Système capable de gérer 100+ assistants simultanés
+- ✅ Taux de disponibilité > 99.5%
+- ✅ Validation utilisateur positive sur tous les personas
+- ✅ Interface mobile fonctionnelle
+- ✅ Plan de support utilisateur opérationnel
 
 ---
 
 ## 🔧 Architecture Technique Détaillée
 
 ### 🏗️ Stack Technologique
+
 - **Backend** : Supabase (PostgreSQL + Edge Functions + Auth + Storage)
 - **Serveur MCP** : Supabase Edge Functions (TypeScript/Deno)
 - **Frontend** : Next.js 14 (App Router) + React + Tailwind CSS
@@ -208,6 +277,7 @@
 - **Tests** : Jest + Playwright (E2E)
 
 ### 🔄 Flux de Données Principal
+
 ```mermaid
 graph TD
     A[Utilisateur] -->|Interaction vocale/textuelle| B[Agent Vapi Configurateur]
@@ -225,6 +295,7 @@ graph TD
 ```
 
 ### 🛡️ Sécurité et Conformité
+
 - **Authentification** : JWT Supabase Auth
 - **Autorisation** : Row Level Security (RLS)
 - **Chiffrement** : HTTPS/TLS pour toutes les communications
@@ -237,6 +308,7 @@ graph TD
 ## 📊 Métriques de Succès
 
 ### 🎯 KPIs Techniques
+
 - **Temps d'onboarding** : < 5 minutes (objectif cahier des charges)
 - **Taux de génération AssistantConfig valide** : > 98%
 - **Temps de déploiement assistant** : < 2 secondes
@@ -245,12 +317,14 @@ graph TD
 - **Taux de validation Zod** : 100% (aucune donnée invalide en base) ✅
 
 ### 📈 KPIs Métier
+
 - **Taux de complétion onboarding** : > 85%
 - **Satisfaction utilisateur (CSAT)** : > 4/5
 - **Taux d'adoption post-création** : > 70%
 - **Nombre d'appels traités par assistant** : Métrique de suivi
 
 ### 🔍 Métriques de Qualité
+
 - **Couverture de tests** : > 80%
 - **Temps de résolution bugs critiques** : < 4h
 - **Performance Lighthouse** : > 90/100
@@ -263,14 +337,16 @@ graph TD
 ### 🚨 Risques Techniques Critiques
 
 #### 1. Latence des Interactions Vocales
+
 - **Impact** : Expérience utilisateur dégradée
 - **Probabilité** : Moyenne
-- **Mitigation** : 
+- **Mitigation** :
   - Tests de performance réguliers
   - Optimisation de la chaîne Twilio-Vapi
   - Monitoring en temps réel de la latence
 
 #### 2. Qualité des Prompts Vapi Configurateur
+
 - **Impact** : AssistantConfig de mauvaise qualité
 - **Probabilité** : Élevée → **Réduite** ✅
 - **Mitigation** :
@@ -280,6 +356,7 @@ graph TD
   - Amélioration continue basée sur les données d'usage
 
 #### 3. Disponibilité des Services Tiers (Vapi, Twilio)
+
 - **Impact** : Service indisponible
 - **Probabilité** : Faible
 - **Mitigation** :
@@ -290,6 +367,7 @@ graph TD
 ### 💰 Risques Économiques
 
 #### 1. Coûts des Services Tiers
+
 - **Impact** : Modèle économique non viable
 - **Probabilité** : Moyenne
 - **Mitigation** :
@@ -298,6 +376,7 @@ graph TD
   - Limitation de durée des appels
 
 #### 2. Adoption Utilisateur
+
 - **Impact** : Faible traction produit
 - **Probabilité** : Moyenne → **Réduite** ✅
 - **Mitigation** :
@@ -312,6 +391,7 @@ graph TD
 ## 📚 Documentation et Ressources
 
 ### 📖 Documentation Technique
+
 - [Cahier des Charges Complet](./Cahier_Des_Charges_Allo_Koli.md)
 - [Modèles de Prompts Vapi Configurateur](./DOCS/prompts/Vapi_Configurateur_Prompts.md) ✅
 - [Schémas Zod OpenAPI](./frontend/lib/schemas/openapi-zod-schemas.ts) ✅
@@ -320,6 +400,7 @@ graph TD
 - [API Reference](./specs/allokoli-api-complete-final.yaml)
 
 ### 🧪 Tests et Validation
+
 - Tests unitaires : Fonctions critiques du serveur MCP
 - Tests d'intégration : Flux complets API
 - Tests E2E : Parcours utilisateur complet
@@ -327,6 +408,7 @@ graph TD
 - ✅ Validation Zod : Schémas pour toutes les entités
 
 ### 🚀 Déploiement
+
 - Environnements : Dev → Staging → Production
 - CI/CD : GitHub Actions
 - Monitoring : Supabase Dashboard + alertes custom
@@ -334,22 +416,47 @@ graph TD
 
 ---
 
-## 🎯 Conclusion
+## 🎯 Conclusion - MISE À JOUR DÉCEMBRE 2024
 
-Cette roadmap détaillée permet de transformer le projet AlloKoli d'un concept ambitieux en un MVP fonctionnel en 10 semaines. Les **modèles de prompts spécialisés** et les **schémas Zod conformes à OpenAPI** constituent des atouts majeurs pour assurer la qualité de l'onboarding conversationnel et la robustesse du système.
+### 📊 État Actuel vs Objectifs
 
-### 🔑 Facteurs Clés de Succès
-1. ✅ **Qualité des prompts Vapi** : 6 modèles spécialisés créés et documentés
+**Score de conformité : 42/100** - Le projet présente une **infrastructure technique excellente** mais souffre de **lacunes critiques** dans les fonctionnalités métier principales.
+
+### 🚨 Constat Principal
+
+**L'infrastructure est prête, mais le produit n'existe pas encore.** Les fonctionnalités F3 (Serveur MCP) et F4 (Attribution numéros) sont parfaitement implémentées, mais les fonctionnalités F1 (Agent configurateur) et F2 (Génération AssistantConfig) qui constituent le cœur de la proposition de valeur sont totalement absentes.
+
+### 🔑 Facteurs Clés de Succès - RÉVISÉS
+
+1. ✅ **Infrastructure technique** : Excellente base avec Supabase + MCP + Intégrations
 2. ✅ **Validation robuste** : Schémas Zod conformes à OpenAPI pour toutes les données
-3. **Robustesse des intégrations** : Gestion d'erreurs et monitoring
-4. **Simplicité utilisateur** : Interface intuitive et onboarding fluide
-5. **Performance technique** : Respect des SLA de latence et disponibilité
+3. ❌ **Expérience utilisateur** : CRITIQUE - Totalement manquante
+4. ❌ **Interface conversationnelle** : BLOQUANT - Agent Vapi non créé
+5. ❌ **Tests et qualité** : MAJEUR - Aucun test automatisé détecté
 
-### 📅 Prochaines Étapes Immédiates
-1. ✅ Validation de cette roadmap par l'équipe
-2. ✅ Setup des schémas de validation Zod
-3. Setup des environnements de développement
-4. Début du Sprint 1 : Fondations MCP et intégrations
-5. Configuration de l'agent Vapi configurateur avec les prompts spécialisés
+### 📅 Prochaines Étapes Critiques - PLAN D'ACTION
 
-Le succès du projet repose sur l'exécution rigoureuse de cette roadmap et l'adaptation continue basée sur les retours utilisateurs et les métriques de performance. La base solide constituée par les prompts spécialisés et la validation Zod garantit une qualité élevée dès le départ. 
+1. **🔥 URGENT** : Créer l'agent Vapi configurateur (Sprint 2)
+2. **🔥 URGENT** : Implémenter l'interface WebRTC pour interaction vocale
+3. **🔥 URGENT** : Développer la logique de collecte d'informations
+4. **⚡ HAUTE** : Finaliser le dashboard avec tests WebRTC fonctionnels
+5. **⚡ HAUTE** : Implémenter les tests automatisés et monitoring
+
+### 🎯 Prévision de Livraison Révisée
+
+Avec un effort concentré sur les gaps critiques identifiés, le projet peut atteindre un **état MVP fonctionnel en 6 semaines** (12 semaines au total avec tests et qualité).
+
+### 💪 Points Forts à Capitaliser
+
+- **Architecture serverless robuste** et scalable
+- **Intégrations API** (Vapi, Twilio) fonctionnelles
+- **Base de données** bien conçue avec RLS
+- **Validation de données** complète avec Zod
+
+### ⚠️ Risques Identifiés
+
+- **Absence totale d'expérience utilisateur** - BLOQUANT
+- **Aucun test automatisé** - Risques de régression
+- **Documentation utilisateur manquante** - Difficultés d'adoption
+
+Le succès du projet repose désormais sur l'implémentation **urgente** des fonctionnalités métier principales (F1 et F2) qui transformeront cette excellente infrastructure technique en un produit utilisable et conforme au cahier des charges.

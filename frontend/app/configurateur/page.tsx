@@ -4,10 +4,10 @@
 import React, { Suspense } from "react";
 import { Typography, Spin } from "antd";
 import { motion } from "framer-motion";
-import ConfiguratorGlob from "./components/ConfiguratorGlob";
-import ConfiguratorChat from "./components/ConfiguratorChat";
-import ConfiguratorSteps from "./components/ConfiguratorSteps";
-import ConfiguratorResult from "./components/ConfiguratorResult";
+import ConfiguratorGlob from "./_components/ConfiguratorGlob";
+import ConfiguratorChat from "./_components/ConfiguratorChat";
+import ConfiguratorSteps from "./_components/ConfiguratorSteps";
+import ConfiguratorResult from "./_components/ConfiguratorResult";
 import { useVapiConfigurator } from "@/lib/hooks/useVapiConfigurator";
 
 const { Title, Paragraph } = Typography;

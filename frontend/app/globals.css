@@ -6,31 +6,31 @@
 @import "./styles/design-tokens.css";
 
 :root {
-  /* Variables héritées mises à jour pour pointer vers les nouveaux tokens */
+  /* Variables mises à jour pour le mode clair */
   --allokoli-primary: var(--allokoli-primary-hover);
   --allokoli-secondary: var(--allokoli-secondary-hover);
   --allokoli-success: var(--allokoli-success-default);
   --allokoli-warning: var(--allokoli-warning-default);
   --allokoli-error: var(--allokoli-error-default);
-  --allokoli-background: var(--allokoli-dark-background);
-  --allokoli-surface: var(--allokoli-dark-surface);
-  --allokoli-foreground: var(--allokoli-dark-textPrimary);
+  --allokoli-background: var(--allokoli-light-background);
+  --allokoli-surface: var(--allokoli-light-surface);
+  --allokoli-foreground: var(--allokoli-light-textPrimary);
 
-  /* Variables pour le Glassmorphism amélioré */
-  --glass-bg: var(--allokoli-dark-surface);
+  /* Variables pour le Glassmorphism mode clair */
+  --glass-bg: var(--allokoli-light-surface);
   --glass-blur: 20px;
-  --glass-border-color: rgba(255, 255, 255, 0.2);
+  --glass-border-color: rgba(0, 0, 0, 0.1);
   --glass-border-radius: var(--allokoli-radius-xl);
   --glass-shadow: var(--allokoli-shadow-lg);
 
-  /* Variables existantes conservées pour compatibilité */
-  --background: var(--allokoli-dark-background);
-  --foreground: var(--allokoli-dark-textPrimary);
+  /* Variables existantes mises à jour pour mode clair */
+  --background: var(--allokoli-light-background);
+  --foreground: var(--allokoli-light-textPrimary);
   --primary-purple: var(--allokoli-primary-default);
   --primary-blue: var(--allokoli-secondary-default);
   --primary-ocean: var(--allokoli-info-default);
 
-  /* Mise à jour des anciennes variables glassmorphism */
+  /* Mise à jour des anciennes variables glassmorphism pour mode clair */
   --glassmorphism-bg: var(--glass-bg);
   --glassmorphism-border: var(--glass-border-color);
   --glassmorphism-shadow: var(--glass-shadow);
@@ -43,24 +43,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Thème sombre - ajustements spécifiques */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --glassmorphism-bg: rgba(42, 43, 66, 0.3);
-    --glassmorphism-border: rgba(70, 70, 90, 0.4);
-    --glass-bg: var(--allokoli-dark-surface);
-    --glass-border-color: var(--allokoli-dark-border);
-    --glass-shadow: var(--allokoli-shadow-xl);
-  }
-}
-
 body {
-  background: var(--allokoli-dark-background);
-  color: var(--allokoli-dark-textPrimary);
+  background: var(--allokoli-light-background);
+  color: var(--allokoli-light-textPrimary);
   font-family: "Inter", system-ui, sans-serif;
 }
 
-/* Styles pour les éléments glassmorphism */
+/* Styles pour les éléments glassmorphism mode clair */
 .glassmorphism {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
@@ -68,10 +57,10 @@ body {
   border: 1px solid var(--glass-border-color);
   border-radius: var(--glass-border-radius);
   box-shadow: var(--glass-shadow);
-  color: var(--allokoli-dark-textPrimary);
+  color: var(--allokoli-light-textPrimary);
 }
 
-/* Système de cartes AlloKoli */
+/* Système de cartes AlloKoli mode clair */
 .card-base {
   padding: var(--allokoli-spacing-6);
   background: var(--glass-bg);
@@ -80,7 +69,7 @@ body {
   border: 1px solid var(--glass-border-color);
   border-radius: var(--glass-border-radius);
   box-shadow: var(--glass-shadow);
-  color: var(--allokoli-dark-textPrimary);
+  color: var(--allokoli-light-textPrimary);
 }
 
 .card-primary {
@@ -91,7 +80,7 @@ body {
   border: 1px solid var(--glass-border-color);
   border-radius: var(--glass-border-radius);
   box-shadow: var(--glass-shadow);
-  color: var(--allokoli-dark-textPrimary);
+  color: var(--allokoli-light-textPrimary);
   border-top: 4px solid var(--allokoli-primary-default);
 }
 
@@ -103,7 +92,7 @@ body {
   border: 1px solid var(--glass-border-color);
   border-radius: var(--glass-border-radius);
   box-shadow: var(--glass-shadow);
-  color: var(--allokoli-dark-textPrimary);
+  color: var(--allokoli-light-textPrimary);
 }
 
 .card-interactive {
@@ -135,21 +124,21 @@ body {
   opacity: 0.9;
 }
 
-/* Classe utilitaire pour les inputs */
+/* Classe utilitaire pour les inputs mode clair */
 .input-styled {
   display: block;
   width: 100%;
   padding: var(--allokoli-spacing-3) var(--allokoli-spacing-3);
-  border: 1px solid var(--allokoli-dark-border);
+  border: 1px solid var(--allokoli-light-border);
   border-radius: var(--allokoli-radius-md);
-  background-color: var(--allokoli-dark-surface);
-  border-color: var(--allokoli-dark-border);
-  color: var(--allokoli-dark-textPrimary);
+  background-color: var(--allokoli-light-background);
+  border-color: var(--allokoli-light-border);
+  color: var(--allokoli-light-textPrimary);
   border-radius: var(--allokoli-radius-input);
 }
 
 .input-styled::placeholder {
-  color: var(--allokoli-dark-textSecondary);
+  color: var(--allokoli-light-textSecondary);
 }
 
 .input-styled:focus {
@@ -172,22 +161,22 @@ body {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Styles des formulaires AlloKoli */
+/* Styles des formulaires AlloKoli mode clair */
 .form-input,
 .form-select,
 .form-textarea {
-  background-color: var(--allokoli-dark-surface);
-  border: 1px solid var(--allokoli-dark-border);
+  background-color: var(--allokoli-light-background);
+  border: 1px solid var(--allokoli-light-border);
   border-radius: var(--allokoli-radius-input);
   padding: var(--allokoli-spacing-3) var(--allokoli-spacing-4);
-  color: var(--allokoli-dark-textPrimary);
+  color: var(--allokoli-light-textPrimary);
   width: 100%;
   transition: var(--allokoli-transition-base);
 }
 
 .form-input::placeholder,
 .form-textarea::placeholder {
-  color: var(--allokoli-dark-textSecondary);
+  color: var(--allokoli-light-textSecondary);
 }
 
 .form-input:focus,

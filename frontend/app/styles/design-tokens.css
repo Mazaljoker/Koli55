@@ -155,6 +155,63 @@
   --allokoli-transition-fadeOut: 200ms ease-out;
   --allokoli-transition-slideIn: 300ms ease-out;
   --allokoli-transition-scaleIn: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Design Tokens AlloKoli - Mode Clair Exclusif */
+  --allokoli-primary-default: #7c3aed;
+  --allokoli-primary-hover: #6d28d9;
+  --allokoli-primary-lighter: #a78bfa;
+  --allokoli-primary-light: #c4b5fd;
+  --allokoli-primary-soft: #ede9fe;
+
+  --allokoli-secondary-default: #3b82f6;
+  --allokoli-secondary-hover: #2563eb;
+  --allokoli-secondary-lighter: #93c5fd;
+  --allokoli-secondary-light: #dbeafe;
+
+  --allokoli-accent-default: #f59e0b;
+  --allokoli-accent-hover: #d97706;
+  --allokoli-accent-light: #fde68a;
+
+  --allokoli-success-default: #10b981;
+  --allokoli-success-hover: #059669;
+  --allokoli-success-light: #a7f3d0;
+
+  --allokoli-warning-default: #f59e0b;
+  --allokoli-warning-hover: #d97706;
+  --allokoli-warning-light: #fde68a;
+
+  --allokoli-error-default: #ef4444;
+  --allokoli-error-hover: #dc2626;
+  --allokoli-error-light: #fecaca;
+
+  --allokoli-light-background: #ffffff;
+  --allokoli-light-surface: #f8fafc;
+  --allokoli-light-surface-hover: #f1f5f9;
+  --allokoli-light-border: #e2e8f0;
+  --allokoli-light-border-hover: #cbd5e1;
+
+  --allokoli-light-textPrimary: #1e293b;
+  --allokoli-light-textSecondary: #64748b;
+  --allokoli-light-textTertiary: #94a3b8;
+  --allokoli-light-textDisabled: #cbd5e1;
+
+  --allokoli-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --allokoli-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --allokoli-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --allokoli-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-blur: 20px;
+  --glass-border-color: rgba(0, 0, 0, 0.1);
+
+  --landing-gradient-start: var(--allokoli-primary-default);
+  --landing-gradient-end: var(--allokoli-secondary-default);
+  --landing-text-primary: var(--allokoli-light-textPrimary);
+  --landing-text-secondary: var(--allokoli-light-textSecondary);
+  --landing-bg-accent: var(--allokoli-light-surface);
 }
 
 /* Classes utilitaires pour utiliser facilement les tokens */
@@ -177,7 +234,7 @@
   background-color: var(--allokoli-error-default);
 }
 .bg-surface {
-  background-color: var(--allokoli-dark-surface);
+  background-color: var(--allokoli-light-surface);
 }
 
 .text-primary {
@@ -249,4 +306,30 @@
 }
 .transition-slow {
   transition: var(--allokoli-transition-slow);
+}
+
+/* Classes pour textes */
+.text-primary {
+  color: var(--allokoli-light-textPrimary);
+}
+.text-secondary {
+  color: var(--allokoli-light-textSecondary);
+}
+.text-tertiary {
+  color: var(--allokoli-light-textTertiary);
+}
+
+/* Classes pour landing page spécifiques */
+.landing-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--landing-gradient-start) 0%,
+    var(--landing-gradient-end) 100%
+  );
+}
+.landing-text {
+  color: var(--landing-text-primary);
+}
+.landing-text-muted {
+  color: var(--landing-text-secondary);
 }

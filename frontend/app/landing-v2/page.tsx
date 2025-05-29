@@ -15,18 +15,20 @@ export default function LandingPageV2() {
       {/* ou laisser Next.js le déduire. */}
 
       {/* Utilise la couleur de fond définie dans globals.css (via tailwind.config.ts et body style) */}
-      <div className="flex flex-col min-h-screen font-sans text-allokoli-foreground">
+      <div className="flex flex-col min-h-screen font-sans text-allokoli-text-primary">
         {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 px-4 py-6 md:px-8 lg:px-16 bg-allokoli-background/80 backdrop-blur-md">
+        <header className="fixed top-0 left-0 right-0 z-50 px-4 py-6 md:px-8 lg:px-16 bg-white/80 backdrop-blur-md border-b border-allokoli-border">
           <div className="container flex items-center justify-between mx-auto">
-            <div className="text-3xl font-bold text-white">AlloKoli</div>
+            <div className="text-3xl font-bold text-allokoli-primary">
+              AlloKoli
+            </div>
             <nav>
               <ul className="flex space-x-6 md:space-x-8">
                 {/* Liens de navigation - exemple */}
                 <li>
                   <a
                     href="#features"
-                    className="transition-colors hover:text-allokoli-primary"
+                    className="text-allokoli-text-secondary transition-colors hover:text-allokoli-primary"
                   >
                     Fonctionnalités
                   </a>
@@ -34,13 +36,16 @@ export default function LandingPageV2() {
                 <li>
                   <a
                     href="#pricing"
-                    className="transition-colors hover:text-allokoli-primary"
+                    className="text-allokoli-text-secondary transition-colors hover:text-allokoli-primary"
                   >
                     Tarifs
                   </a>
                 </li>
                 <li>
-                  <a href="/login" className="px-4 py-2 text-sm btn-primary">
+                  <a
+                    href="/login"
+                    className="px-4 py-2 text-sm btn-primary text-white"
+                  >
                     Connexion
                   </a>
                 </li>
@@ -50,21 +55,21 @@ export default function LandingPageV2() {
         </header>
 
         {/* Hero Section */}
-        <main className="flex-grow pt-24 md:pt-32">
+        <main className="flex-grow pt-24 md:pt-32 bg-allokoli-background">
           {" "}
           {/* pt pour compenser le header fixed */}
           <section className="container flex flex-col items-center px-4 py-16 mx-auto text-center md:px-8 lg:px-16 md:py-24">
-            <h1 className="mb-6 text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+            <h1 className="mb-6 text-4xl font-bold leading-tight text-allokoli-text-primary md:text-5xl lg:text-6xl">
               Créez votre{" "}
               <span className="text-allokoli-primary">assistant vocal</span>{" "}
               intelligent
             </h1>
-            <p className="max-w-2xl mb-10 text-lg text-gray-300 md:text-xl lg:text-2xl">
+            <p className="max-w-2xl mb-10 text-lg text-allokoli-text-secondary md:text-xl lg:text-2xl">
               Personnalisez un agent virtuel pour gérer les appels de votre
               entreprise, améliorer l'expérience client et optimiser votre
               temps.
             </p>
-            <button className="px-8 py-3 text-lg font-semibold transition-transform duration-300 transform rounded-lg btn-primary md:text-xl md:py-4 md:px-10 hover:scale-105">
+            <button className="px-8 py-3 text-lg font-semibold text-white transition-transform duration-300 transform rounded-lg btn-primary md:text-xl md:py-4 md:px-10 hover:scale-105">
               Commencer gratuitement
             </button>
             <div className="relative w-full max-w-lg mt-12 md:mt-16 lg:max-w-xl">
@@ -100,12 +105,12 @@ export default function LandingPageV2() {
           {/* Features Section */}
           <section
             id="features"
-            className="py-16 md:py-24 bg-allokoli-background/50"
+            className="py-16 md:py-24 bg-allokoli-surface/50"
           >
             {" "}
             {/* Léger changement de fond pour la section */}
             <div className="container px-4 mx-auto md:px-8 lg:px-16">
-              <h2 className="mb-12 text-3xl font-bold text-center md:text-4xl md:mb-16">
+              <h2 className="mb-12 text-3xl font-bold text-center text-allokoli-text-primary md:text-4xl md:mb-16">
                 Tout ce dont vous avez{" "}
                 <span className="text-allokoli-secondary">besoin</span>,
                 simplement.
@@ -130,7 +135,7 @@ export default function LandingPageV2() {
                 />
               </div>
               <div className="mt-16 text-center md:mt-20">
-                <button className="px-8 py-3 text-lg font-semibold transition-transform duration-300 transform rounded-lg btn-primary md:text-xl md:py-4 md:px-10 hover:scale-105">
+                <button className="px-8 py-3 text-lg font-semibold text-white transition-transform duration-300 transform rounded-lg btn-primary md:text-xl md:py-4 md:px-10 hover:scale-105">
                   Essayer maintenant
                 </button>
               </div>

@@ -9,3 +9,6 @@ export interface FormStepConfig {
   content: React.ReactNode;
   // validation?: ValidationSchema; // Décommenter et définir ValidationSchema si nécessaire
 }
+
+// Export des types landing
+export * from "./landing";

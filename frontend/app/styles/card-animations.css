@@ -1,14 +1,17 @@
 @keyframes glowingPulse {
   0% {
-    box-shadow: 0 0 5px rgba(119, 69, 255, 0.4), 0 0 10px rgba(119, 69, 255, 0.2);
+    box-shadow: 0 0 5px rgba(119, 69, 255, 0.4),
+      0 0 10px rgba(119, 69, 255, 0.2);
     border-color: rgba(119, 69, 255, 0.7);
   }
   50% {
-    box-shadow: 0 0 10px rgba(119, 69, 255, 0.6), 0 0 20px rgba(119, 69, 255, 0.4);
+    box-shadow: 0 0 10px rgba(119, 69, 255, 0.6),
+      0 0 20px rgba(119, 69, 255, 0.4);
     border-color: rgba(119, 69, 255, 0.9);
   }
   100% {
-    box-shadow: 0 0 5px rgba(119, 69, 255, 0.4), 0 0 10px rgba(119, 69, 255, 0.2);
+    box-shadow: 0 0 5px rgba(119, 69, 255, 0.4),
+      0 0 10px rgba(119, 69, 255, 0.2);
     border-color: rgba(119, 69, 255, 0.7);
   }
 }
@@ -26,4 +29,110 @@
 .elevated-card:hover {
   transform: translateY(-16px);
   animation: glowingPulse 2s infinite alternate;
-} 
+}
+
+/* Animations pour les cartes avec couleurs du design system */
+.card-hover {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border-color);
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--allokoli-shadow-lg);
+  border-color: var(--allokoli-primary-default);
+}
+
+.card-glassmorphism {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border-color);
+  border-radius: 16px;
+}
+
+/* Surcharge des couleurs hardcodées pour la landing page */
+.landing-page-override {
+  /* Variables CSS pour remplacer les couleurs hardcodées */
+  --hardcoded-primary: var(--allokoli-primary-default); /* #7745FF */
+  --hardcoded-secondary: var(--allokoli-secondary-default); /* #5769FF */
+  --hardcoded-tertiary: var(--allokoli-primary-lighter); /* #9CB8FF */
+  --hardcoded-text: var(--allokoli-light-textPrimary); /* #1B1D2A */
+  --hardcoded-text-muted: var(
+    --allokoli-light-textSecondary
+  ); /* rgba(27, 29, 42, 0.8) */
+  --hardcoded-background: var(--allokoli-light-background); /* #F7F7FC */
+  --hardcoded-surface: var(--allokoli-light-surface); /* #F2F5FF */
+}
+
+/* Styles spécifiques pour les éléments avec couleurs hardcodées */
+.landing-page-override [style*="#7745FF"],
+.landing-page-override [style*="rgb(119, 69, 255)"] {
+  color: var(--allokoli-primary-default) !important;
+  background-color: var(--allokoli-primary-default) !important;
+}
+
+.landing-page-override [style*="#5769FF"],
+.landing-page-override [style*="rgb(87, 105, 255)"] {
+  color: var(--allokoli-secondary-default) !important;
+  background-color: var(--allokoli-secondary-default) !important;
+}
+
+.landing-page-override [style*="#1B1D2A"],
+.landing-page-override [style*="rgb(27, 29, 42)"] {
+  color: var(--allokoli-light-textPrimary) !important;
+}
+
+.landing-page-override [style*="rgba(27, 29, 42, 0.8)"],
+.landing-page-override [style*="rgba(27, 29, 42, 0.7)"] {
+  color: var(--allokoli-light-textSecondary) !important;
+}
+
+/* Animations de rotation pour les cartes */
+@keyframes cardPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--allokoli-shadow-md);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: var(--allokoli-shadow-lg);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--allokoli-shadow-md);
+  }
+}
+
+.card-pulse:hover {
+  animation: cardPulse 2s infinite;
+}
+
+/* Gradient animations */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-animated {
+  background: linear-gradient(
+    -45deg,
+    var(--allokoli-primary-default),
+    var(--allokoli-secondary-default),
+    var(--allokoli-primary-lighter),
+    var(--allokoli-accent-default)
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}

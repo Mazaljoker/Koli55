@@ -1,0 +1,57 @@
+import type { PricingPlan } from "@/lib/types/landing";
+
+export const pricingPlans: PricingPlan[] = [
+  {
+    id: "starter",
+    name: "STARTER",
+    price: "29€",
+    period: "/mois",
+    popular: false,
+    features: [
+      "5 assistants inclus",
+      "1 000 conversations/mois",
+      "Support par email",
+      "Interface No-Code",
+      "Analytics de base",
+    ],
+    buttonText: "Commencer",
+    href: "/dashboard",
+  },
+  {
+    id: "business",
+    name: "BUSINESS",
+    price: "99€",
+    period: "/mois",
+    popular: true,
+    features: [
+      "15 assistants inclus",
+      "10 000 conversations/mois",
+      "Support prioritaire",
+      "Intégrations avancées",
+      "Analytics détaillées",
+      "API personnalisée",
+      "Formation incluse",
+    ],
+    buttonText: "Commencer",
+    href: "/dashboard",
+  },
+  {
+    id: "enterprise",
+    name: "ENTERPRISE",
+    price: "Sur mesure",
+    period: "",
+    popular: false,
+    features: [
+      "Assistants illimités",
+      "Conversations illimitées",
+      "Support dédié 24/7",
+      "Intégrations sur mesure",
+      "Analytics avancées",
+      "SLA garantie",
+      "Formation équipe",
+      "Consulting inclus",
+    ],
+    buttonText: "Nous contacter",
+    href: "/contact",
+  },
+];

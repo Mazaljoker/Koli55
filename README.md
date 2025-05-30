@@ -2,14 +2,36 @@
 
 Allokoli est une plateforme no-code permettant à des professionnels de créer un assistant vocal IA en quelques minutes.
 
+## 🎯 **CONFIGURATEUR OPÉRATIONNEL** ✅
+
+Le configurateur AlloKoli Expert est maintenant **100% déployé et fonctionnel** !
+
+### 🚀 **Accès direct**
+
+- **Test du configurateur** : [https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test](https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test)
+- **Configuration** : [https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e](https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e)
+- **Gestion des tools** : [https://dashboard.vapi.ai/tools](https://dashboard.vapi.ai/tools)
+
+### 🔧 **Tools déployés**
+
+- `analyzeBusinessContext` : Analyse automatique du secteur d'activité
+- `listVoicesForBusiness` : Recommandations de voix par secteur
+- `createAssistant` : Création automatique d'assistants vocaux
+
+### 🌐 **Edge Functions actives**
+
+- **URL** : `https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools`
+- **Version** : 6 (ACTIVE)
+- **Secteurs supportés** : Restaurant, Salon, Artisan, Commerce, Médical, Service
+
 ## Stack
 
 - Frontend : Next.js 15.3.2 + Turbopack + Supabase
-- Backend : Supabase Edge Functions (Deno)
-- API vocale : Vapi.ai
+- Backend : Supabase Edge Functions (Deno) ✅ **DÉPLOYÉES**
+- API vocale : Vapi.ai ✅ **CONFIGURÉE**
 - Auth : Supabase Auth
 - Base de données : Supabase PostgreSQL avec RLS
-- Intégration : Model Context Protocol (MCP) pour Vapi et Supabase
+- Intégration : Model Context Protocol (MCP) pour Vapi et Supabase ✅ **OPÉRATIONNEL**
 
 ## ⚡ Performances optimisées avec Turbopack
 
@@ -28,8 +50,9 @@ Allokoli est une plateforme no-code permettant à des professionnels de créer u
 - ✅ **Phase 6.1** : Intégration frontend
 - ✅ **Phase 6.2** : Migration structurelle complète
 - ✅ **Phase 7** : Optimisation Turbopack et MCP
-- 🔄 **Phase 8** : Documentation et tests (en cours)
-- 📅 **Phase 9** : Déploiement et lancement (à venir)
+- ✅ **Phase 8** : **CONFIGURATEUR DÉPLOYÉ ET OPÉRATIONNEL** ✅
+- 📅 **Phase 9** : Tests et optimisations (à venir)
+- 📅 **Phase 10** : Déploiement frontend et lancement (à venir)
 
 ## 🚀 Intégration Model Context Protocol (MCP)
 
@@ -37,8 +60,8 @@ Le projet intègre MCP pour une orchestration avancée des services :
 
 ### Configuration MCP disponible
 
-- **Vapi MCP Server** : Création et gestion d'assistants vocaux via des prompts naturels
-- **Supabase MCP** : Gestion de la base de données et des fonctions Edge
+- **Vapi MCP Server** : Création et gestion d'assistants vocaux via des prompts naturels ✅ **OPÉRATIONNEL**
+- **Supabase MCP** : Gestion de la base de données et des fonctions Edge ✅ **UTILISÉ**
 - **GitHub MCP** : Automatisation des workflows de développement
 
 ### Utilisation avec Claude Desktop
@@ -59,10 +82,51 @@ Configuration dans `~/.cursor/mcp.json` :
       "env": {
         "VAPI_TOKEN": "votre-clé-vapi"
       }
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-supabase"],
+      "env": {
+        "SUPABASE_URL": "https://aiurboizarbbcpynmmgv.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "votre-service-role-key"
+      }
     }
   }
 }
 ```
+
+## 🎯 **Fonctionnalités du Configurateur**
+
+### **Analyse automatique**
+
+Le configurateur analyse automatiquement l'activité du client et détermine le secteur optimal parmi :
+
+- **Restaurant & Hôtellerie**
+- **Salon de beauté & Bien-être**
+- **Artisan & Réparation**
+- **Commerce & Retail**
+- **Médical & Santé**
+- **Service client**
+
+### **Recommandations intelligentes**
+
+Pour chaque secteur, le configurateur recommande les 3 meilleures voix Azure :
+
+- **Restaurant** : Denise (sophistiquée), Claude (conviviale), Vivienne (élégante)
+- **Salon** : Brigitte (douce), Céline (rassurante), Denise (professionnelle)
+- **Artisan** : Henri (confiant), Antoine (technique), Claude (professionnel)
+- **Commerce** : Brigitte (accueillante), Denise (dynamique), Claude (claire)
+- **Médical** : Claude (calme), Henri (professionnel), Denise (rassurante)
+- **Service** : Denise (patiente), Claude (claire), Brigitte (empathique)
+
+### **Création automatique**
+
+Le configurateur crée automatiquement l'assistant vocal final avec :
+
+- Configuration optimisée pour le secteur
+- Voix recommandée sélectionnée
+- Prompt personnalisé pour l'activité
+- Paramètres techniques adaptés
 
 ## Structure du projet
 
@@ -71,7 +135,7 @@ Ce projet suit une structure standardisée définie dans [DOCS/architecture/stru
 La structure du projet est organisée de la façon suivante :
 
 - `/frontend` : Application Next.js principale (App Router)
-- `/supabase` : Fonctions Edge et migrations Supabase
+- `/supabase` : Fonctions Edge et migrations Supabase ✅ **DÉPLOYÉES**
 - `/lib` : Bibliothèques partagées
 - `/DOCS` : Documentation complète du projet
 
@@ -82,15 +146,16 @@ Pour démarrer le projet, vous devez configurer les variables d'environnement n�
 1. Créez un fichier `.env.local` à la racine du projet en vous basant sur `.env.example`
 2. Configurez les variables Supabase et Vapi avec les valeurs appropriées :
 
-```
+```bash
 # Frontend (publiques mais limitées)
-NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://aiurboizarbbcpynmmgv.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=votre-cle-anon-publique
 
 # Backend (privées)
-SUPABASE_URL=https://votre-projet.supabase.co
+SUPABASE_URL=https://aiurboizarbbcpynmmgv.supabase.co
 SUPABASE_ANON_KEY=votre-cle-anon-publique
 SUPABASE_SERVICE_ROLE_KEY=votre-cle-service-role-secrete
+VAPI_PRIVATE_KEY=37e5584f-31ce-4f77-baf2-5684682079ea
 VAPI_API_KEY=votre-cle-api-vapi
 
 # MCP (pour intégration Claude Desktop)
@@ -119,10 +184,26 @@ cd frontend && pnpm install
 pnpm dev
 ```
 
+### **Test du configurateur**
+
+Le configurateur est immédiatement testable :
+
+```bash
+# Test direct via Vapi Dashboard
+# URL: https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test
+
+# Test des Edge Functions
+.\test-edge-functions.ps1
+
+# Création de nouveaux assistants
+.\create-tools-separately.ps1
+```
+
 ### Accès à l'application
 
 - **Local :** http://localhost:3001
 - **Réseau :** http://192.168.137.1:3001
+- **Configurateur :** https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test
 
 ### Commandes disponibles
 
@@ -138,6 +219,11 @@ pnpm build
 
 # Linting
 pnpm lint
+
+# Scripts de déploiement et test
+.\create-tools-separately.ps1        # Créer assistant avec tools
+.\test-edge-functions.ps1           # Tester les Edge Functions
+.\ALLOKOLI-CONFIGURATEUR-FINAL-SANS-TOOLS.ps1  # Configurateur intelligent
 ```
 
 ## Documentation

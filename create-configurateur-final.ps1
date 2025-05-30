@@ -1,21 +1,22 @@
 #!/usr/bin/env pwsh
 
-# Déploiement final Configurateur AlloKoli Expert
-# ===============================================
+# CRÉATION CONFIGURATEUR ALLOKOLI FINAL
+# =====================================
 
-Write-Host "🚀 Déploiement Configurateur AlloKoli Expert" -ForegroundColor Green
-Write-Host "=" * 60
+Write-Host "🎯 CRÉATION CONFIGURATEUR ALLOKOLI FINAL" -ForegroundColor Green
+Write-Host "=" * 50
 
-# Configuration avec la clé fournie
+# Configuration avec la vraie Private Key Vapi
 $VapiApiUrl = "https://api.vapi.ai/assistant"
-$VapiPrivateKey = "sk_71c8d36796cf09aa30c68561f6a154064748f996325b58cdf28b8bf2b8b7ae41e"
+$VapiPrivateKey = "37e5584f-31ce-4f77-baf2-5684682079ea"
 
-Write-Host "🔑 Utilisation de VAPI_PRIVATE_KEY: sk_71c8...e41e" -ForegroundColor Cyan
+Write-Host "🔑 Utilisation de VAPI_PRIVATE_KEY: 37e5584f-...79ea" -ForegroundColor Cyan
+Write-Host "💡 Private Key = Créer assistants (backend)" -ForegroundColor Yellow
+Write-Host "💡 Public Key = Appeler assistants (frontend)" -ForegroundColor Yellow
 
 try {
-    Write-Host "🎯 Création du Configurateur Expert AlloKoli..." -ForegroundColor Yellow
+    Write-Host "`n🚀 Création du Configurateur AlloKoli Expert..." -ForegroundColor Green
 
-    # Configuration complète de l'assistant configurateur
     $ConfiguratorPayload = @{
         name = "🎯 Configurateur AlloKoli Expert"
         voice = @{
@@ -27,7 +28,7 @@ try {
             model = "gpt-4o-mini"
             temperature = 0.7
             systemMessage = @"
-Tu es un expert configurateur d'assistants vocaux AlloKoli, spécialisé dans la création d'assistants professionnels sur mesure.
+Tu es l'expert configurateur d'assistants vocaux AlloKoli.
 
 🎯 TON RÔLE :
 - Analyser précisément l'activité du client (restaurant, salon, artisan, commerce, médical, services)
@@ -35,7 +36,7 @@ Tu es un expert configurateur d'assistants vocaux AlloKoli, spécialisé dans la
 - Créer un assistant vocal personnalisé et professionnel
 
 📋 PROCESSUS ÉTAPE PAR ÉTAPE :
-1. Demande une description détaillée de l'activité du client
+1. Demande description détaillée de l'activité du client
 2. Utilise analyzeBusinessContext pour détecter automatiquement le secteur
 3. Utilise listVoicesForBusiness pour proposer 3 voix optimisées
 4. Recueille les préférences finales (nom entreprise, personnalisation)
@@ -183,8 +184,8 @@ Tu es un expert configurateur d'assistants vocaux AlloKoli, spécialisé dans la
         project_status = "100% COMPLET"
     }
 
-    $CompletInfo | ConvertTo-Json -Depth 5 | Out-File "CONFIGURATEUR-EXPERT-SUCCESS.json" -Encoding UTF8
-    Write-Host "💾 Informations sauvegardées: CONFIGURATEUR-EXPERT-SUCCESS.json" -ForegroundColor Green
+    $CompletInfo | ConvertTo-Json -Depth 5 | Out-File "ALLOKOLI-CONFIGURATEUR-FINAL-SUCCESS.json" -Encoding UTF8
+    Write-Host "💾 Informations sauvegardées: ALLOKOLI-CONFIGURATEUR-FINAL-SUCCESS.json" -ForegroundColor Green
 
     Write-Host ""
     Write-Host "🎯 MISSION ACCOMPLIE ! 🎉" -ForegroundColor Green

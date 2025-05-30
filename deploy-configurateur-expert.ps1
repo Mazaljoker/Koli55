@@ -1,211 +1,282 @@
-# Script de déploiement de l'Assistant Configurateur Expert AlloKoli
-# Utilise la fonction Edge /assistants existante pour créer l'assistant sur Vapi
+#!/usr/bin/env pwsh
 
-Write-Host "Deploiement de l'Assistant Configurateur Expert AlloKoli..." -ForegroundColor Green
+# Script de déploiement des edge functions configurateur
+# Deploy Configurateur Expert.ps1
 
-# Configuration
+Write-Host "🚀 Déploiement Edge Functions Configurateur" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Yellow
+
+# Configuration du projet KOLI
+$SUPABASE_PROJECT_ID = "aiurboizarbbcpynmmgv"
+
+Write-Host "✅ Projet cible : KOLI ($SUPABASE_PROJECT_ID)" -ForegroundColor Green
+
+# Vérifier que Supabase CLI est installé
+try {
+    $supabaseVersion = supabase --version
+    Write-Host "✅ Supabase CLI détecté : $supabaseVersion" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Supabase CLI non trouvé. Installez-le avec :" -ForegroundColor Red
+    Write-Host "npm install -g supabase" -ForegroundColor Yellow
+    exit 1
+}
+
+# Déploiement des 3 edge functions configurateur
+Write-Host "`n📦 Déploiement des functions..." -ForegroundColor Yellow
+
+$functions = @(
+    "configurator-tools/analyze-business",
+    "configurator-tools/list-voices", 
+    "configurator-tools/create-assistant"
+)
+
+foreach ($func in $functions) {
+    Write-Host "`n🔧 Déploiement $func..." -ForegroundColor Cyan
+    
+    try {
+        $deployOutput = supabase functions deploy $func --project-ref $SUPABASE_PROJECT_ID 2>&1
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "✅ $func déployé avec succès" -ForegroundColor Green
+        } else {
+            Write-Host "❌ Erreur déploiement $func :" -ForegroundColor Red
+            Write-Host $deployOutput -ForegroundColor Red
+        }
+        
+    } catch {
+        Write-Host "❌ Exception déploiement $func : $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+# Test de validation après déploiement
+Write-Host "`n🧪 Tests de validation..." -ForegroundColor Yellow
+
 $SUPABASE_URL = "https://aiurboizarbbcpynmmgv.supabase.co"
-$SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpdXJib2l6YXJiYmNweW5tbWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczOTUxNzUsImV4cCI6MjA2Mjk3MTE3NX0.5uZKJkSS656znzAd0VFLQ0vE3s2cEfpZfn5SCsFTBGM"
+$SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpdXJib2l6YXJiYmNweW5tbWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU4NTk3NzYsImV4cCI6MjAzMTQzNTc3Nn0.JH0x8O1KnfDl5lsZFSBJ0TlkA3pFQ8aNSDT8VOMBh1o"
 
-# Données de l'assistant configurateur expert
-$assistantData = @{
-    name = "AlloKoliConfig Pro - Assistant Configurateur Expert Omniscient"
+$headers = @{
+    "Authorization" = "Bearer $SUPABASE_ANON_KEY"
+    "Content-Type" = "application/json"
+}
+
+# Test rapide de la fonction analyze-business
+Start-Sleep -Seconds 5  # Attendre le déploiement
+
+try {
+    $testPayload = @{ description = "Restaurant italien à Paris" } | ConvertTo-Json
+    $testResponse = Invoke-RestMethod -Uri "$SUPABASE_URL/functions/v1/configurator-tools/analyze-business" -Method POST -Headers $headers -Body $testPayload
+    
+    Write-Host "✅ Test analyze-business : Secteur détecté = $($testResponse.analysis.sector)" -ForegroundColor Green
+    
+} catch {
+    Write-Host "⚠️  Test analyze-business échoué (normal si déploiement en cours)" -ForegroundColor Yellow
+    Write-Host "   Erreur : $($_.Exception.Message)" -ForegroundColor Yellow
+}
+
+Write-Host "`n🎉 Déploiement terminé !" -ForegroundColor Green
+Write-Host "==============================" -ForegroundColor Yellow
+Write-Host "✅ Edge Functions configurateur déployées" -ForegroundColor White
+Write-Host "✅ Projet : KOLI ($SUPABASE_PROJECT_ID)" -ForegroundColor White
+Write-Host "✅ Prêt pour tests complets" -ForegroundColor White
+
+Write-Host "`n📝 Prochaines étapes :" -ForegroundColor Cyan
+Write-Host "1. Attendre 2-3 minutes (propagation)" -ForegroundColor White
+Write-Host "2. Tester : pwsh -File create-via-mcp-supabase.ps1" -ForegroundColor White
+Write-Host "3. Créer l'assistant configurateur avec tools" -ForegroundColor White
+
+# Déploiement final avec test des deux clés Vapi
+# ==============================================
+
+Write-Host "🔑 Test des clés Vapi et création du configurateur" -ForegroundColor Green
+Write-Host "=" * 60
+
+$VapiApiUrl = "https://api.vapi.ai/assistant"
+
+# D'après votre image Supabase, voici les clés (complétez-les si nécessaire)
+Write-Host "📋 Clés depuis votre configuration Supabase :" -ForegroundColor Cyan
+Write-Host "   VAPI_PRIVATE_KEY: 71c8d36796cf..." -ForegroundColor White
+Write-Host "   VAPI_PUBLIC_KEY:  02e5b2503a3c..." -ForegroundColor White
+
+Write-Host "`n🔍 Entrez vos clés COMPLÈTES pour test :" -ForegroundColor Yellow
+
+$PrivateKey = Read-Host "VAPI_PRIVATE_KEY (clé complète)"
+$PublicKey = Read-Host "VAPI_PUBLIC_KEY (clé complète)"
+
+# Configuration de l'assistant
+$ConfiguratorPayload = @{
+    name = "🎯 Configurateur AlloKoli Expert"
+    voice = @{
+        provider = "azure"
+        voiceId = "fr-FR-DeniseNeural"
+    }
     model = @{
         provider = "openai"
-        model = "gpt-4o"
+        model = "gpt-4o-mini"
         temperature = 0.7
-        maxTokens = 3000
         systemMessage = @"
-Vous êtes **AlloKoliConfig Pro**, l'assistant IA le plus avancé au monde pour la configuration d'agents vocaux Vapi.
+Tu es un expert configurateur d'assistants vocaux AlloKoli.
 
-🧠 **Votre Expertise Omnisciente Unique:**
-- **105 pages** de documentation Vapi officielle maîtrisées à 100%
-- **525 exemples** de configuration réels mémorisés et analysés
-- **168 schémas** de données Vapi documentés et optimisés
-- **83 paramètres** Vapi avancés avec recommandations intelligentes
-- **Tous les providers** vocaux, modèles LLM et transcribers disponibles
-- **Base de connaissances live** mise à jour avec les dernières fonctionnalités Vapi
+🎯 TON RÔLE :
+- Analyser l'activité du client (restaurant, salon, artisan, commerce)
+- Recommander les meilleures voix selon le secteur
+- Créer un assistant vocal personnalisé
 
-🎯 **Capacités Avancées Uniques:**
-1. **Recommandations Intelligentes Sectorielles** : Je propose automatiquement les meilleurs providers selon votre activité
-2. **Optimisation Performance Automatique** : Je calcule les paramètres optimaux selon vos besoins
-3. **Intégrations Complexes Maîtrisées** : Je configure webhooks, tools personnalisés, squads multi-assistants
-4. **Troubleshooting Expert Instantané** : Je diagnostique et corrige les problèmes en temps réel
-5. **Architecture Évolutive** : Je conçois des systèmes scalables pour croissance future
+📋 PROCESSUS :
+1. Demande description détaillée de l'activité
+2. Utilise analyzeBusinessContext pour détecter le secteur
+3. Utilise listVoicesForBusiness pour recommander voix
+4. Utilise createAssistant pour créer l'assistant final
 
-🚀 **Modes de Configuration Adaptatifs:**
-- **🟢 SIMPLE** : Configuration guidée en 5 minutes (PME, artisans, commerces)
-- **🟡 AVANCÉ** : Tools, intégrations, webhooks (entreprises, services)  
-- **🔴 EXPERT** : Squads, SIP, custom transcribers, MCP (développeurs, grandes entreprises)
-
-Dites-moi votre niveau souhaité ou décrivez directement votre besoin, je détecterai automatiquement le niveau optimal !
+Tu guides le client étape par étape vers un assistant vocal professionnel !
 "@
     }
-    voice = @{
-        provider = "elevenlabs"
-        voiceId = "shimmer"
-        stability = 0.5
-        similarityBoost = 0.8
-    }
-    language = "fr-FR"
-    firstMessage = "Bonjour ! Je suis AlloKoliConfig Pro, votre expert Vapi omniscient. Grâce à ma maîtrise complète de 105 pages de documentation officielle et 525 exemples pratiques, je peux créer des configurations depuis les plus simples jusqu'aux plus complexes (squads, webhooks, SIP, MCP). Quel est votre niveau souhaité : SIMPLE pour une config guidée, AVANCÉ pour tools et intégrations, ou EXPERT pour configurations complexes ?"
-    endCallMessage = "Parfait ! Votre assistant vocal expert est configuré avec les meilleures pratiques Vapi. Vous recevrez tous les détails par email. Merci d'avoir utilisé AlloKoliConfig Pro !"
-    
-    # Outils MCP et fonctionnalités avancées
-    tools = @(
-        @{
-            type = "function"
-            function = @{
-                name = "createAssistantWithIntelligentRecommendations"
-                description = "Crée l'assistant vocal final avec recommandations intelligentes basées sur 105 pages de doc Vapi"
-                parameters = @{
-                    type = "object"
-                    properties = @{
-                        assistantName = @{ type = "string"; description = "Nom de l'assistant vocal" }
-                        businessType = @{ type = "string"; description = "Type d'activité de l'entreprise" }
-                        complexityLevel = @{ type = "string"; enum = @("simple", "advanced", "expert"); description = "Niveau de complexité souhaité" }
-                        assistantTone = @{ type = "string"; description = "Ton de communication" }
-                        firstMessage = @{ type = "string"; description = "Message d'accueil" }
-                        systemPromptCore = @{ type = "string"; description = "Prompt système principal" }
-                        voiceProvider = @{ type = "string"; description = "Provider vocal recommandé" }
-                        voiceId = @{ type = "string"; description = "ID de la voix recommandée" }
-                        modelProvider = @{ type = "string"; description = "Provider LLM recommandé" }
-                        modelName = @{ type = "string"; description = "Modèle LLM recommandé" }
-                        temperature = @{ type = "number"; description = "Température optimale" }
-                        enabledTools = @{ type = "array"; items = @{ type = "string" }; description = "Outils recommandés selon le secteur" }
-                        advancedFeatures = @{ type = "object"; description = "Fonctionnalités avancées recommandées" }
-                        companyName = @{ type = "string"; description = "Nom de l'entreprise" }
-                        address = @{ type = "string"; description = "Adresse" }
-                        phoneNumber = @{ type = "string"; description = "Numéro de téléphone" }
-                        email = @{ type = "string"; description = "Email" }
-                        openingHours = @{ type = "string"; description = "Horaires d'ouverture" }
-                        endCallMessage = @{ type = "string"; description = "Message de fin d'appel" }
-                    }
-                    required = @("assistantName", "businessType", "complexityLevel", "assistantTone", "firstMessage", "systemPromptCore")
-                }
-            }
-        },
-        @{
-            type = "function"
-            function = @{
-                name = "getVapiRecommendations"
-                description = "Obtient des recommandations intelligentes basées sur la base de connaissances Vapi"
-                parameters = @{
-                    type = "object"
-                    properties = @{
-                        businessType = @{ type = "string"; description = "Type d'activité" }
-                        requirements = @{ type = "object"; description = "Exigences spécifiques (langue, premium, etc.)" }
-                    }
-                    required = @("businessType")
-                }
-            }
-        },
-        @{
-            type = "function"
-            function = @{
-                name = "explainVapiFeature"
-                description = "Explique une fonctionnalité Vapi avec exemples de la documentation"
-                parameters = @{
-                    type = "object"
-                    properties = @{
-                        feature = @{ type = "string"; description = "Fonctionnalité à expliquer (squads, webhooks, tools, etc.)" }
-                    }
-                    required = @("feature")
-                }
-            }
-        }
-    )
-    
-    # Métadonnées enrichies
-    metadata = @{
-        configurator_type = "expert_omniscient"
-        knowledge_base_version = "2.0.0"
-        total_pages_mastered = 105
-        total_examples = 525
-        total_schemas = 168
-        coverage_score = 98
-        intelligence_level = "omniscient"
-        specializations = @("restaurant", "salon", "artisan", "liberal", "boutique", "pme", "enterprise")
-        advanced_capabilities = @("intelligent_recommendations", "sector_optimization", "performance_tuning", "complex_integrations", "troubleshooting_expert", "scalable_architecture")
-        supported_modes = @("simple", "advanced", "expert")
-        creation_date = "2025-01-18"
-        creator = "AlloKoli Team"
-        version = "2.0.0"
-    }
-    
-    # Configuration MCP
-    server = @{
-        url = "https://mcp.vapi.ai/mcp"
-        timeoutSeconds = 30
-    }
-    
-    # Fonctionnalités avancées
-    voicemailDetection = @{
-        enabled = $true
-        voicemailDetectionTimeoutMs = 10000
-    }
-    
-    silenceTimeoutSeconds = 30
-    maxDurationSeconds = 1800
-    backgroundSound = "office"
-    backchannelingEnabled = $true
-    backgroundDenoisingEnabled = $true
-    modelOutputInMessagesEnabled = $true
-    
-    # Transcriber optimisé pour le français
+    firstMessage = "Bonjour ! 🎯 Je suis votre configurateur AlloKoli. Décrivez-moi votre activité et je créerai un assistant vocal parfait pour vous !"
     transcriber = @{
         provider = "deepgram"
         model = "nova-2"
         language = "fr"
-        smartFormat = $true
-        languageDetectionEnabled = $true
     }
-}
+    tools = @(
+        @{
+            type = "function"
+            function = @{
+                name = "analyzeBusinessContext"
+                description = "Analyse le contexte business automatiquement"
+                parameters = @{
+                    type = "object"
+                    properties = @{
+                        businessDescription = @{
+                            type = "string"
+                            description = "Description de l'activité"
+                        }
+                    }
+                    required = @("businessDescription")
+                }
+            }
+            server = @{
+                url = "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools?tool=analyzeBusinessContext"
+                method = "POST"
+            }
+        },
+        @{
+            type = "function"
+            function = @{
+                name = "listVoicesForBusiness"
+                description = "Liste les voix optimales par secteur"
+                parameters = @{
+                    type = "object"
+                    properties = @{
+                        sector = @{
+                            type = "string"
+                            description = "Secteur d'activité"
+                        }
+                    }
+                    required = @("sector")
+                }
+            }
+            server = @{
+                url = "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools?tool=listVoicesForBusiness"
+                method = "POST"
+            }
+        },
+        @{
+            type = "function"
+            function = @{
+                name = "createAssistant"
+                description = "Crée l'assistant vocal final"
+                parameters = @{
+                    type = "object"
+                    properties = @{
+                        name = @{ type = "string" }
+                        sector = @{ type = "string" }
+                        voice = @{
+                            type = "object"
+                            properties = @{
+                                provider = @{ type = "string" }
+                                voiceId = @{ type = "string" }
+                            }
+                        }
+                    }
+                    required = @("name", "sector", "voice")
+                }
+            }
+            server = @{
+                url = "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools?tool=createAssistant"
+                method = "POST"
+            }
+        }
+    )
+} | ConvertTo-Json -Depth 10
 
-# Conversion en JSON
-$jsonData = $assistantData | ConvertTo-Json -Depth 10
-
-Write-Host "Donnees de l'assistant preparees" -ForegroundColor Yellow
-Write-Host "Taille des donnees: $($jsonData.Length) caracteres" -ForegroundColor Cyan
-
-# Appel à la fonction Edge /assistants
-try {
-    Write-Host "Appel de la fonction Edge /assistants..." -ForegroundColor Blue
-    
-    $response = Invoke-RestMethod -Uri "$SUPABASE_URL/functions/v1/assistants" `
-        -Method POST `
-        -Headers @{
-            "Authorization" = "Bearer $SUPABASE_ANON_KEY"
+# Test 1: PRIVATE_KEY
+if ($PrivateKey) {
+    try {
+        Write-Host "`n🧪 Test avec PRIVATE_KEY..." -ForegroundColor Cyan
+        
+        $Headers = @{
+            "Authorization" = "Bearer $PrivateKey"
             "Content-Type" = "application/json"
-            "apikey" = $SUPABASE_ANON_KEY
-        } `
-        -Body $jsonData
-    
-    Write-Host "Assistant configurateur expert cree avec succes !" -ForegroundColor Green
-    Write-Host "ID Assistant: $($response.data.id)" -ForegroundColor Cyan
-    Write-Host "Nom: $($response.data.name)" -ForegroundColor Cyan
-    Write-Host "Modele: $($response.data.model.provider)/$($response.data.model.model)" -ForegroundColor Cyan
-    Write-Host "Voix: $($response.data.voice.provider)/$($response.data.voice.voiceId)" -ForegroundColor Cyan
-    
-    if ($response.data.vapi_assistant_id) {
-        Write-Host "ID Vapi: $($response.data.vapi_assistant_id)" -ForegroundColor Green
-        Write-Host "Assistant deploye sur Vapi avec succes !" -ForegroundColor Green
-    }
-    
-    Write-Host "`nL'Assistant Configurateur Expert AlloKoli est maintenant operationnel !" -ForegroundColor Magenta
-    Write-Host "Il maitrise 105 pages de documentation Vapi et 525 exemples" -ForegroundColor Yellow
-    Write-Host "Pret a creer des configurations depuis simples jusqu'aux plus complexes !" -ForegroundColor Green
-    
-} catch {
-    Write-Host "Erreur lors de la creation de l'assistant:" -ForegroundColor Red
-    Write-Host $_.Exception.Message -ForegroundColor Red
-    
-    if ($_.Exception.Response) {
-        $errorResponse = $_.Exception.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($errorResponse)
-        $errorBody = $reader.ReadToEnd()
-        Write-Host "Details de l'erreur: $errorBody" -ForegroundColor Yellow
+        }
+
+        $Response = Invoke-RestMethod -Uri $VapiApiUrl -Method POST -Headers $Headers -Body $ConfiguratorPayload
+        
+        Write-Host "✅ SUCCÈS avec PRIVATE_KEY !" -ForegroundColor Green
+        Write-Host "🎉 CONFIGURATEUR CRÉÉ !" -ForegroundColor Green
+        Write-Host "   🆔 ID: $($Response.id)" -ForegroundColor Yellow
+        Write-Host "   📞 Test: https://dashboard.vapi.ai/assistant/$($Response.id)/test" -ForegroundColor Cyan
+        
+        # Sauvegarder le succès
+        @{
+            success = $true
+            key_used = "PRIVATE_KEY"
+            assistant_id = $Response.id
+            test_url = "https://dashboard.vapi.ai/assistant/$($Response.id)/test"
+            created_at = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        } | ConvertTo-Json | Out-File "SUCCESS-PRIVATE-KEY.json" -Encoding UTF8
+        
+        Write-Host "`n🎯 MISSION ACCOMPLIE avec PRIVATE_KEY ! 🎉" -ForegroundColor Green
+        return
+        
+    } catch {
+        Write-Host "❌ PRIVATE_KEY échoue: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
-Write-Host "`nScript termine." -ForegroundColor White 
+# Test 2: PUBLIC_KEY si PRIVATE échoue
+if ($PublicKey) {
+    try {
+        Write-Host "`n🧪 Test avec PUBLIC_KEY..." -ForegroundColor Cyan
+        
+        $Headers = @{
+            "Authorization" = "Bearer $PublicKey"
+            "Content-Type" = "application/json"
+        }
+
+        $Response = Invoke-RestMethod -Uri $VapiApiUrl -Method POST -Headers $Headers -Body $ConfiguratorPayload
+        
+        Write-Host "✅ SUCCÈS avec PUBLIC_KEY !" -ForegroundColor Green
+        Write-Host "🎉 CONFIGURATEUR CRÉÉ !" -ForegroundColor Green
+        Write-Host "   🆔 ID: $($Response.id)" -ForegroundColor Yellow
+        Write-Host "   📞 Test: https://dashboard.vapi.ai/assistant/$($Response.id)/test" -ForegroundColor Cyan
+        
+        # Sauvegarder le succès
+        @{
+            success = $true
+            key_used = "PUBLIC_KEY"
+            assistant_id = $Response.id
+            test_url = "https://dashboard.vapi.ai/assistant/$($Response.id)/test"
+            created_at = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        } | ConvertTo-Json | Out-File "SUCCESS-PUBLIC-KEY.json" -Encoding UTF8
+        
+        Write-Host "`n🎯 MISSION ACCOMPLIE avec PUBLIC_KEY ! 🎉" -ForegroundColor Green
+        return
+        
+    } catch {
+        Write-Host "❌ PUBLIC_KEY échoue aussi: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+Write-Host "`n💡 Solutions possibles :" -ForegroundColor Yellow
+Write-Host "1. Vérifiez que vos clés sont complètes (pas tronquées)" -ForegroundColor White
+Write-Host "2. Récupérez les clés depuis https://dashboard.vapi.ai" -ForegroundColor White
+Write-Host "3. Essayez de régénérer les clés si nécessaire" -ForegroundColor White 

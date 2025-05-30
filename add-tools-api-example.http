@@ -1,0 +1,140 @@
+### Ajouter les Tools à l'Assistant Vapi Configurateur
+### Add Tools to Vapi Assistant API Examples
+
+# Variables
+@vapiApiKey = YOUR_VAPI_API_KEY_HERE
+@assistantId = 46b73124-6624-45ab-89c7-d27ecedcb251
+@webhookUrl = https://allokoli.vercel.app/api/vapi/webhook
+
+### 1. Récupérer l'assistant actuel
+GET https://api.vapi.ai/assistant/{{assistantId}}
+Authorization: Bearer {{vapiApiKey}}
+Content-Type: application/json
+
+###
+
+### 2. Ajouter les tools à l'assistant
+PATCH https://api.vapi.ai/assistant/{{assistantId}}
+Authorization: Bearer {{vapiApiKey}}
+Content-Type: application/json
+
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "analyzeBusinessContext",
+        "description": "Analyse le contexte business et détecte le secteur d'activité pour recommander le template optimal",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description de l'entreprise par l'utilisateur (activité, services, etc.)"
+            }
+          },
+          "required": ["description"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "listVoicesForSector",
+        "description": "Obtient les 3 meilleures voix recommandées pour un secteur donné avec exemples audio personnalisés",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sector": {
+              "type": "string",
+              "description": "Secteur d'activité détecté (restaurant, salon, ecommerce, artisan, service, medical)"
+            },
+            "language": {
+              "type": "string",
+              "description": "Code langue (fr, en, etc.)",
+              "default": "fr"
+            },
+            "businessName": {
+              "type": "string",
+              "description": "Nom de l'entreprise pour personnaliser les exemples audio"
+            }
+          },
+          "required": ["sector"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "createCompleteAssistant",
+        "description": "Crée l'assistant vocal final avec toute la configuration optimisée",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "businessName": {
+              "type": "string",
+              "description": "Nom de l'entreprise"
+            },
+            "sector": {
+              "type": "string",
+              "description": "Secteur d'activité"
+            },
+            "selectedVoice": {
+              "type": "object",
+              "description": "Voix sélectionnée par l'utilisateur",
+              "properties": {
+                "provider": { "type": "string" },
+                "voiceId": { "type": "string" },
+                "name": { "type": "string" }
+              },
+              "required": ["provider", "voiceId", "name"]
+            },
+            "template": {
+              "type": "object",
+              "description": "Template de configuration sectoriel",
+              "properties": {
+                "id": { "type": "string" },
+                "config": { "type": "object" }
+              },
+              "required": ["id", "config"]
+            },
+            "knowledgeBaseIds": {
+              "type": "array",
+              "description": "IDs des bases de connaissances à associer",
+              "items": { "type": "string" }
+            },
+            "customInstructions": {
+              "type": "string",
+              "description": "Instructions personnalisées supplémentaires"
+            },
+            "userId": {
+              "type": "string",
+              "description": "ID utilisateur pour traçabilité"
+            }
+          },
+          "required": ["businessName", "sector", "selectedVoice"]
+        }
+      }
+    }
+  ],
+  "serverUrl": "{{webhookUrl}}",
+  "serverUrlSecret": "allokoli-webhook-secret-2025"
+}
+
+###
+
+### 3. Tester un function call (simulation webhook)
+POST {{webhookUrl}}
+Content-Type: application/json
+
+{
+  "type": "function-call",
+  "functionCall": {
+    "name": "analyzeBusinessContext",
+    "parameters": {
+      "description": "Restaurant italien à Paris spécialisé en pizza"
+    }
+  }
+}
+
+### 

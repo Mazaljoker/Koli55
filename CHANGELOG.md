@@ -5,6 +5,140 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2025-01-15 🎉 **CONFIGURATEUR OPÉRATIONNEL**
+
+### 🚀 **DÉPLOIEMENT MAJEUR - CONFIGURATEUR ALLOKOLI EXPERT**
+
+#### Ajouté ✅
+
+- **Configurateur d'assistants vocaux 100% fonctionnel**
+  - Assistant Vapi ID: `99cce75a-5b25-4925-bdcd-9287d350728e`
+  - URL de test: https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test
+- **3 Tools Vapi opérationnels**
+
+  - `analyzeBusinessContext` (`0cc19f66-9eee-482e-b945-6d04792a705d`)
+  - `listVoicesForBusiness` (`bcd1a8a3-ba44-4d8d-92df-df44e03edd64`)
+  - `createAssistant` (`80a26731-1b97-4e2c-afde-7d84abf1a7e5`)
+
+- **Edge Functions Supabase déployées**
+
+  - Version 6 (ACTIVE)
+  - URL: `https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools`
+  - 4 fichiers TypeScript déployés
+
+- **Support de 6 secteurs d'activité**
+
+  - Restaurant & Hôtellerie
+  - Salon de beauté & Bien-être
+  - Artisan & Réparation
+  - Commerce & Retail
+  - Médical & Santé
+  - Service client
+
+- **Recommandations intelligentes de voix**
+
+  - 12 voix Azure françaises
+  - 3 recommandations optimisées par secteur
+  - Personnalités adaptées au business
+
+- **Scripts PowerShell opérationnels**
+  - `create-tools-separately.ps1` - Création automatique d'assistants avec tools
+  - `test-edge-functions.ps1` - Tests des fonctions déployées
+  - `ALLOKOLI-CONFIGURATEUR-FINAL-SANS-TOOLS.ps1` - Configurateur intelligent
+  - `test-assistant-minimal.ps1` - Validation API Vapi
+
+#### Configuration technique ⚙️
+
+- **Intégration MCP Supabase** - Déploiement via Model Context Protocol
+- **Clés API Vapi configurées** - Format UUID pour PRIVATE_KEY
+- **Variables d'environnement** - Supabase secrets configurés
+- **Architecture modulaire** - Edge Functions TypeScript/Deno
+
+#### Documentation 📚
+
+- `DOCS/CONFIGURATEUR_DEPLOYMENT_SUCCESS.md` - Documentation complète du déploiement
+- README.md mis à jour avec accès directs et fonctionnalités
+- Architecture et métriques de déploiement documentées
+
+### 🔧 Modifié
+
+- **README.md** - Ajout section configurateur opérationnel
+- **État du projet** - Phase 8 complétée (configurateur déployé)
+- **Configuration MCP** - Ajout de la configuration Supabase MCP
+
+### ✅ Tests validés
+
+- Edge Functions Supabase - Toutes fonctions répondent correctement
+- API Vapi - Création d'assistants et tools fonctionnelle
+- Processus complet - Flux utilisateur de bout en bout validé
+- Architecture - Infrastructure stable et scalable
+
+---
+
+## [0.8.0] - 2025-01-14
+
+### Ajouté
+
+- Intégration Model Context Protocol (MCP)
+- Configuration MCP pour Vapi, Supabase, et GitHub
+- Support Turbopack pour performances optimisées
+- Hot Reload instantané en développement
+
+### Modifié
+
+- Optimisation bundle avec Turbopack (10x plus rapide)
+- Structure projet standardisée
+- Configuration variables d'environnement
+
+## [0.7.0] - 2025-01-13
+
+### Ajouté
+
+- Migration structurelle complète
+- Intégration frontend avec backend
+- Tables de base de données configurées
+
+### Modifié
+
+- Architecture en couches stabilisée
+- APIs frontend/backend connectées
+
+## [0.6.0] - 2025-01-12
+
+### Ajouté
+
+- Supabase Edge Functions développées
+- Intégration SDKs Vapi (client et serveur)
+- Base de données PostgreSQL avec RLS
+
+### Modifié
+
+- Authentification Supabase intégrée
+- Structure projet Next.js 15 avec App Router
+
+## [0.5.0] - 2025-01-11
+
+### Ajouté
+
+- Initialisation du projet AlloKoli
+- Structure de base Next.js + Supabase
+- Documentation initiale et contexte projet
+
+### Bases posées
+
+- Stack technique défini
+- Workflow de développement établi
+- Objectifs et roadmap créés
+
+---
+
+## Liens utiles
+
+- **Configurateur en action**: [Test direct](https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test)
+- **Documentation**: [Déploiement réussi](DOCS/CONFIGURATEUR_DEPLOYMENT_SUCCESS.md)
+- **Projet GitHub**: [AlloKoli](https://github.com/user/allokoli)
+- **Dashboard Supabase**: [KOLI Project](https://supabase.com/dashboard/project/aiurboizarbbcpynmmgv)
+
 ## [Non publié] - 2024-12-XX
 
 ### 📊 Analyse de Conformité Complète

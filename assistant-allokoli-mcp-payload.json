@@ -1,16 +1,157 @@
 {
-  "assistantName": "AlloKoliConfig Pro Expert v4",
-  "businessType": "configurateur",
-  "assistantTone": "expert et pédagogue",
-  "firstMessage": "Bonjour ! Je suis AlloKoliConfig Pro, votre expert Vapi omniscient. Grâce à ma maîtrise de 105 pages de documentation et 525 exemples, je peux créer des configurations depuis les plus simples jusqu'aux plus complexes. Quel est votre niveau souhaité : SIMPLE, AVANCÉ, ou EXPERT ?",
-  "systemPromptCore": "Vous êtes AlloKoliConfig Pro, l'assistant IA expert pour la configuration d'agents vocaux Vapi. Vous maîtrisez 105 pages de documentation officielle et 525 exemples pratiques. Vous proposez des configurations adaptées selon 3 modes : SIMPLE (5 min), AVANCÉ (tools/webhooks), EXPERT (squads/SIP/MCP). Dites-moi votre niveau souhaité ou décrivez votre besoin.",
-  "canTakeReservations": false,
-  "canTakeAppointments": false,
-  "canTransferCall": false,
-  "companyName": "AlloKoli",
-  "address": "Paris, France",
-  "phoneNumber": "+33 1 00 00 00 00",
-  "email": "contact@allokoli.com",
-  "openingHours": "24h/24 7j/7",
-  "provisionPhone": false
+  "name": "Configurateur AlloKoli MCP",
+  "firstMessage": "Bonjour ! Je suis votre configurateur d'assistant vocal AlloKoli. Décrivez-moi votre activité et je créerai un assistant parfaitement adapté à vos besoins professionnels !",
+  "systemPrompt": "Tu es un expert en configuration d'assistants vocaux pour professionnels avec AlloKoli.\n\nTon rôle :\n1. Analyser l'activité du client (restaurant, salon, artisan, cabinet médical, commerce)\n2. Recommander les meilleures voix selon le secteur d'activité\n3. Créer un assistant vocal personnalisé et professionnel\n\nProcess étape par étape :\n1. Demande une description détaillée de l'activité du client\n2. Utilise analyzeBusinessContext pour détecter automatiquement le secteur\n3. Utilise listVoicesForBusiness pour recommander 3 voix optimisées\n4. Recueille les préférences (nom entreprise, contact, message d'accueil personnalisé)\n5. Utilise createAssistant pour finaliser la création avec la configuration optimale\n\nTu es enthousiaste, expert et efficace. Tu guides le client étape par étape vers un assistant vocal professionnel. Tu expliques tes recommandations et personnalises selon les besoins spécifiques.",
+  "voice": {
+    "provider": "azure",
+    "voiceId": "fr-FR-DeniseNeural"
+  },
+  "model": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "temperature": 0.7,
+    "maxTokens": 1000
+  },
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "analyzeBusinessContext",
+        "description": "Analyse le contexte business et détecte automatiquement le secteur d'activité pour recommander le template optimal",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description détaillée de l'activité du client (nom, services, localisation, etc.)"
+            }
+          },
+          "required": ["description"]
+        }
+      },
+      "server": {
+        "url": "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "listVoicesForBusiness",
+        "description": "Liste les 3 meilleures voix optimisées selon le secteur d'activité détecté avec exemples audio",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "businessType": {
+              "type": "string",
+              "description": "Type de business détecté (restaurant, salon, artisan, medical, commerce)",
+              "enum": ["restaurant", "salon", "artisan", "medical", "commerce"]
+            }
+          },
+          "required": ["businessType"]
+        }
+      },
+      "server": {
+        "url": "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "createAssistant",
+        "description": "Crée un assistant Vapi personnalisé avec la configuration optimale selon le secteur et les préférences",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "businessInfo": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Nom de l'entreprise/établissement"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type de business détecté",
+                  "enum": [
+                    "restaurant",
+                    "salon",
+                    "artisan",
+                    "medical",
+                    "commerce"
+                  ]
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description détaillée de l'activité"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Numéro de téléphone (optionnel)"
+                },
+                "address": {
+                  "type": "string",
+                  "description": "Adresse de l'établissement (optionnel)"
+                }
+              },
+              "required": ["name", "type", "description"]
+            },
+            "selectedVoice": {
+              "type": "object",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "enum": ["azure", "elevenlabs", "openai"]
+                },
+                "voiceId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": ["provider", "voiceId", "name"]
+            },
+            "additionalConfig": {
+              "type": "object",
+              "properties": {
+                "greeting": {
+                  "type": "string",
+                  "description": "Message d'accueil personnalisé"
+                },
+                "instructions": {
+                  "type": "string",
+                  "description": "Instructions spécifiques supplémentaires"
+                }
+              }
+            }
+          },
+          "required": ["businessInfo", "selectedVoice"]
+        }
+      },
+      "server": {
+        "url": "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ],
+  "recordingEnabled": true,
+  "silenceTimeoutSeconds": 30,
+  "maxDurationSeconds": 900,
+  "endCallMessage": "Merci d'avoir utilisé le configurateur AlloKoli ! Votre assistant vocal sera opérationnel sous peu. À bientôt !",
+  "transcriber": {
+    "provider": "deepgram",
+    "model": "nova-2",
+    "language": "fr"
+  }
 }

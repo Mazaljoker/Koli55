@@ -1,0 +1,73 @@
+{
+  "model": "gpt-4o-mini",
+  "voices_recommended": [
+    {
+      "voices": [
+        "Denise",
+        "Claude",
+        "Vivienne"
+      ],
+      "sector": "restaurant"
+    },
+    {
+      "voices": [
+        "Brigitte",
+        "Céline",
+        "Denise"
+      ],
+      "sector": "salon"
+    },
+    {
+      "voices": [
+        "Henri",
+        "Antoine",
+        "Claude"
+      ],
+      "sector": "artisan"
+    },
+    {
+      "voices": [
+        "Brigitte",
+        "Denise",
+        "Claude"
+      ],
+      "sector": "commerce"
+    },
+    {
+      "voices": [
+        "Claude",
+        "Henri",
+        "Denise"
+      ],
+      "sector": "medical"
+    },
+    {
+      "voices": [
+        "Denise",
+        "Claude",
+        "Brigitte"
+      ],
+      "sector": "service"
+    }
+  ],
+  "max_duration": 1200,
+  "created_at": "2025-05-30 10:09:14",
+  "configurator_id": "e08f80b9-4390-4da0-ad74-0596cb80e395",
+  "name": "🎯 Configurateur AlloKoli Expert",
+  "project_status": "100% COMPLET",
+  "voice_provider": "azure",
+  "test_url": "https://dashboard.vapi.ai/assistant/e08f80b9-4390-4da0-ad74-0596cb80e395/test",
+  "success": true,
+  "note": "Configurateur intelligent avec expertise secteurs intégrée",
+  "dashboard_url": "https://dashboard.vapi.ai/assistant/e08f80b9-4390-4da0-ad74-0596cb80e395",
+  "sectors": [
+    "restaurant",
+    "salon",
+    "artisan",
+    "commerce",
+    "medical",
+    "service"
+  ],
+  "edge_functions_url": "https://aiurboizarbbcpynmmgv.supabase.co/functions/v1/configurator-tools",
+  "voice_id": "fr-FR-DeniseNeural"
+}

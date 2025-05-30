@@ -1,0 +1,18 @@
+{
+  "dashboard_urls": {
+    "assistant": "https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e",
+    "test": "https://dashboard.vapi.ai/assistant/99cce75a-5b25-4925-bdcd-9287d350728e/test",
+    "tools": "https://dashboard.vapi.ai/tools"
+  },
+  "created_at": "2025-05-30 10:13:25",
+  "assistant": {
+    "id": "99cce75a-5b25-4925-bdcd-9287d350728e",
+    "name": "🎯 Configurateur AlloKoli Expert"
+  },
+  "success": true,
+  "tools": {
+    "listVoicesForBusiness": "bcd1a8a3-ba44-4d8d-92df-df44e03edd64",
+    "createAssistant": "80a26731-1b97-4e2c-afde-7d84abf1a7e5",
+    "analyzeBusinessContext": "0cc19f66-9eee-482e-b945-6d04792a705d"
+  }
+}
